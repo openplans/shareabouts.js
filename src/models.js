@@ -1,6 +1,6 @@
 var Shareabouts = Shareabouts || {};
 
-(function(S, $, console, loadImage) {
+(function(S, $, console) {
   var normalizeModelArguments = function(key, val, options) {
     var attrs;
     if (key == null || _.isObject(key)) {
@@ -17,7 +17,24 @@ var Shareabouts = Shareabouts || {};
     };
   };
 
-  S.SubmissionModel = Backbone.Model.extend({
+  S.ShareaboutsApiModel = Backbone.Model.extend({
+    sync: function(method, model, options) {
+      var data = model.toJSON();
+
+      delete data.created_datetime;
+      delete data.dataset;
+      delete data.id;
+      delete data.updated_datetime;
+
+      options = options || {};
+      options.contentType = 'application/json';
+      options.data = JSON.stringify(data);
+
+      Backbone.sync(method, model, options);
+    }
+  });
+
+  S.SubmissionModel = S.ShareaboutsApiModel.extend({
     url: function() {
       // This is to make Django happy. I'm sad to have to add it.
       var url = S.SubmissionModel.__super__.url.call(this);
@@ -46,7 +63,7 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  S.PlaceModel = Backbone.Model.extend({
+  S.PlaceModel = S.ShareaboutsApiModel.extend({
     initialize: function(attributes, options) {
       this.responseCollection = new S.SubmissionCollection([], {
         placeModel: this,
@@ -122,8 +139,8 @@ var Shareabouts = Shareabouts || {};
       // Pass the submissionType into each PlaceModel so that it makes its way
       // to the SubmissionCollections
       options = options || {};
-      options.responseType = this.options.responseType;
-      options.supportType = this.options.supportType;
+      options.responseType = this.options && this.options.responseType;
+      options.supportType = this.options && this.options.supportType;
       return S.PlaceCollection.__super__.add.call(this, models, options);
     }
   });
@@ -196,8 +213,7 @@ var Shareabouts = Shareabouts || {};
     url: '/api/activity/'
   });
 
-})(Shareabouts, jQuery, Shareabouts.Util.console, window.loadImage);
-// NOTE: loadImage comes from the Load Image plugin in load-image.js
+})(Shareabouts, jQuery, Shareabouts.Util.console);
 
 
 /*****************************************************************************

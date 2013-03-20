@@ -1,6 +1,10 @@
+/*global _ moment BinaryFile loadImage EXIF */
+
 var Shareabouts = Shareabouts || {};
 
 (function(S, moment){
+  'use strict';
+
   S.Util = {
     setPrettyDateLang: function(locale) {
       moment.lang(locale);
@@ -18,7 +22,7 @@ var Shareabouts = Shareabouts || {};
       var attrs = {};
 
       // Get values from the form
-      _.each($form.serializeArray(), function(item, i) {
+      _.each($form.serializeArray(), function(item) {
         attrs[item.name] = item.value;
       });
 
@@ -27,11 +31,11 @@ var Shareabouts = Shareabouts || {};
 
     isSupported: function(userAgent) {
       switch (userAgent.browser.name) {
-        case "Chrome":
-        case "Firefox":
-        case "Safari":
+        case 'Chrome':
+        case 'Firefox':
+        case 'Safari':
           return true;
-        case "Microsoft Internet Explorer":
+        case 'Microsoft Internet Explorer':
           var firstDot = userAgent.browser.version.indexOf('.'),
               major = parseInt(userAgent.browser.version.substr(0, firstDot), 10);
 
@@ -60,7 +64,7 @@ var Shareabouts = Shareabouts || {};
     },
 
     fixImageOrientation: function(canvas, orientation) {
-      var rotated = document.createElement("canvas"),
+      var rotated = document.createElement('canvas'),
           ctx = rotated.getContext('2d'),
           width = canvas.width,
           height = canvas.height;
@@ -191,15 +195,15 @@ var Shareabouts = Shareabouts || {};
         if (days) {
           var date = new Date();
           date.setTime(date.getTime()+(days*24*60*60*1000));
-          expires = "; expires="+date.toGMTString();
+          expires = '; expires='+date.toGMTString();
         }
         else {
-          expires = "";
+          expires = '';
         }
-        document.cookie = name+"="+value+expires+"; path=/";
+        document.cookie = name+'='+value+expires+'; path=/';
       },
       get: function(name) {
-        var nameEQ = name + "=";
+        var nameEQ = name + '=';
         var ca = document.cookie.split(';');
         for(var i=0;i < ca.length;i++) {
           var c = ca[i];
@@ -213,8 +217,8 @@ var Shareabouts = Shareabouts || {};
         return null;
       },
       destroy: function(name) {
-        this.save(name,"",-1);
+        this.save(name,'',-1);
       }
     }
   };
-})(Shareabouts, moment);
+}(Shareabouts, moment));

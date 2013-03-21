@@ -37,7 +37,10 @@ var Shareabouts = Shareabouts || {};
       }
     }, options);
 
-    this.layer = new L.ImageOverlay.HeatCanvas(data, this.options);
+    this.layer = new L.ImageOverlay.HeatCanvas(
+      (shareaboutsFormatToHeatCanvasFormat(data, this.options.valueFn)),
+      this.options
+    );
 
     this.setData = function(data) {
       this.layer.setData(shareaboutsFormatToHeatCanvasFormat(data, this.options.valueFn));
@@ -45,6 +48,6 @@ var Shareabouts = Shareabouts || {};
   };
 
   S.heatmap = function(data, options) {
-    return new S.Heatmap(options);
+    return new S.Heatmap(data, options);
   };
 }(Shareabouts, L));

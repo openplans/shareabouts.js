@@ -76,9 +76,24 @@ module.exports = function (grunt) {
     },
     // not used since Uglify task does concat,
     // but still available if needed
-    /*concat: {
-      dist: {}
-    },*/
+    concat: {
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/utils.js': [
+            '<%= yeoman.app %>/utils.js'
+          ],
+          '<%= yeoman.dist %>/models.js': [
+            '<%= yeoman.app %>/models.js',
+            '<%= yeoman.app %>/lib/django-csrf.js'
+          ],
+          '<%= yeoman.dist %>/heatmap.js': [
+            '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.Canvas.js',
+            '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.HeatCanvas.js',
+            '<%= yeoman.app %>/heatmap/heatmap.js'
+          ]
+        }
+      }
+    },
 
     uglify: {
       dist: {
@@ -127,6 +142,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'concat',
     'uglify'
   ]);
 

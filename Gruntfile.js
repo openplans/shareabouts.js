@@ -90,6 +90,12 @@ module.exports = function (grunt) {
             '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.Canvas.js',
             '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.HeatCanvas.js',
             '<%= yeoman.app %>/heatmap/heatmap.js'
+          ],
+          '<%= yeoman.dist %>/lib/heatcanvas.js': [
+            '<%= yeoman.app %>/heatcanvas.js'
+          ],
+          '<%= yeoman.dist %>/lib/heatcanvas-worker.js': [
+            '<%= yeoman.app %>/heatcanvas-worker.js'
           ]
         }
       }

@@ -92,10 +92,10 @@ module.exports = function (grunt) {
             '<%= yeoman.app %>/heatmap/heatmap.js'
           ],
           '<%= yeoman.dist %>/lib/heatcanvas.js': [
-            '<%= yeoman.app %>/heatcanvas.js'
+            '<%= yeoman.app %>/heatmap/lib/heatcanvas.js'
           ],
           '<%= yeoman.dist %>/lib/heatcanvas-worker.js': [
-            '<%= yeoman.app %>/heatcanvas-worker.js'
+            '<%= yeoman.app %>/heatmap/lib/heatcanvas-worker.js'
           ]
         }
       }

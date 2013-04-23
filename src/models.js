@@ -23,16 +23,18 @@ var Shareabouts = Shareabouts || {};
 
   S.ShareaboutsApiModel = Backbone.Model.extend({
     sync: function(method, model, options) {
-      var data = model.toJSON();
+      if (method !== 'read') {
+        var data = model.toJSON();
 
-      delete data.created_datetime;
-      delete data.dataset;
-      delete data.id;
-      delete data.updated_datetime;
+        delete data.created_datetime;
+        delete data.dataset;
+        delete data.id;
+        delete data.updated_datetime;
 
-      options = options || {};
-      options.contentType = 'application/json';
-      options.data = JSON.stringify(data);
+        options = options || {};
+        options.contentType = 'application/json';
+        options.data = JSON.stringify(data);
+      }
 
       Backbone.sync(method, model, options);
     }

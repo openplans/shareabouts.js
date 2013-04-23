@@ -77,8 +77,8 @@ var Shareabouts = Shareabouts || {};
       _.each(submissionSetsData, function(submissionSetData) {
         var submissionSetName;
 
-        if (_.isArray(submissionSet)) {
-          submissionSetName = _.first(submissionSet).type;
+        if (_.isArray(submissionSetData)) {
+          submissionSetName = _.first(submissionSetData).type;
           // TODO: Figure out a better, more general way to treat submission sets.
           if (submissionSetName === options.responseType) {
             responsesData = submissionSetData;

@@ -71,12 +71,30 @@ var Shareabouts = Shareabouts || {};
 
   S.PlaceModel = S.ShareaboutsApiModel.extend({
     initialize: function(attributes, options) {
-      this.responseCollection = new S.SubmissionCollection([], {
+      var submissionSetsData = this.get('submissions') || [],
+          responsesData = [], supportsData = [];
+
+      _.each(submissionSetsData, function(submissionSetData) {
+        var submissionSetName;
+
+        if (_.isArray(submissionSet)) {
+          submissionSetName = _.first(submissionSet).type;
+          // TODO: Figure out a better, more general way to treat submission sets.
+          if (submissionSetName === options.responseType) {
+            responsesData = submissionSetData;
+          }
+          else if (submissionSetName === options.supportType) {
+            supportsData = submissionSetData;
+          }
+        }
+      });
+
+      this.responseCollection = new S.SubmissionCollection(responsesData, {
         placeModel: this,
         submissionType: options.responseType
       });
 
-      this.supportCollection = new S.SubmissionCollection([], {
+      this.supportCollection = new S.SubmissionCollection(supportsData, {
         placeModel: this,
         submissionType: options.supportType
       });
@@ -88,11 +106,27 @@ var Shareabouts = Shareabouts || {};
     },
 
     set: function(key, val, options) {
-      var args = normalizeModelArguments(key, val, options);
+      var args = normalizeModelArguments(key, val, options),
+          model = this;
 
       if (_.isArray(args.attrs.attachments) && this.attachmentCollection && !args.options.ignoreAttachnments) {
         this.attachmentCollection.reset(args.attrs.attachments);
       }
+
+      _.each(args.attrs.submissions, function(submissionSet) {
+        var submissionSetName;
+
+        if (_.isArray(submissionSet)) {
+          submissionSetName = _.first(submissionSet).type;
+          // TODO: Figure out a better, more general way to treat submission sets.
+          if (submissionSetName === model.collection.options.responseType && model.responseCollection) {
+            model.responseCollection.reset(submissionSet);
+          }
+          else if (submissionSetName === model.collection.options.supportType && model.supportCollection) {
+            model.supportCollection.reset(submissionSet);
+          }
+        }
+      });
 
       return S.PlaceModel.__super__.set.call(this, args.attrs, args.options);
     },

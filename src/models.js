@@ -30,6 +30,7 @@ var Shareabouts = Shareabouts || {};
         delete data.dataset;
         delete data.id;
         delete data.updated_datetime;
+        delete data.distance;
 
         options = options || {};
         options.contentType = 'application/json';

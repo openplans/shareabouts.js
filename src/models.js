@@ -71,7 +71,8 @@ var Shareabouts = Shareabouts || {};
 
   S.PlaceModel = S.ShareaboutsApiModel.extend({
     initialize: function(attributes, options) {
-      var submissionSetsData = this.get('submissions') || [],
+      var model = this,
+          submissionSetsData = this.get('submissions') || [],
           responsesData = [], supportsData = [];
 
       _.each(submissionSetsData, function(submissionSetData) {
@@ -80,10 +81,10 @@ var Shareabouts = Shareabouts || {};
         if (_.isArray(submissionSetData)) {
           submissionSetName = _.first(submissionSetData).type;
           // TODO: Figure out a better, more general way to treat submission sets.
-          if (submissionSetName === options.responseType) {
+          if (submissionSetName === model.collection.options.responseType) {
             responsesData = submissionSetData;
           }
-          else if (submissionSetName === options.supportType) {
+          else if (submissionSetName === model.collection.options.supportType) {
             supportsData = submissionSetData;
           }
         }

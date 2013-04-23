@@ -71,7 +71,7 @@ var Shareabouts = Shareabouts || {};
   });
 
   S.PlaceModel = S.ShareaboutsApiModel.extend({
-    initialize: function(attributes, options) {
+    initialize: function() {
       var model = this,
           submissionSetsData = this.get('submissions') || [],
           responsesData = [], supportsData = [];

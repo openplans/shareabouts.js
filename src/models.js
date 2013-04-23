@@ -93,12 +93,12 @@ var Shareabouts = Shareabouts || {};
 
       this.responseCollection = new S.SubmissionCollection(responsesData, {
         placeModel: this,
-        submissionType: options.responseType
+        submissionType: this.collection.options.responseType
       });
 
       this.supportCollection = new S.SubmissionCollection(supportsData, {
         placeModel: this,
-        submissionType: options.supportType
+        submissionType: this.collection.options.supportType
       });
 
       var attachmentData = this.get('attachments') || [];

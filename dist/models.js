@@ -67,36 +67,17 @@ var Shareabouts = Shareabouts || {};
 
   S.PlaceModel = Backbone.Model.extend({
     initialize: function() {
-      var model = this,
-          submissionSetsData = this.get('submissions') || [],
-          responsesData = [], supportsData = [];
+      var attachmentData;
 
-      _.each(submissionSetsData, function(submissionSetData) {
-        var submissionSetName;
+      this.submissionSets = {};
 
-        if (_.isArray(submissionSetData)) {
-          submissionSetName = _.first(submissionSetData).type;
-          // TODO: Figure out a better, more general way to treat submission sets.
-          if (submissionSetName === model.collection.options.responseType) {
-            responsesData = submissionSetData;
-          }
-          else if (submissionSetName === model.collection.options.supportType) {
-            supportsData = submissionSetData;
-          }
-        }
-      });
+      _.each(this.get('submission_sets'), function(submissions, name) {
+        this.submissionSets[name] = new S.SubmissionCollection(submissions, {
+          placeModel: this
+        });
+      }, this);
 
-      this.responseCollection = new S.SubmissionCollection(responsesData, {
-        placeModel: this,
-        submissionType: this.collection.options.responseType
-      });
-
-      this.supportCollection = new S.SubmissionCollection(supportsData, {
-        placeModel: this,
-        submissionType: this.collection.options.supportType
-      });
-
-      var attachmentData = this.get('attachments') || [];
+      attachmentData = this.get('attachments') || [];
       this.attachmentCollection = new S.AttachmentCollection(attachmentData, {
         thingModel: this
       });
@@ -161,24 +142,22 @@ var Shareabouts = Shareabouts || {};
           attachment.save();
         }
       });
+    },
+
+    parse: function(response) {
+      var properties = _.clone(response.properties);
+      properties.geometry = _.clone(response.geometry);
+      return properties;
     }
   });
 
-  S.PlaceCollection = Backbone.Collection.extend({
+  S.PlaceCollection = S.PaginatedCollection.extend({
     url: '/api/places',
     model: S.PlaceModel,
 
-    initialize: function(models, options) {
-      this.options = options;
-    },
-
-    add: function(models, options) {
-      // Pass the submissionType into each PlaceModel so that it makes its way
-      // to the SubmissionCollections
-      options = options || {};
-      options.responseType = this.options && this.options.responseType;
-      options.supportType = this.options && this.options.supportType;
-      return S.PlaceCollection.__super__.add.call(this, models, options);
+    parse: function(response) {
+      this.metadata = response.metadata;
+      return response.features;
     }
   });
 

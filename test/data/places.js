@@ -20,6 +20,7 @@ Shareabouts.Data.places =
             },
             "type": "Feature",
             "properties": {
+                "id": 17,
                 "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/17",
                 "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
                 "attachments": [
@@ -72,6 +73,7 @@ Shareabouts.Data.places =
             },
             "type": "Feature",
             "properties": {
+                "id": 57,
                 "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/57",
                 "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
                 "attachments": [],
@@ -93,6 +95,7 @@ Shareabouts.Data.places =
             },
             "type": "Feature",
             "properties": {
+                "id": 31,
                 "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/31",
                 "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
                 "attachments": [],
@@ -114,6 +117,7 @@ Shareabouts.Data.places =
             },
             "type": "Feature",
             "properties": {
+                "id": 97,
                 "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/97",
                 "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
                 "attachments": [

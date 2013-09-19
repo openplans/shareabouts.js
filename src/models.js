@@ -21,6 +21,31 @@ var Shareabouts = Shareabouts || {};
     };
   };
 
+  S.PaginatedCollection = Backbone.Collection.extend({
+    parse: function(response) {
+      this.totalLength = response.count;
+      this.nextPage = response.next;
+      return response.results;
+    },
+
+    fetchNextPage: function(success, error) {
+      var collection = this,
+          nextUrl;
+
+      if (this.nextPage) {
+        nextUrl = function() { return collection.nextPage; };
+
+        S.Utils.patch(this, {url: nextUrl}, function() {
+          collection.fetch({
+            remove: false,
+            success: success,
+            error: error
+          });
+        });
+      }
+    }
+  });
+
   S.ShareaboutsApiModel = Backbone.Model.extend({
     sync: function(method, model, options) {
       if (method !== 'read') {
@@ -170,7 +195,7 @@ var Shareabouts = Shareabouts || {};
   });
 
   S.PlaceCollection = Backbone.Collection.extend({
-    url: '/api/places/',
+    url: '/api/places',
     model: S.PlaceModel,
 
     initialize: function(models, options) {
@@ -253,8 +278,8 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  S.ActivityCollection = Backbone.Collection.extend({
-    url: '/api/activity/'
+  S.ActivityCollection = S.PaginatedCollection.extend({
+    url: '/api/actions'
   });
 
 }(Shareabouts, jQuery, Shareabouts.Util.console));

@@ -23,8 +23,7 @@ var Shareabouts = Shareabouts || {};
 
   S.PaginatedCollection = Backbone.Collection.extend({
     parse: function(response) {
-      this.totalLength = response.count;
-      this.nextPage = response.next;
+      this.metadata = response.metadata;
       return response.results;
     },
 
@@ -32,8 +31,8 @@ var Shareabouts = Shareabouts || {};
       var collection = this,
           nextUrl;
 
-      if (this.nextPage) {
-        nextUrl = function() { return collection.nextPage; };
+      if (this.metadata.next) {
+        nextUrl = function() { return collection.metadata.next; };
 
         S.Utils.patch(this, {url: nextUrl}, function() {
           collection.fetch({
@@ -282,4 +281,4 @@ var Shareabouts = Shareabouts || {};
     url: '/api/actions'
   });
 
-}(Shareabouts, jQuery, Shareabouts.Util.console));
+}(Shareabouts, jQuery));

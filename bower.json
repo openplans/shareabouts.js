@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "dependencies": {
     "underscore": "~1.4.4",
-    "backbone": "~0.9.10"
+    "backbone": "~0.9.10",
+    "jquery": "~2.0.3"
   },
   "devDependencies": {}
 }

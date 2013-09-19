@@ -31,7 +31,7 @@ module.exports = function (grunt) {
         options: {
           middleware: function (connect) {
             return [
-              mountFolder(connect, '.tmp'),
+              mountFolder(connect, 'src'),
               mountFolder(connect, 'test')
             ];
           }

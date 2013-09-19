@@ -45,32 +45,23 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  S.SubmissionModel = Backbone.Model.extend({
-    url: function() {
-      // This is to make Django happy. I'm sad to have to add it.
-      var url = S.SubmissionModel.__super__.url.call(this);
-      url += url.charAt(url.length-1) === '/' ? '' : '/';
-
-      return url;
-    }
-  });
-
-  S.SubmissionCollection = Backbone.Collection.extend({
+  S.SubmissionCollection = S.PaginatedCollection.extend({
     initialize: function(models, options) {
       this.options = options;
     },
 
-    model: S.SubmissionModel,
-
     url: function() {
       var submissionType = this.options.submissionType,
-          placeId = this.options.placeModel.id;
+          placeId = this.options.placeModel && this.options.placeModel.id;
+
+      if (!submissionType) { throw new Error('submissionType option' +
+                                                     ' is required.'); }
 
       if (!placeId) { throw new Error('Place model id is not defined. You ' +
-                                      'must save the Place before saving ' +
+                                      'must save the place before saving ' +
                                       'its ' + submissionType + '.'); }
 
-      return '/api/places/' + placeId + '/' + submissionType + '/';
+      return '/api/places/' + placeId + '/' + submissionType;
     }
   });
 
@@ -253,11 +244,11 @@ var Shareabouts = Shareabouts || {};
       var thingModel = this.options.thingModel,
           thingUrl = thingModel.url();
 
-      return thingUrl + '/attachments/';
+      return thingUrl + '/attachments';
     }
   });
 
-  S.ActivityCollection = S.PaginatedCollection.extend({
+  S.ActionCollection = S.PaginatedCollection.extend({
     url: '/api/actions'
   });
 

@@ -16,9 +16,9 @@ notifications:
       - "irc.freenode.org#shareabouts"
     on_success: change
     on_failure: always
-email:
-   recipients:
-    - dev@openplans.org
-   on_success: change
-   on_failure: always
+  email:
+    recipients:
+     - dev@openplans.org
+    on_success: change
+    on_failure: always
 

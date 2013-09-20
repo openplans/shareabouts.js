@@ -98,6 +98,7 @@
       });
     });
 
+
     describe('PlaceCollection', function () {
       var collection;
 
@@ -123,6 +124,7 @@
 
     });
 
+
     describe('Existing PlaceModel', function() {
       var model;
 
@@ -142,6 +144,7 @@
         assert.notEqual(model.toJSON().type, 'intersection');
       });
     });
+
 
     describe('Saving a new PlaceModel', function() {
       var model, ajax;
@@ -178,6 +181,7 @@
         assert.property(obj, 'geometry');
       });
     });
+
 
     describe('Saving an existing PlaceModel', function() {
       var model, ajax;

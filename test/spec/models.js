@@ -98,12 +98,11 @@
       });
     });
 
-
     describe('PlaceCollection', function () {
       var collection;
 
       beforeEach(function() {
-        collection = new S.PlaceCollection(S.Data.places, {
+          collection = new S.PlaceCollection(S.Data.places, {
           parse: true
         });
       });
@@ -124,7 +123,6 @@
 
     });
 
-
     describe('Existing PlaceModel', function() {
       var model;
 
@@ -143,6 +141,43 @@
       it('should have a "type" property not equal to "Feature"', function() {
         assert.notEqual(model.toJSON().type, 'intersection');
       });
+    });
+
+    describe('Full Submission Sets on PlaceModels', function() {
+      var model;
+
+      beforeEach(function() {
+        model = new S.PlaceModel(S.Data.placesIncludeSubmissions.features[0], {'parse': true});
+      });
+
+      it('should have a "support" submission_set', function() {
+        assert.property(model.submissionSets, 'support');
+        assert.instanceOf(model.submissionSets.support, S.SubmissionCollection);
+      });
+
+      it('should have one model in the "support" submission_set we have data and not a summary.', function() {
+        assert.equal(model.submissionSets.support.size(), 1);
+      });
+    });
+
+
+
+    describe('Summary Submission Sets on PlaceModels', function() {
+      var model;
+
+      beforeEach(function() {
+        model = new S.PlaceModel(S.Data.places.features[0], {'parse': true});
+      });
+
+      it('should have a "support" submission_set', function() {
+        assert.property(model.submissionSets, 'support');
+        assert.instanceOf(model.submissionSets.support, S.SubmissionCollection);
+      });
+
+      it('should have no models in the "support" submission_set because it is a summary.', function() {
+        assert.equal(model.submissionSets.support.size(), 0);
+      });
+
     });
 
 
@@ -181,7 +216,6 @@
         assert.property(obj, 'geometry');
       });
     });
-
 
     describe('Saving an existing PlaceModel', function() {
       var model, ajax;

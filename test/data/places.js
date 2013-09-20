@@ -141,4 +141,65 @@ Shareabouts.Data.places =
         }
     ],
     "type": "FeatureCollection"
-}
+};
+
+
+Shareabouts.Data.placesIncludeSubmissions =
+{
+    "metadata": {
+        "length": 1,
+        "next": null,
+        "previous": null,
+        "page": 1
+    },
+    "features": [
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -75.16359686851501,
+                    39.952377071746284
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/17",
+                "id": 17,
+                "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
+                "attachments": [],
+                "created_datetime": "2012-08-31T21:39:59.562Z",
+                "updated_datetime": "2012-11-06T20:44:45.124Z",
+                "submitter_name": "",
+                "visible": true,
+                "location_type": "Landmark",
+                "name": "City Hall",
+                "submission_sets": {
+                    "support": [
+                        {
+                            "url": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/17/support/18",
+                            "id": 18,
+                            "dataset": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data",
+                            "set": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/17/support",
+                            "place": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/places/17",
+                            "attachments": [
+                                {
+                                    "created_datetime": "2013-09-16T14:33:11.043Z",
+                                    "updated_datetime": "2013-09-16T14:33:11.043Z",
+                                    "file": "attachments/OHc2QOR-milk.jpg",
+                                    "name": "milk.jpg"
+                                }
+                            ],
+                            "created_datetime": "2012-10-18T19:40:01.080Z",
+                            "updated_datetime": "2012-10-18T19:41:02.549Z",
+                            "submitter_name": "hi",
+                            "visible": true,
+                            "test": "ohai",
+                            "type": "noreally"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "type": "FeatureCollection"
+};

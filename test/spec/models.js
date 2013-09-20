@@ -1,4 +1,5 @@
-/*global chai describe it beforeEach Shareabouts Backbone */
+/*global chai describe it beforeEach afterEach Shareabouts Backbone jQuery sinon */
+
 (function (S) {
   'use strict';
 
@@ -122,6 +123,97 @@
 
     });
 
+    describe('Existing PlaceModel', function() {
+      var model;
+
+      beforeEach(function() {
+        model = new S.PlaceModel(S.Data.places.features[0], {'parse': true});
+      });
+
+      it('should have a "geometry" property', function() {
+        assert.property(model.toJSON(), 'geometry');
+      });
+
+      it('should not have a "properties" property', function() {
+        assert.notProperty(model.toJSON(), 'properties');
+      });
+
+      it('should have a "type" property not equal to "Feature"', function() {
+        assert.notEqual(model.toJSON().type, 'intersection');
+      });
+    });
+
+    describe('Saving a new PlaceModel', function() {
+      var model, ajax;
+
+      beforeEach(function() {
+        model = new S.PlaceModel(S.Data.newPlace);
+        model.urlRoot = 'http://www.example.com/api/';
+        ajax = sinon.stub(jQuery, 'ajax', function() {});
+
+        model.save();
+      });
+
+      afterEach(function() {
+        jQuery.ajax.restore();
+      });
+
+      it('should call the jQuery ajax method', function() {
+        assert.equal(ajax.callCount, 1);
+      });
+
+      it('should pass a GeoJSON feature to the server', function() {
+        var syncedData = ajax.args[0][0].data,
+            syncedType = ajax.args[0][0].contentType,
+            obj;
+
+        assert.isDefined(syncedData);
+        assert.equal(syncedType, 'application/json');
+
+        obj = JSON.parse(syncedData);
+
+        assert.property(obj, 'type');
+        assert.equal(obj.type, 'Feature');
+        assert.property(obj, 'properties');
+        assert.property(obj, 'geometry');
+      });
+    });
+
+    describe('Saving an existing PlaceModel', function() {
+      var model, ajax;
+
+      beforeEach(function() {
+        model = new S.PlaceModel(S.Data.places.features[0], {'parse': true});
+        model.urlRoot = 'http://www.example.com/api/';
+        ajax = sinon.stub(jQuery, 'ajax', function() {});
+
+        model.save();
+      });
+
+      afterEach(function() {
+        jQuery.ajax.restore();
+      });
+
+      it('should call the jQuery ajax method', function() {
+        assert.equal(ajax.callCount, 1);
+      });
+
+      it('should pass a GeoJSON feature to the server', function() {
+        var syncedData = ajax.args[0][0].data,
+            syncedType = ajax.args[0][0].contentType,
+            obj;
+
+        assert.isDefined(syncedData);
+        assert.equal(syncedType, 'application/json');
+
+        obj = JSON.parse(syncedData);
+
+        assert.property(obj, 'type');
+        assert.equal(obj.type, 'Feature');
+        assert.property(obj, 'properties');
+        assert.property(obj, 'geometry');
+      });
+    });
 
   });
 })(Shareabouts);

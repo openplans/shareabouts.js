@@ -54,6 +54,7 @@ Shareabouts.Data.places =
                 "submitter_name": "",
                 "visible": true,
                 "location_type": "Landmark",
+                "type": "Landmark",
                 "name": "City Hall",
                 "submission_sets": {
                     "support": {

@@ -148,6 +148,23 @@ var Shareabouts = Shareabouts || {};
       var properties = _.clone(response.properties);
       properties.geometry = _.clone(response.geometry);
       return properties;
+    },
+
+    sync: function(method, model, options) {
+      var attrs;
+
+      if (method === 'create' || method === 'update') {
+        attrs = {
+          'type': 'Feature',
+          'geometry': model.get('geometry'),
+          'properties': _.omit(model.toJSON(), 'geometry')
+        };
+
+        options.data = JSON.stringify(attrs);
+        options.contentType = 'application/json';
+      }
+
+      return Backbone.sync(method, model, options);
     }
   });
 
@@ -164,7 +181,7 @@ var Shareabouts = Shareabouts || {};
   // This does not support editing at this time, which is why it is not a
   // ShareaboutsModel
   S.AttachmentModel = Backbone.Model.extend({
-    idAttr: 'name',
+    idAttribute: 'name',
 
     initialize: function(attributes, options) {
       this.options = options;

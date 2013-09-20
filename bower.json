@@ -2,8 +2,8 @@
   "name": "shareabouts-js",
   "version": "0.0.0",
   "dependencies": {
-    "underscore": "~1.4.4",
-    "backbone": "~0.9.10",
+    "underscore": "~1.5.2",
+    "backbone": "~1.0.0",
     "jquery": "~2.0.3"
   },
   "devDependencies": {

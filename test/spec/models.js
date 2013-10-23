@@ -121,7 +121,35 @@
         });
       });
 
+      describe('fetchByIds', function() {
+        var ajax;
+        beforeEach(function() {
+          ajax = sinon.stub(jQuery, 'ajax', function() {});
+        });
+
+        afterEach(function() {
+          jQuery.ajax.restore();
+        });
+
+        it('should make a url of joined ids', function() {
+          collection.fetchByIds([1,2,3]);
+
+          assert.equal(ajax.callCount, 1);
+          assert.equal('/api/places/1,2,3', ajax.getCall(0).args[0].url);
+        });
+
+        it('should make a url of a single id', function() {
+          var fetchByIdSpy = sinon.spy(collection, 'fetchById');
+          collection.fetchByIds([1]);
+
+          assert.equal(fetchByIdSpy.callCount, 1);
+          assert.equal('/api/places/1', ajax.getCall(0).args[0].url);
+        });
+
+      });
     });
+
+
 
     describe('Existing PlaceModel', function() {
       var model;

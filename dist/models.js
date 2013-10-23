@@ -174,6 +174,39 @@ var Shareabouts = Shareabouts || {};
     parse: function(response) {
       this.metadata = response.metadata;
       return response.features;
+    },
+
+    fetchByIds: function(ids, options) {
+      var base = _.result(this, 'url');
+
+      if (ids.length === 1) {
+        this.fetchById(ids[0], options);
+      } else {
+        ids = _.map(ids, function(id) { return encodeURIComponent(id); });
+        options = options ? _.clone(options) : {};
+        options.url = base + (base.charAt(base.length - 1) === '/' ? '' : '/') + ids.join(',');
+
+        this.fetch(options);
+      }
+    },
+
+    fetchById: function(id, options) {
+      options = options ? _.clone(options) : {};
+      var self = this,
+          place = new S.PlaceModel(),
+          success = options.success;
+
+      place.id = id;
+      place.collection = self;
+
+      options.success = function() {
+        var args = Array.prototype.slice.call(arguments);
+        self.add(place);
+        if (success) {
+          success.apply(this, args);
+        }
+      };
+      place.fetch(options);
     }
   });
 

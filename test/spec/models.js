@@ -170,10 +170,24 @@
 
         it('should make a url of a single id', function() {
           var fetchByIdSpy = sinon.spy(collection, 'fetchById');
+          
           collection.fetchByIds([1]);
 
           assert.equal(fetchByIdSpy.callCount, 1);
           assert.equal('/api/places/1', ajax.getCall(0).args[0].url);
+
+          collection.fetchById.restore();
+        });
+
+        it('should not remove existing places by default', function() {
+          var fetchSpy = sinon.spy(collection, 'fetch');
+
+          collection.fetchByIds([1, 2]);
+
+          assert.equal(fetchSpy.callCount, 1);
+          assert.equal(false, fetchSpy.getCall(0).args[0].remove);
+
+          collection.fetch.restore();
         });
 
       });

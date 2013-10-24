@@ -182,7 +182,10 @@ var Shareabouts = Shareabouts || {};
         options = options ? _.clone(options) : {};
         options.url = base + (base.charAt(base.length - 1) === '/' ? '' : '/') + ids.join(',');
 
-        this.fetch(options);
+        this.fetch(_.extend(
+          {remove: false},
+          options
+        ));
       }
     },
 

@@ -24,6 +24,36 @@
       it('should have 1 model', function () {
         assert.equal(collection.size(), 1);
       });
+
+      describe('fetchNextPage', function() {
+        var ajax;
+        beforeEach(function() {
+          ajax = sinon.stub(jQuery, 'ajax', function() {});
+        });
+
+        afterEach(function() {
+          jQuery.ajax.restore();
+        });
+
+        it('should use next page url', function() {
+          collection.fetchNextPage();
+
+          assert.equal(ajax.callCount, 1);
+          assert.equal('http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/support?page_size=1&page=2', ajax.getCall(0).args[0].url);
+        });
+
+        it('should not remove existing places by default', function() {
+          var fetchSpy = sinon.spy(collection, 'fetch');
+
+          collection.fetchNextPage();
+
+          assert.equal(fetchSpy.callCount, 1);
+          assert.equal(false, fetchSpy.getCall(0).args[0].remove);
+
+          collection.fetch.restore();
+        });
+
+      });
     });
 
 

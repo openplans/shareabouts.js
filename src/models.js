@@ -28,18 +28,14 @@ var Shareabouts = Shareabouts || {};
     },
 
     fetchNextPage: function(success, error) {
-      var collection = this,
-          nextUrl;
+      var collection = this;
 
       if (this.metadata.next) {
-        nextUrl = function() { return collection.metadata.next; };
-
-        S.Utils.patch(this, {url: nextUrl}, function() {
-          collection.fetch({
-            remove: false,
-            success: success,
-            error: error
-          });
+        collection.fetch({
+          remove: false,
+          url: collection.metadata.next,
+          success: success,
+          error: error
         });
       }
     }

@@ -1,4 +1,4 @@
-/*global _ Backbone jQuery */
+/*global _, Backbone, jQuery */
 
 var Shareabouts = Shareabouts || {};
 

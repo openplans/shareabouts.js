@@ -1,4 +1,4 @@
-/*global chai describe it beforeEach afterEach Shareabouts Backbone jQuery sinon */
+/*global chai, describe, it, beforeEach, afterEach, Shareabouts, Backbone, jQuery, sinon */
 
 (function (S) {
   'use strict';

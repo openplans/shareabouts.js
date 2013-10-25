@@ -87,6 +87,10 @@ var Shareabouts = Shareabouts || {};
       this.attachmentCollection = new S.AttachmentCollection(attachmentData, {
         thingModel: this
       });
+
+      this.attachmentCollection.each(function(attachment) {
+        attachment.set({saved: true});
+      });
     },
 
     set: function(key, val, options) {
@@ -220,6 +224,10 @@ var Shareabouts = Shareabouts || {};
       this.options = options;
     },
 
+    isNew: function() {
+      return this.get('saved') !== true;
+    },
+
     // TODO: We should be overriding sync instead of save here. The only
     // override for save should be to always use wait=True.
     save: function(key, val, options) {
@@ -232,6 +240,7 @@ var Shareabouts = Shareabouts || {};
 
     _attachBlob: function(blob, name, options) {
       var formData = new FormData(),
+          self = this,
           progressHandler = S.Util.wrapHandler('progress', this, options.progress),
           myXhr = $.ajaxSettings.xhr();
 
@@ -250,7 +259,19 @@ var Shareabouts = Shareabouts || {};
           return myXhr;
         },
         //Ajax events
-        success: options.success,
+        success: function() {
+          var args = Array.prototype.slice.call(arguments);
+
+          // Set the save attribute on the incoming data so that we know it's
+          // not new.
+          args[0].saved = true;
+          self.set({saved: true});
+
+          if (options.success) {
+            options.success.apply(this, args);
+          }
+
+        },
         error: options.error,
         // Form data
         data: formData,

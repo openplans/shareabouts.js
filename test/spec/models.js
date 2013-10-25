@@ -339,5 +339,42 @@
       });
     });
 
+    describe('Saving an AttachmentModel', function() {
+      var model, ajax;
+
+      beforeEach(function() {
+        var place;
+        place = new S.PlaceModel(S.Data.places.features[0], {'parse': true});
+        place.urlRoot = 'http://www.example.com/api/';
+
+        ajax = sinon.stub(jQuery, 'ajax', function(options) {
+          options.success({
+              'created_datetime': '2012-12-21T15:04:03.771Z',
+              'updated_datetime': '2012-12-21T15:04:03.771Z',
+              'file': 'attachments/6D4wJCWPQ.png',
+              'name': 'test_name'
+          });
+        });
+
+        model = place.attachmentCollection.get('test_name');
+        model.unset('saved');
+        model.save();
+      });
+
+      afterEach(function() {
+        jQuery.ajax.restore();
+      });
+
+      it('should always POST to root URL', function() {
+        assert.equal(ajax.callCount, 1);
+        assert.equal(ajax.getCall(0).args[0].url, model.collection.url());
+        assert.equal(ajax.getCall(0).args[0].type, 'POST');
+      });
+
+      it('should have saved set to true', function() {
+        assert.equal(model.get('saved'), true);
+      });
+    });
+
   });
 })(Shareabouts);

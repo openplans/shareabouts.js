@@ -31,21 +31,9 @@ Shareabouts.Data.places =
                         "name": "test_name"
                     },
                     {
-                        "created_datetime": "2012-12-21T16:28:52.095Z",
-                        "updated_datetime": "2012-12-21T16:28:52.095Z",
-                        "file": "attachments/6D51rYbuf.png",
-                        "name": "test_name"
-                    },
-                    {
                         "created_datetime": "2013-09-13T19:28:34.605Z",
                         "updated_datetime": "2013-09-13T19:28:34.605Z",
                         "file": "attachments/OHLhDLB-milk.jpg",
-                        "name": "milk.picture"
-                    },
-                    {
-                        "created_datetime": "2013-09-13T19:34:37.272Z",
-                        "updated_datetime": "2013-09-13T19:34:37.272Z",
-                        "file": "attachments/OHLijge-milk.jpg",
                         "name": "milk.picture"
                     }
                 ],

@@ -100,6 +100,20 @@
         assert.equal(collection.at(0).url(), '/api/places/17/comments/18');
       });
 
+      it('should order submissions by created_datetime', function () {
+        var collection = new S.SubmissionCollection([], {
+          parse: true,
+          placeModel: new Backbone.Model({id: 7})
+        });
+
+        collection.add({created_datetime: '2013-11-14'});
+        collection.add({created_datetime: '2013-11-13'});
+        collection.add({created_datetime: '2013-11-15'});
+
+        assert.equal(collection.at(0).get('created_datetime'), '2013-11-13');
+      });
+
+
     });
 
 
@@ -170,7 +184,7 @@
 
         it('should make a url of a single id', function() {
           var fetchByIdSpy = sinon.spy(collection, 'fetchById');
-          
+
           collection.fetchByIds([1]);
 
           assert.equal(fetchByIdSpy.callCount, 1);

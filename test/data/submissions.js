@@ -4,7 +4,7 @@ Shareabouts.Data = Shareabouts.Data || {};
 Shareabouts.Data.submissions =
 {
     "metadata": {
-        "length": 3,
+        "length": 1,
         "next": "http://127.0.0.1:8000/api/v2/demo-user/datasets/demo-data/support?page_size=1&page=2",
         "previous": null,
         "page": 1

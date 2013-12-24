@@ -54,6 +54,135 @@
         });
 
       });
+
+      describe('fetchAllPages with success responses', function() {
+        var collection,
+            pageComplete, fetchComplete,
+            pageSuccess, fetchSuccess,
+            pageError, fetchError,
+            ajax;
+
+        beforeEach(function() {
+          ajax = sinon.stub(jQuery, 'ajax', function(options) {
+            var pageNum = (options.data && options.data.page ? options.data.page : 1);
+            options.success(Shareabouts.Data.pages[pageNum - 1]);
+            options.complete();
+          });
+
+          collection = new S.PaginatedCollection();
+          pageComplete = sinon.spy();
+          fetchComplete = sinon.spy();
+          pageSuccess = sinon.spy();
+          fetchSuccess = sinon.spy();
+          pageError = sinon.spy();
+          fetchError = sinon.spy();
+
+          collection.url = 'http://example.com/api';
+          collection.fetchAllPages({
+            pageComplete: pageComplete,
+            complete: fetchComplete,
+            pageSuccess: pageSuccess,
+            success: fetchSuccess,
+            pageError: pageError,
+            error: fetchError
+          });
+        });
+
+        afterEach(function() {
+          jQuery.ajax.restore();
+        });
+
+        it('should call pageComplete for each page', function() {
+          assert.equal(pageComplete.callCount, 4);
+        });
+        
+        it('should call complete once', function() {
+          assert.equal(fetchComplete.callCount, 1);
+        });
+        
+        it('should call pageSuccess for each page', function() {
+          assert.equal(pageSuccess.callCount, 4);
+        });
+        
+        it('should call success once', function() {
+          assert.equal(fetchSuccess.callCount, 1);
+        });
+        
+        it('should not call pageError', function() {
+          assert.equal(pageError.callCount, 0);
+        });
+        
+        it('should not call error', function() {
+          assert.equal(fetchError.callCount, 0);
+        });
+        
+        it('should load all data', function() {
+          assert.equal(collection.pluck('id').toString(), [1, 2, 3, 4, 5, 6, 7, 8].toString());
+        });
+      });
+
+      describe('fetchAllPages with errors', function() {
+        var collection,
+            pageComplete, fetchComplete,
+            pageSuccess, fetchSuccess,
+            pageError, fetchError,
+            ajax;
+
+        beforeEach(function() {
+          ajax = sinon.stub(jQuery, 'ajax', function(options) {
+            var pageNum = (options.data && options.data.page ? options.data.page : 1);
+            if (pageNum % 2 === 0) { options.error(); }
+            else { options.success(Shareabouts.Data.pages[pageNum - 1]); }
+            options.complete();
+          });
+
+          collection = new S.PaginatedCollection();
+          pageComplete = sinon.spy();
+          fetchComplete = sinon.spy();
+          pageSuccess = sinon.spy();
+          fetchSuccess = sinon.spy();
+          pageError = sinon.spy();
+          fetchError = sinon.spy();
+
+          collection.url = 'http://example.com/api';
+          collection.fetchAllPages({
+            pageComplete: pageComplete,
+            complete: fetchComplete,
+            pageSuccess: pageSuccess,
+            success: fetchSuccess,
+            pageError: pageError,
+            error: fetchError
+          });
+        });
+
+        afterEach(function() {
+          jQuery.ajax.restore();
+        });
+
+        it('should call pageComplete for each page', function() {
+          assert.equal(pageComplete.callCount, 4);
+        });
+        
+        it('should call complete once', function() {
+          assert.equal(fetchComplete.callCount, 1);
+        });
+        
+        it('should call pageSuccess for each successful page', function() {
+          assert.equal(pageSuccess.callCount, 2);
+        });
+        
+        it('should not call success', function() {
+          assert.equal(fetchSuccess.callCount, 0);
+        });
+        
+        it('should call pageError for each errored page', function() {
+          assert.equal(pageError.callCount, 2);
+        });
+        
+        it('should call error once', function() {
+          assert.equal(fetchError.callCount, 1);
+        });
+      });
     });
 
 

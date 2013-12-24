@@ -22,9 +22,11 @@ var Shareabouts = Shareabouts || {};
   };
 
   S.PaginatedCollection = Backbone.Collection.extend({
+    resultsAttr: 'results',
+
     parse: function(response) {
       this.metadata = response.metadata;
-      return response.results;
+      return response[this.resultsAttr];
     },
 
     fetchNextPage: function(success, error) {
@@ -172,11 +174,7 @@ var Shareabouts = Shareabouts || {};
   S.PlaceCollection = S.PaginatedCollection.extend({
     url: '/api/places',
     model: S.PlaceModel,
-
-    parse: function(response) {
-      this.metadata = response.metadata;
-      return response.features;
-    },
+    resultsAttr: 'features',
 
     fetchByIds: function(ids, options) {
       var base = _.result(this, 'url');

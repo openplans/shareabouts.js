@@ -2,10 +2,10 @@
 
 var Shareabouts = Shareabouts || {};
 
-(function(S){
+(function(NS){
   'use strict';
 
-  S.Util = {
+  NS.Util = {
     patch: function(obj, overrides, func) {
       var attr, originals = {};
 
@@ -160,7 +160,7 @@ var Shareabouts = Shareabouts || {};
 
           loadImage(file, function(canvas) {
             // rotate the image, if needed
-            var rotated = S.Util.fixImageOrientation(canvas, orientation);
+            var rotated = NS.Util.fixImageOrientation(canvas, orientation);
             callback(rotated);
           }, options);
       };

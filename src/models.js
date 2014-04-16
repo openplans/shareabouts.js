@@ -266,7 +266,7 @@ var Shareabouts = Shareabouts || {};
           place = new S.PlaceModel(),
           success = options.success;
 
-      place.id = id;
+      place.set('id', id);
       place.collection = self;
 
       options.success = function() {

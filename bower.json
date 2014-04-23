@@ -4,7 +4,8 @@
   "dependencies": {
     "underscore": "~1.6.x",
     "backbone": "~1.1.x",
-    "jquery": "~2.1.x"
+    "jquery": "~2.1.x",
+    "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip"
   },
   "devDependencies": {
     "sinonjs": "~1.9.x"

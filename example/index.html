@@ -8,9 +8,26 @@
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
   <link rel="stylesheet" href="../src/styles/shareabouts.css" />
   <style type="text/css">
+
+    /* NOTE: The #shareabouts-container must have an explicit 
+       width and a fluid height. An explicit height must be 
+       set within a media query. */
+
     #shareabouts-container {
-      height: 350px;
+      width: 100%;
+      max-width: 64.063em;
+      margin: 0 auto;
+      overflow: hidden;
     }
+
+    @media only screen and (min-width: 40.063em) {
+
+      #shareabouts-container {
+        height: 600px;
+      }
+
+    }
+
   </style>
   <!--[if IE]>
       <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -63,8 +80,30 @@
       templates: {
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
         'place-detail': function(data) {
-          return '<h2>' + data.name + '</h2><p>' +
-            data.location_type + '</p>';
+          return '<h2>' + data.name + '</h2>' + 
+            '<p>' + data.location_type + '</p>' + 
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>';
         }
       }
     });

@@ -48,7 +48,7 @@ var Shareabouts = Shareabouts || {};
 
   NS.PanelLayout = Backbone.View.extend({
     events: {
-      'click button': 'handleCloseClick'
+      'click .shareabouts-close-button': 'handleCloseClick'
     },
     initialize: function() {
       this.$content = this.$('.shareabouts-panel-content');
@@ -86,7 +86,7 @@ var Shareabouts = Shareabouts || {};
         el = $(options.el).get(0),
         $map = $('<div class="shareabouts-map"></div>'),
         // TODO: should this be its own widget?
-        $panel = $('<div class="shareabouts-panel"><button>Close</button><div class="shareabouts-panel-content"></div></div>'),
+        $panel = $('<div class="shareabouts-panel"><span class="shareabouts-close-button">&times;</span><div class="shareabouts-panel-content"></div></div>'),
         i, layerOptions, panelLayout;
 
     $map.appendTo(el);

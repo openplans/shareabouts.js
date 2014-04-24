@@ -46,11 +46,30 @@ var Shareabouts = Shareabouts || {};
     }
   };
 
-  NS.PanelView = Backbone.Marionette.ItemView.extend({
+  NS.PanelLayout = Backbone.View.extend({
+    events: {
+      'click button': 'handleCloseClick'
+    },
+    initialize: function() {
+      this.$content = this.$('.shareabouts-panel-content');
+    },
+    showContent: function(view) {
+      if (this.currentView) {
+        this.currentView.onClose();
+      }
 
+      this.currentView = view;
+      this.$content.html(view.render().el);
+      this.$el.parent().addClass('panel-open');
+      view.onShow();
+    },
+    handleCloseClick: function() {
+      this.$el.parent().removeClass('panel-open');
+      this.currentView.onClose();
+    }
   });
 
-  NS.PlaceDetailView = NS.PanelView.extend({
+  NS.PlaceDetailView = Backbone.Marionette.ItemView.extend({
     onClose: function() {
       this.model.collection.trigger('closeplace', this.model);
     },
@@ -67,17 +86,13 @@ var Shareabouts = Shareabouts || {};
         el = $(options.el).get(0),
         $map = $('<div class="shareabouts-map"></div>'),
         // TODO: should this be its own widget?
-        $panel = $('<div class="shareabouts-panel"></div>'),
-        i, layerOptions;
+        $panel = $('<div class="shareabouts-panel"><button>Close</button><div class="shareabouts-panel-content"></div></div>'),
+        i, layerOptions, panelLayout;
 
     $map.appendTo(el);
     $panel.appendTo(el);
 
-    NS.App.addRegions({
-      map: new Backbone.Marionette.Region({ el: $map.get(0) }),
-      panel: new Backbone.Marionette.Region({ el: $panel.get(0) })
-    });
-
+    panelLayout = new NS.PanelLayout({el: $panel.get(0)});
 
     this.map = L.map($map.get(0), options.map);
     for (i = 0; i < options.layers.length; ++i) {
@@ -114,10 +129,12 @@ var Shareabouts = Shareabouts || {};
           model = self.placeCollection.get(featureData.properties.id),
           styleRule = getStyleRule(featureData.properties, options.placeStyles);
 
-      NS.App.panel.show(new NS.PlaceDetailView({
+      panelLayout.showContent(new NS.PlaceDetailView({
         template: tpl,
         model: model
       }));
+
+      self.map.panTo(evt.layer.getLatLng());
     });
 
     this.placeCollection.on('showplace', function(model){
@@ -125,6 +142,7 @@ var Shareabouts = Shareabouts || {};
           layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
 
       focusLayer(layer, styleRule);
+      self.map.invalidateSize(true);
     });
 
     this.placeCollection.on('closeplace', function(model){
@@ -132,6 +150,7 @@ var Shareabouts = Shareabouts || {};
           layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
 
       unfocusLayer(layer, styleRule);
+      self.map.invalidateSize(true);
     });
 
     this.placeCollection.fetchAllPages({

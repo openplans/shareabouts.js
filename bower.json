@@ -2,7 +2,7 @@
   "name": "shareabouts-js",
   "version": "3.0.0",
   "dependencies": {
-    "underscore": "~1.6.x",
+    "underscore": ">=1.5",
     "backbone": "~1.1.x",
     "jquery": "~2.1.x",
     "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip"

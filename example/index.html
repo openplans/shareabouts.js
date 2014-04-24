@@ -6,9 +6,10 @@
 
   <title>Shareabouts Example</title>
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+  <link rel="stylesheet" href="../src/styles/shareabouts.css" />
   <style type="text/css">
-    #map {
-      height: 500px;
+    #shareabouts-container {
+      height: 350px;
     }
   </style>
   <!--[if IE]>
@@ -17,7 +18,7 @@
 </head>
 
 <body>
-  <div id="map"></div>
+  <div id="shareabouts-container"></div>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
@@ -29,7 +30,7 @@
   <script src="../src/map.js"></script>
   <script>
     new Shareabouts.Map({
-      el: '#map',
+      el: '#shareabouts-container',
       map: {
         center: [39.952780, -75.163136],
         zoom: 12
@@ -57,7 +58,15 @@
           }
         },
       ],
-      datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places'
+      datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places',
+      // These are template functions that expect geojson.
+      templates: {
+        // This is only an example. You should use Mustache, Handlebars, etc in real life.
+        'place-detail': function(feature) {
+          return '<h2>' + feature.properties.name + '</h2><p>' +
+            feature.properties.location_type + '</p>';
+        }
+      }
     });
 
   </script>

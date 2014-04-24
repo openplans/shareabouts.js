@@ -1,4 +1,4 @@
-/*global _ L jQuery */
+/*global _ L jQuery Backbone */
 
 var Shareabouts = Shareabouts || {};
 
@@ -46,8 +46,24 @@ var Shareabouts = Shareabouts || {};
     }
   };
 
+  NS.PanelView = Backbone.Marionette.ItemView.extend({
+
+  });
+
+  NS.PlaceDetailView = NS.PanelView.extend({
+    onClose: function() {
+      this.model.collection.trigger('closeplace', this.model);
+    },
+    onShow: function() {
+      this.model.collection.trigger('showplace', this.model);
+    }
+  });
+
+  NS.App = new Backbone.Marionette.Application();
+
   NS.Map = function(options) {
     var self = this,
+        modelIdToLayerId = {},
         el = $(options.el).get(0),
         $map = $('<div class="shareabouts-map"></div>'),
         // TODO: should this be its own widget?
@@ -56,6 +72,12 @@ var Shareabouts = Shareabouts || {};
 
     $map.appendTo(el);
     $panel.appendTo(el);
+
+    NS.App.addRegions({
+      map: new Backbone.Marionette.Region({ el: $map.get(0) }),
+      panel: new Backbone.Marionette.Region({ el: $panel.get(0) })
+    });
+
 
     this.map = L.map($map.get(0), options.map);
     for (i = 0; i < options.layers.length; ++i) {
@@ -81,24 +103,35 @@ var Shareabouts = Shareabouts || {};
           return L.circleMarker(latLng, styleRule.style);
         }
       }
+    }).on('layeradd', function(evt) {
+      modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
     }).addTo(this.map);
 
     // Render the place detail template
     this.geoJsonLayer.on('click', function(evt) {
       var tpl = options.templates['place-detail'],
           featureData = evt.layer.feature,
-          styleRule = getStyleRule(featureData.properties, options.placeStyles),
-          html = tpl(featureData);
+          model = self.placeCollection.get(featureData.properties.id),
+          styleRule = getStyleRule(featureData.properties, options.placeStyles);
 
-      if (this.focusedLayer) {
-        unfocusLayer(this.focusedLayer, styleRule);
-      }
+      NS.App.panel.show(new NS.PlaceDetailView({
+        template: tpl,
+        model: model
+      }));
+    });
 
-      this.focusedLayer = evt.layer;
-      focusLayer(this.focusedLayer, styleRule);
+    this.placeCollection.on('showplace', function(model){
+      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
 
-      $panel.html(html);
+      focusLayer(layer, styleRule);
+    });
 
+    this.placeCollection.on('closeplace', function(model){
+      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
+
+      unfocusLayer(layer, styleRule);
     });
 
     this.placeCollection.fetchAllPages({

@@ -29,7 +29,7 @@
   <script src="../src/models.js"></script>
   <script src="../src/map.js"></script>
   <script>
-    new Shareabouts.Map({
+    var sa = new Shareabouts.Map({
       el: '#shareabouts-container',
       map: {
         center: [39.952780, -75.163136],
@@ -62,9 +62,9 @@
       // These are template functions that expect geojson.
       templates: {
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
-        'place-detail': function(feature) {
-          return '<h2>' + feature.properties.name + '</h2><p>' +
-            feature.properties.location_type + '</p>';
+        'place-detail': function(data) {
+          return '<h2>' + data.name + '</h2><p>' +
+            data.location_type + '</p>';
         }
       }
     });

@@ -9,6 +9,13 @@
   <link rel="stylesheet" href="../src/styles/shareabouts.css" />
   <style type="text/css">
 
+    /* NOTE: use these selectors to style invalid form elements on non-HTML5 browsers */
+    .form-submitted input:invalid,
+    .form-submitted textarea:invalid,
+    .form-submitted select:invalid {
+      border: 2px solid #b2182b;
+    }
+
     /* NOTE: The #shareabouts-container must have an explicit
        width and a fluid height. An explicit height must be
        set within a media query. */
@@ -19,6 +26,16 @@
       margin: 0 auto;
       overflow: hidden;
     }
+
+    .shareabouts-add-button {
+      display: block;
+      text-align: center;
+      line-height: 2em;
+      border: 1px solid black;
+      background-color: white;
+      padding: 0.5em;
+    }
+
 
     @media only screen and (min-width: 40.063em) {
 
@@ -42,6 +59,9 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.marionette/1.8.0/backbone.marionette.min.js"></script>
   <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+
+
+  <script src="http://rawgit.com/openplans/gatekeeper/gh-pages/gatekeeper.js"></script>
   <script src="../src/utils.js"></script>
   <script src="../src/models.js"></script>
   <script src="../src/map.js"></script>
@@ -107,6 +127,16 @@
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>';
+        },
+        'place-form': function(data) {
+          return '<h2>Add a Place</h2>' +
+            '<form novalidate>' +
+            '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +
+            '<p><label>Your Email<input type="text" name="private-email" /></label></p>' +
+            '<p><label>Title<input type="text" name="name" required /></label></p>' +
+            '<p><label>Description<textarea name="description" required></textarea></label></p>' +
+            '<p><input type="submit" value="Add to Map"></p>'
+            '</form>'
         }
       }
     });

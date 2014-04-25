@@ -7,14 +7,6 @@
   position: relative;
   z-index: 1;
 }
-.shareabouts-add-button {
-  display: block;
-  text-align: center;
-  line-height: 2em;
-  border: 1px solid black;
-  background-color: white;
-  padding: 0.5em;
-}
 .panel-open .shareabouts-add-button-container {
   display: none;
 }

@@ -1,4 +1,4 @@
-/*global _ L jQuery Backbone */
+/*global _ L jQuery Backbone Gatekeeper */
 
 var Shareabouts = Shareabouts || {};
 
@@ -55,17 +55,18 @@ var Shareabouts = Shareabouts || {};
     },
     showContent: function(view) {
       if (this.currentView) {
-        this.currentView.onClose();
+        this.currentView.trigger('close');
       }
 
       this.currentView = view;
       this.$content.html(view.render().el);
       this.$el.parent().addClass('panel-open');
-      view.onShow();
+
+      this.currentView.trigger('show');
     },
     handleCloseClick: function() {
       this.$el.parent().removeClass('panel-open');
-      this.currentView.onClose();
+      this.currentView.trigger('close');
     }
   });
 
@@ -80,12 +81,46 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
+  NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
+    ui: {
+      form: 'form'
+    },
+    events: {
+      'submit @ui.form': 'handleSubmit'
+    },
+    handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
+      evt.preventDefault();
+
+      // serialize the form
+      var self = this,
+          data = NS.Util.getAttrs(this.ui.form);
+
+      // add loading/busy class
+      this.$el.addClass('loading');
+
+
+      this.collection.create(data, {
+        wait: true,
+        complete: function(evt) {
+          console.log('complete');
+          // remove loading/busy class
+          self.$el.removeClass('loading');
+        }
+      });
+
+    }, function(evt) {
+      // window.alert('invalid!');
+    })
+  });
+
+
   NS.App = new Backbone.Marionette.Application();
 
   NS.Map = function(options) {
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
+        // $addButton,
         map, layoutHtml, i, layerOptions, panelLayout;
 
     // Set any default options
@@ -180,6 +215,19 @@ var Shareabouts = Shareabouts || {};
       // Tell the map that the size of its container has changed
       map.invalidateSize(true);
     });
+
+    // Init add button object
+    $el.on('click', '.shareabouts-add-button', function(evt) {
+      evt.preventDefault();
+      var tpl = options.templates['place-form'];
+
+      // Show the place details in the panel
+      panelLayout.showContent(new NS.PlaceFormView({
+        template: tpl,
+        collection: self.placeCollection
+      }));
+    });
+
 
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?

@@ -88,6 +88,13 @@ var Shareabouts = Shareabouts || {};
         $el = $(options.el),
         map, layoutHtml, i, layerOptions, panelLayout;
 
+    // Set any default options
+    options = options || {};
+    _.defaults(options, {
+      addButtonLabel: 'Add a Place'
+    });
+
+    // Initialize the Shareabouts DOM structure
     layoutHtml =
       '<div class="shareabouts-map"></div>' +
       '<div class="shareabouts-add-button-container">' +
@@ -97,7 +104,6 @@ var Shareabouts = Shareabouts || {};
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +
       '</div>';
-
     $el.html(layoutHtml);
 
     // Init the panel layout

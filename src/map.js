@@ -75,6 +75,8 @@ var Shareabouts = Shareabouts || {};
     },
     onShow: function() {
       this.model.collection.trigger('showplace', this.model);
+      // TODO: is this necessary?
+      // this.el.scrollIntoView();
     }
   });
 
@@ -83,34 +85,42 @@ var Shareabouts = Shareabouts || {};
   NS.Map = function(options) {
     var self = this,
         modelIdToLayerId = {},
-        el = $(options.el).get(0),
-        $map = $('<div class="shareabouts-map"></div>'),
-        // TODO: should this be its own widget?
-        $panel = $('<div class="shareabouts-panel"><span class="shareabouts-close-button">&times;</span><div class="shareabouts-panel-content"></div></div>'),
-        i, layerOptions, panelLayout;
+        $el = $(options.el),
+        map, layoutHtml, i, layerOptions, panelLayout;
 
-    $map.appendTo(el);
-    $panel.appendTo(el);
+    layoutHtml =
+      '<div class="shareabouts-map"></div>' +
+      '<div class="shareabouts-panel">' +
+        '<span class="shareabouts-close-button">&times;</span>' +
+        '<div class="shareabouts-panel-content"></div>' +
+      '</div>';
 
-    panelLayout = new NS.PanelLayout({el: $panel.get(0)});
+    $el.html(layoutHtml);
 
-    this.map = L.map($map.get(0), options.map);
+    // Init the panel layout
+    panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
+
+    // Init the map
+    map = L.map($el.find('.shareabouts-map').get(0), options.map);
     for (i = 0; i < options.layers.length; ++i) {
       layerOptions = options.layers[i];
-      L.tileLayer(layerOptions.url, layerOptions).addTo(this.map);
+      L.tileLayer(layerOptions.url, layerOptions).addTo(map);
     }
 
-    NS.PlaceCollection.prototype.url = options.datasetUrl;
+    // Init the place collection
+    this.placeCollection = new NS.PlaceCollection();
+    // This has to be set directly, not via the options
+    this.placeCollection.url = options.datasetUrl;
 
-    this.placeCollection = new NS.PlaceCollection([], {
-      url: options.datasetUrl
-    });
-
+    // Init an empty geoJson layer and add it to the map
+    // Add data to it for it to appear on the map
     this.geoJsonLayer = L.geoJson(null, {
       style: function(featureData) {
-        return getStyleRule(featureData.properties, options.placeStyles);
+        // Get the style for non-point geometries
+        return getStyleRule(featureData.properties, options.placeStyles).style;
       },
       pointToLayer: function(featureData, latLng) {
+        // Get style or icon settings for point geometries
         var styleRule = getStyleRule(featureData.properties, options.placeStyles);
         if (styleRule.icon) {
           return L.marker(latLng, {icon: L.icon(styleRule.icon)});
@@ -119,40 +129,51 @@ var Shareabouts = Shareabouts || {};
         }
       }
     }).on('layeradd', function(evt) {
+      // Map model ids to leaflet layer ids
       modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
-    }).addTo(this.map);
+    }).addTo(map);
 
     // Render the place detail template
     this.geoJsonLayer.on('click', function(evt) {
       var tpl = options.templates['place-detail'],
           featureData = evt.layer.feature,
-          model = self.placeCollection.get(featureData.properties.id),
-          styleRule = getStyleRule(featureData.properties, options.placeStyles);
+          model = self.placeCollection.get(featureData.properties.id);
 
+      // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: tpl,
         model: model
       }));
 
-      self.map.panTo(evt.layer.getLatLng());
+      // Pan the map to the selected layer
+      // TODO: handle non-point geometries
+      map.panTo(evt.layer.getLatLng());
     });
 
+    // Listen for when a place is shown
     this.placeCollection.on('showplace', function(model){
       var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
           layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
 
+      // Focus/highlight the layer
       focusLayer(layer, styleRule);
-      self.map.invalidateSize(true);
+      // Tell the map that the size of its container has changed
+      map.invalidateSize(true);
     });
 
+    // Listen for when a place is closed
     this.placeCollection.on('closeplace', function(model){
       var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
           layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
 
+      // Revert the layer
       unfocusLayer(layer, styleRule);
-      self.map.invalidateSize(true);
+      // Tell the map that the size of its container has changed
+      map.invalidateSize(true);
     });
 
+    // Get all of the places, all at once.
+    // TODO: How do we make Sharebouts handle very large datasets?
     this.placeCollection.fetchAllPages({
       pageSuccess: function(collection, data) {
         self.geoJsonLayer.addData(data);

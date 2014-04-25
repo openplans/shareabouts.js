@@ -90,6 +90,9 @@ var Shareabouts = Shareabouts || {};
 
     layoutHtml =
       '<div class="shareabouts-map"></div>' +
+      '<div class="shareabouts-add-button-container">' +
+        '<a href="#" class="shareabouts-add-button"><span>'+options.addButtonLabel+'</span></a>' +
+      '</div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +

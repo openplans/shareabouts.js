@@ -2,6 +2,11 @@
 -------------------------------------------------------------- */
 .shareabouts-map {
   width: 100%;
+  height: 100%;
+}
+
+.shareabouts-map-container {
+  width: 100%;
   height: 300px;
   display: block;
   position: relative;
@@ -47,6 +52,102 @@
   display: block;
 }
 
+/* Centerpoint */
+/* Center Point (new point icon) */
+.panel-form-open .shareabouts-centerpoint {
+  display: block;
+}
+
+.shareabouts-centerpoint {
+  display: none;
+  overflow: visible;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 11;
+  width: 47px;
+  height: 47px;
+  margin: -44px 0 0 -12px;
+}
+.shareabouts-centerpoint .x {
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 12px;
+  background: transparent url(../images/marker-x.png) 0 0 no-repeat scroll;
+  left: 4px;
+  top: 37px;
+  opacity: 0;
+  -webkit-transition: opacity 0.25s;
+  -moz-transition: opacity 0.25s;
+  -o-transition: opacity 0.25s;
+  -ms-transition: opacity 0.25s;
+  transition: opacity 0.25s;
+}
+.shareabouts-centerpoint:hover .x,
+.leaflet-dragging .shareabouts-centerpoint .x {
+  opacity: 1;
+}
+.shareabouts-centerpoint .shadow {
+  display: block;
+  height: 47px;
+  width: 47px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent url(../images/marker-shadow.png) 0 3px no-repeat scroll;
+  -webkit-transition: opacity 0s, background-position 0.3s ease;
+  -moz-transition: opacity 0s, background-position 0.3s ease;
+  -o-transition: opacity 0s, background-position 0.3s ease;
+  -ms-transition: opacity 0s, background-position 0.3s ease;
+  transition: opacity 0s, background-position 0.3s ease;
+}
+.shareabouts-centerpoint:hover .shadow,
+.leaflet-dragging .shareabouts-centerpoint .shadow {
+  opacity: 0.2;
+  background-image:
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png)
+    ;
+  background-position:
+    0px -3px,
+    3px -3px,
+    6px -3px,
+    0px -6px,
+    3px -6px,
+    6px -6px,
+    0px -9px,
+    3px -9px,
+    6px -9px
+  ;
+}
+.shareabouts-centerpoint .marker {
+  display: block;
+  width: 25px;
+  height: 41px;
+  background: transparent url(../images/marker-plus.png) 0 0 no-repeat scroll;
+  position: relative;
+  top: 3px;
+  -webkit-transition: top 0.4s ease;
+  -moz-transition: top 0.4s ease;
+  -o-transition: top 0.4s ease;
+  -ms-transition: top 0.4s ease;
+  transition: top 0.4s ease;
+}
+.shareabouts-centerpoint:hover .marker,
+.leaflet-dragging .shareabouts-centerpoint .marker {
+  top: -20px;
+}
+
+
 
 /* =Media Queries (breakpoints via Foundation)
 -------------------------------------------------------------- */
@@ -69,13 +170,14 @@
     position: relative;
   }
 
-  .shareabouts-map {
+  .shareabouts-map-container {
     height: 100%;
   }
-  .panel-open .shareabouts-map {
+  .panel-open .shareabouts-map-container {
     width:50%;
     display: inline-block;
   }
+
   .shareabouts-add-button-container {
     position: relative;
     bottom: 4em;

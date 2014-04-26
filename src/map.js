@@ -61,6 +61,7 @@ var Shareabouts = Shareabouts || {};
       this.currentView = view;
       this.$content.html(view.render().el);
       this.$el.parent().addClass('panel-open');
+      this.$el.parent().trigger('showpanel');
 
       if (this.currentView.onShow) {
         this.currentView.onShow();
@@ -68,6 +69,7 @@ var Shareabouts = Shareabouts || {};
     },
     handleCloseClick: function() {
       this.$el.parent().removeClass('panel-open');
+      this.$el.parent().trigger('closepanel');
       if (this.currentView.onClose) {
         this.currentView.onClose();
       }
@@ -113,7 +115,6 @@ var Shareabouts = Shareabouts || {};
       model = this.collection.create(data, {
         wait: true,
         complete: function(evt) {
-          console.log('complete');
           // remove loading/busy class
           self.$el.removeClass('loading');
         }
@@ -125,6 +126,14 @@ var Shareabouts = Shareabouts || {};
     setGeometry: function(geom) {
       this.geometry = geom;
       this.$el.addClass('shareabouts-geometry-set');
+    },
+    onClose: function() {
+      // ick
+      this.$el.parent().parent().parent().removeClass('panel-form-open');
+    },
+    onShow: function() {
+      // ick
+      this.$el.parent().parent().parent().addClass('panel-form-open');
     }
   });
 
@@ -144,7 +153,12 @@ var Shareabouts = Shareabouts || {};
 
     // Initialize the Shareabouts DOM structure
     layoutHtml =
-      '<div class="shareabouts-map"></div>' +
+      '<div class="shareabouts-map-container">' +
+        '<div class="shareabouts-map"></div>' +
+        '<div class="shareabouts-centerpoint">' +
+          '<span class="shadow"></span><span class="x"></span><span class="marker"></span>' +
+        '</div>' +
+      '</div>' +
       '<div class="shareabouts-add-button-container">' +
         '<a href="#" class="shareabouts-add-button"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
@@ -227,8 +241,6 @@ var Shareabouts = Shareabouts || {};
 
       // Focus/highlight the layer
       focusLayer(layer, styleRule);
-      // Tell the map that the size of its container has changed
-      map.invalidateSize(true);
     });
 
     // Listen for when a place is closed
@@ -238,8 +250,6 @@ var Shareabouts = Shareabouts || {};
 
       // Revert the layer
       unfocusLayer(layer, styleRule);
-      // Tell the map that the size of its container has changed
-      map.invalidateSize(true);
     });
 
     // Init add button object
@@ -254,7 +264,12 @@ var Shareabouts = Shareabouts || {};
       });
 
       panelLayout.showContent(self.placeFormView);
-      map.invalidateSize();
+
+    });
+
+    // Tell the map to resize itself when its container changes width
+    $el.on('showpanel closepanel', function() {
+      map.invalidateSize(true);
     });
 
 

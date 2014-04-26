@@ -160,7 +160,7 @@ var Shareabouts = Shareabouts || {};
         '</div>' +
       '</div>' +
       '<div class="shareabouts-add-button-container">' +
-        '<a href="#" class="shareabouts-add-button button"><span>'+options.addButtonLabel+'</span></a>' +
+        '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +

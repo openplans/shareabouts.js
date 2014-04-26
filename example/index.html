@@ -36,6 +36,10 @@
       padding: 0.5em;
     }
 
+    .shareabouts-geometry-set .form-instructions {
+      display: none;
+    }
+
 
     @media only screen and (min-width: 40.063em) {
 
@@ -104,7 +108,6 @@
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
         'place-detail': function(data) {
           return '<h2>' + data.name + '</h2>' +
-            '<p>' + data.location_type + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
@@ -129,7 +132,8 @@
             '<p>' + data.description + '</p>';
         },
         'place-form': function(data) {
-          return '<h2>Add a Place</h2>' +
+          return '<p class="form-instructions">Drag the map to the place you want to share.</p>' +
+            '<h2>Add a Place</h2>' +
             '<form novalidate>' +
             '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +
             '<p><label>Your Email<input type="text" name="private-email" /></label></p>' +

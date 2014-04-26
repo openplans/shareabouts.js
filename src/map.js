@@ -54,19 +54,23 @@ var Shareabouts = Shareabouts || {};
       this.$content = this.$('.shareabouts-panel-content');
     },
     showContent: function(view) {
-      if (this.currentView) {
-        this.currentView.trigger('close');
+      if (this.currentView && this.currentView.onClose) {
+        this.currentView.onClose();
       }
 
       this.currentView = view;
       this.$content.html(view.render().el);
       this.$el.parent().addClass('panel-open');
 
-      this.currentView.trigger('show');
+      if (this.currentView.onShow) {
+        this.currentView.onShow();
+      }
     },
     handleCloseClick: function() {
       this.$el.parent().removeClass('panel-open');
-      this.currentView.trigger('close');
+      if (this.currentView.onClose) {
+        this.currentView.onClose();
+      }
     }
   });
 
@@ -93,13 +97,20 @@ var Shareabouts = Shareabouts || {};
 
       // serialize the form
       var self = this,
-          data = NS.Util.getAttrs(this.ui.form);
+          data = NS.Util.getAttrs(this.ui.form),
+          model;
+
+      // Do nothing - can't save without a geometry
+      if (!this.geometry) {
+        return;
+      }
+
+      data.geometry = this.geometry;
 
       // add loading/busy class
       this.$el.addClass('loading');
 
-
-      this.collection.create(data, {
+      model = this.collection.create(data, {
         wait: true,
         complete: function(evt) {
           console.log('complete');
@@ -110,11 +121,13 @@ var Shareabouts = Shareabouts || {};
 
     }, function(evt) {
       // window.alert('invalid!');
-    })
+    }),
+    setGeometry: function(geom) {
+      this.geometry = geom;
+      this.$el.addClass('shareabouts-geometry-set');
+    }
   });
 
-
-  NS.App = new Backbone.Marionette.Application();
 
   NS.Map = function(options) {
     var self = this,
@@ -177,6 +190,19 @@ var Shareabouts = Shareabouts || {};
       modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
     }).addTo(map);
 
+    // Listen for map moves, and update the geometry on the place form view
+    // if it is open.
+    map.on('dragend', function(evt) {
+      var center = evt.target.getCenter();
+
+      if (self.placeFormView) {
+        self.placeFormView.setGeometry({
+          type: 'Point',
+          coordinates: [center.lng, center.lat]
+        });
+      }
+    });
+
     // Render the place detail template
     this.geoJsonLayer.on('click', function(evt) {
       var tpl = options.templates['place-detail'],
@@ -222,19 +248,36 @@ var Shareabouts = Shareabouts || {};
       var tpl = options.templates['place-form'];
 
       // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceFormView({
+      self.placeFormView = new NS.PlaceFormView({
         template: tpl,
         collection: self.placeCollection
-      }));
+      });
+
+      panelLayout.showContent(self.placeFormView);
+      map.invalidateSize();
     });
 
 
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
     this.placeCollection.fetchAllPages({
+      // So we can add the geojson in bulk, not on add
+      silent: true,
       pageSuccess: function(collection, data) {
         self.geoJsonLayer.addData(data);
       }
+    });
+
+    this.placeCollection.on('add', function(model) {
+      // This is for when a user adds a new place, not page load
+      self.geoJsonLayer.addData(model.toGeoJSON());
+
+      // TODO: this may not be the best place for this in the long run
+      // Show the place details in the panel
+      panelLayout.showContent(new NS.PlaceDetailView({
+        template: options.templates['place-detail'],
+        model: model
+      }));
     });
   };
 

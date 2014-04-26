@@ -235,6 +235,13 @@ var Shareabouts = Shareabouts || {};
       }
 
       return Backbone.sync(method, model, options);
+    },
+    toGeoJSON: function() {
+      return {
+        'type': 'Feature',
+        'geometry': this.get('geometry'),
+        'properties': _.omit(this.toJSON(), 'geometry')
+      };
     }
   });
 

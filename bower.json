@@ -6,7 +6,7 @@
     "backbone": "~1.1.x",
     "jquery": "~2.1.x",
     "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
-    "gatekeeper": "git@github.com:openplans/gatekeeper.git#~0.1.x"
+    "gatekeeper": "https://github.com/openplans/gatekeeper.git#~0.1.x"
   },
   "devDependencies": {
     "sinonjs": "~1.9.x"

@@ -1,4 +1,4 @@
-/*global _, L, jQuery, Backbone, Gatekeeper */
+/*global _, L, jQuery, Backbone, Gatekeeper, google */
 
 var Shareabouts = Shareabouts || {};
 
@@ -193,6 +193,8 @@ var Shareabouts = Shareabouts || {};
       },
       visible: true
     }, options || {}),
+    markers = [],
+    summaryWindow = new google.maps.InfoWindow({ disableAutoPan: true }),
     panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
 
     // map = L.map($el.find('.shareabouts-map').get(0), options.map);
@@ -278,8 +280,6 @@ var Shareabouts = Shareabouts || {};
       google.maps.event.trigger(panorama, 'resize');
     });
 
-    var markers = [];
-
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
     this.placeCollection.fetchAllPages({
@@ -291,15 +291,34 @@ var Shareabouts = Shareabouts || {};
 
     this.placeCollection.on('add', function(model) {
       var geom = model.get('geometry'),
+          position = new google.maps.LatLng(geom.coordinates[1], geom.coordinates[0]),
           styleRule = getStyleRule(model.toJSON(), options.placeStyles),
           marker;
 
       marker = new google.maps.Marker({
-        position: new google.maps.LatLng(geom.coordinates[1], geom.coordinates[0]),
+        position: position,
         map: panorama,
         icon: styleRule.icon.url,
         title: 'hello'
       });
+
+      // Show an infowindow on marker hover if a summary template is defined
+      if (options.templates['place-summary']) {
+
+        google.maps.event.addListener(marker, 'mouseover', function(evt) {
+          // close the shared window if it's already open
+          summaryWindow.close();
+
+          // set the window content
+          summaryWindow.setOptions({
+            content: options.templates['place-summary'](model.toJSON())
+          });
+
+          // show the window
+          summaryWindow.open(panorama, marker);
+        });
+      }
+
       markers.push(marker);
     });
 

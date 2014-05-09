@@ -78,7 +78,7 @@
         {
           condition: 'true',
           icon: {
-            url: 'http://visionzero-dev.herokuapp.com/static/css/images/markers/marker-jaywalking.png'
+            url: 'images/marker-blue.png'
           },
           focusIcon: {}
         },
@@ -113,6 +113,10 @@
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>';
+        },
+        'place-summary': function(data) {
+          return '<h2>' + data.name + '</h2>' +
             '<p>' + data.description + '</p>';
         },
         'place-form': function(data) {

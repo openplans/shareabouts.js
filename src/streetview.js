@@ -150,7 +150,8 @@ var Shareabouts = Shareabouts || {};
     _.defaults(options, {
       addButtonLabel: 'Add a Place',
       map: {
-        center: [39.950769, -75.145535]
+        center: [39.950769, -75.145535],
+        maxDistance: '50m'
       }
     });
 
@@ -281,10 +282,10 @@ var Shareabouts = Shareabouts || {};
 
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
-    this.placeCollection.fetch({
+    this.placeCollection.fetchAllPages({
       data: {
         near: options.map.center[0] + ',' + options.map.center[1],
-        page_size: 20
+        distance_lt: options.map.maxDistance
       }
     });
 

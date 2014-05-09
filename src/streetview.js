@@ -30,20 +30,12 @@ var Shareabouts = Shareabouts || {};
     return null;
   };
 
-  var focusLayer = function(layer, styleRule) {
-    if (styleRule.focusIcon) {
-      layer.setIcon(L.icon(styleRule.focusIcon));
-    } else if (styleRule.focusStyle) {
-      layer.setStyle(styleRule.focusStyle);
-    }
+  var focusLayer = function(marker, styleRule) {
+    marker.setIcon(styleRule.focusIcon.url);
   };
 
-  var unfocusLayer = function(layer, styleRule) {
-    if (styleRule.icon) {
-      layer.setIcon(L.icon(styleRule.icon));
-    } else if (styleRule.style) {
-      layer.setStyle(styleRule.style);
-    }
+  var unfocusLayer = function(marker, styleRule) {
+    marker.setIcon(styleRule.icon.url);
   };
 
   NS.PanelLayout = Backbone.View.extend({
@@ -200,10 +192,9 @@ var Shareabouts = Shareabouts || {};
         }, options.summary || {}),
         summaryWindow = new google.maps.InfoWindow(summaryOptions),
 
-        markers = [],
+        markers = {},
         panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
 
-    // map = L.map($el.find('.shareabouts-map').get(0), mapOptions);
     // for (i = 0; i < options.layers.length; ++i) {
     //   layerOptions = options.layers[i];
     //   L.tileLayer(layerOptions.url, layerOptions).addTo(map);
@@ -248,22 +239,23 @@ var Shareabouts = Shareabouts || {};
 
     // Listen for when a place is shown
     this.placeCollection.on('showplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles);
-
-      // TODO: Select the marker to focus
+      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
+          marker = markers[model.id];
 
       // Focus/highlight the layer
-      // focusLayer(layer, styleRule);
+      focusLayer(marker, styleRule);
+
+      // Hide the summary
+      summaryWindow.close();
     });
 
     // Listen for when a place is closed
     this.placeCollection.on('closeplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles);
-
-      // TODO: Select the marker to focus
+      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
+          marker = markers[model.id];
 
       // Revert the layer
-      // unfocusLayer(layer, styleRule);
+      unfocusLayer(marker, styleRule);
     });
 
     // Init add button object
@@ -301,12 +293,26 @@ var Shareabouts = Shareabouts || {};
           styleRule = getStyleRule(model.toJSON(), options.placeStyles),
           marker;
 
+      var showPlace = function(model) {
+        // Show the place details in the panel
+        panelLayout.showContent(new NS.PlaceDetailView({
+          template: options.templates['place-detail'],
+          model: model
+        }));
+      };
+
       marker = new google.maps.Marker({
         position: position,
         map: panorama,
         icon: styleRule.icon.url,
         title: 'hello'
       });
+
+      if (options.templates['place-detail']) {
+        google.maps.event.addListener(marker, 'click', function(evt) {
+          showPlace(model);
+        });
+      }
 
       // Show an infowindow on marker hover if a summary template is defined
       if (options.templates['place-summary']) {
@@ -325,16 +331,8 @@ var Shareabouts = Shareabouts || {};
         });
       }
 
-      markers.push(marker);
+      markers[model.id] = marker;
     });
-
-    var showPlace = function(model) {
-      // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
-        template: options.templates['place-detail'],
-        model: model
-      }));
-    };
   };
 
 }(Shareabouts, jQuery, Shareabouts.Util.console));

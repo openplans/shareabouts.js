@@ -78,12 +78,13 @@
         {
           condition: 'true',
           icon: {
-            url: 'images/dot-blue.png',
-            scaledSize: new google.maps.Size(50, 50)
+            url: 'images/dot-blue.png'
           },
           focusIcon: {
-            url: 'images/marker-blue.png',
-            scaledSize: new google.maps.Size(50, 82)
+            url: 'images/marker-blue.png'
+          },
+          newIcon: {
+            url: 'images/marker-plus.png'
           }
         },
       ],
@@ -128,7 +129,7 @@
             '<p>' + data.description + '</p>';
         },
         'place-form': function(data) {
-          return '<p class="form-instructions">Drag the map to the place you want to share.</p>' +
+          return '<p class="form-instructions">Drag the marker to the place you want to share.</p>' +
             '<h2>Add a Place</h2>' +
             '<form novalidate>' +
             '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +

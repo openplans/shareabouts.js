@@ -106,6 +106,9 @@ var Shareabouts = Shareabouts || {};
 
       model = this.collection.create(data, {
         wait: true,
+        success: function(evt) {
+          model.collection.trigger('create', model);
+        },
         complete: function(evt) {
           // remove loading/busy class
           self.$el.removeClass('loading');
@@ -147,9 +150,6 @@ var Shareabouts = Shareabouts || {};
     layoutHtml =
       '<div class="shareabouts-map-container">' +
         '<div class="shareabouts-map"></div>' +
-        '<div class="shareabouts-centerpoint">' +
-          '<span class="shadow"></span><span class="x"></span><span class="marker"></span>' +
-        '</div>' +
       '</div>' +
       '<div class="shareabouts-add-button-container">' +
         '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
@@ -193,7 +193,11 @@ var Shareabouts = Shareabouts || {};
         summaryWindow = new google.maps.InfoWindow(summaryOptions),
 
         markers = {},
-        panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
+        panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions),
+        plusMarker = new google.maps.Marker({
+          draggable: true,
+          crossOnDrag: false
+        });
 
     // for (i = 0; i < options.layers.length; ++i) {
     //   layerOptions = options.layers[i];
@@ -211,13 +215,18 @@ var Shareabouts = Shareabouts || {};
       console.log(arguments);
       // var center = evt.target.getCenter();
 
-      // if (self.placeFormView) {
-      //   self.placeFormView.setGeometry({
-      //     type: 'Point',
-      //     coordinates: [center.lng, center.lat]
-      //   });
-      // }
     });
+
+    google.maps.event.addListener(plusMarker, 'dragend', function(evt) {
+      if (self.placeFormView) {
+        var center = plusMarker.getPosition();
+        self.placeFormView.setGeometry({
+          type: 'Point',
+          coordinates: [center.lng(), center.lat()]
+        });
+      }
+    });
+
 
     // Render the place detail template
     // TODO: Adapt for StreetView. When user clicks a marker, show the details.
@@ -261,16 +270,29 @@ var Shareabouts = Shareabouts || {};
     // Init add button object
     $el.on('click', '.shareabouts-add-button', function(evt) {
       evt.preventDefault();
-      var tpl = options.templates['place-form'];
+      var tpl = options.templates['place-form'],
+          styleRule = getStyleRule({}, options.placeStyles),
+          position;
 
-      // Show the place details in the panel
-      self.placeFormView = new NS.PlaceFormView({
-        template: tpl,
-        collection: self.placeCollection
-      });
+      if (tpl) {
+         position = google.maps.geometry.spherical.computeOffsetOrigin(
+          panorama.getPosition(), 10, panorama.getPov().heading-180);
 
-      panelLayout.showContent(self.placeFormView);
 
+        // Show the place details in the panel
+        self.placeFormView = new NS.PlaceFormView({
+          template: tpl,
+          collection: self.placeCollection
+        });
+
+        panelLayout.showContent(self.placeFormView);
+
+        plusMarker.setOptions({
+          map: panorama,
+          icon: styleRule.newIcon,
+          position: position
+        });
+      }
     });
 
     // Tell the map to resize itself when its container changes width
@@ -285,6 +307,17 @@ var Shareabouts = Shareabouts || {};
         near: mapOptions.center[0] + ',' + mapOptions.center[1],
         distance_lt: mapOptions.maxDistance
       }
+    });
+
+    this.placeCollection.on('create', function(model) {
+      // Remove the plus marker if it exists
+      plusMarker.setMap(null);
+
+      // Show the place details in the panel
+      panelLayout.showContent(new NS.PlaceDetailView({
+        template: options.templates['place-detail'],
+        model: model
+      }));
     });
 
     this.placeCollection.on('add', function(model) {
@@ -304,8 +337,7 @@ var Shareabouts = Shareabouts || {};
       marker = new google.maps.Marker({
         position: position,
         map: panorama,
-        icon: styleRule.icon,
-        title: 'hello'
+        icon: styleRule.icon
       });
 
       if (options.templates['place-detail']) {

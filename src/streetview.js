@@ -148,11 +148,7 @@ var Shareabouts = Shareabouts || {};
     // Set any default options
     options = options || {};
     _.defaults(options, {
-      addButtonLabel: 'Add a Place',
-      map: {
-        center: [39.950769, -75.145535],
-        maxDistance: '50m'
-      }
+      addButtonLabel: 'Add a Place'
     });
 
     // Initialize the Shareabouts DOM structure
@@ -176,28 +172,38 @@ var Shareabouts = Shareabouts || {};
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
 
     // Init the panorama
-    var centerLatLng = new google.maps.LatLng(options.map.center[0], options.map.center[1]);
-    var panoramaOptions = _.extend({
-      addressControl: false,
-      clickToGo: false,
-      scrollwheel: false,
-      linksControl: false,
-      disableDoubleClickZoom: false,
-      zoomControlOptions: {
-        style: google.maps.ZoomControlStyle.SMALL
-      },
-      position: centerLatLng,
-      pov: {
-        heading: 0,
-        pitch: 0
-      },
-      visible: true
-    }, options || {}),
-    markers = [],
-    summaryWindow = new google.maps.InfoWindow({ disableAutoPan: true }),
-    panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
+    var mapOptions = _.extend({
+          center: [39.950769, -75.145535],
+          maxDistance: '50m'
+        }, options.map || {}),
+        centerLatLng = new google.maps.LatLng(mapOptions.center[0], mapOptions.center[1]),
 
-    // map = L.map($el.find('.shareabouts-map').get(0), options.map);
+        panoramaOptions = _.extend({
+          addressControl: false,
+          clickToGo: false,
+          scrollwheel: false,
+          linksControl: false,
+          disableDoubleClickZoom: false,
+          zoomControlOptions: {
+            style: google.maps.ZoomControlStyle.SMALL
+          },
+          position: centerLatLng,
+          pov: {
+            heading: 0,
+            pitch: 0
+          },
+          visible: true
+        }, options || {}),
+
+        summaryOptions = _.extend({
+          disableAutoPan: true
+        }, options.summary || {}),
+        summaryWindow = new google.maps.InfoWindow(summaryOptions),
+
+        markers = [],
+        panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
+
+    // map = L.map($el.find('.shareabouts-map').get(0), mapOptions);
     // for (i = 0; i < options.layers.length; ++i) {
     //   layerOptions = options.layers[i];
     //   L.tileLayer(layerOptions.url, layerOptions).addTo(map);
@@ -284,8 +290,8 @@ var Shareabouts = Shareabouts || {};
     // TODO: How do we make Sharebouts handle very large datasets?
     this.placeCollection.fetchAllPages({
       data: {
-        near: options.map.center[0] + ',' + options.map.center[1],
-        distance_lt: options.map.maxDistance
+        near: mapOptions.center[0] + ',' + mapOptions.center[1],
+        distance_lt: mapOptions.maxDistance
       }
     });
 

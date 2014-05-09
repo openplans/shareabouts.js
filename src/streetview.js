@@ -209,14 +209,8 @@ var Shareabouts = Shareabouts || {};
     // This has to be set directly, not via the options
     this.placeCollection.url = options.datasetUrl;
 
-    // Listen for map moves, and update the geometry on the place form view
+    // Listen for marker drag, and update the geometry on the place form view
     // if it is open.
-    google.maps.event.addListener(panorama, 'pov_changed', function(evt) {
-      console.log(arguments);
-      // var center = evt.target.getCenter();
-
-    });
-
     google.maps.event.addListener(plusMarker, 'dragend', function(evt) {
       if (self.placeFormView) {
         var center = plusMarker.getPosition();
@@ -226,6 +220,27 @@ var Shareabouts = Shareabouts || {};
         });
       }
     });
+
+    // Don't let the user place a marker beyond the maxDistance
+    google.maps.event.addListener(plusMarker, 'drag', function(evt) {
+      var dist = google.maps.geometry.spherical.computeDistanceBetween(
+            panorama.getPosition(), plusMarker.getPosition()),
+          panoPosition, heading, position;
+
+      if (dist > options.maxDistance) {
+        // origin
+        panoPosition = panorama.getPosition();
+        // from the origin to the new marker
+        heading = google.maps.geometry.spherical.computeHeading(panoPosition, plusMarker.getPosition());
+        // reposition the marker at exact maxDistance along it's current heading (like star trek)
+        position = google.maps.geometry.spherical.computeOffsetOrigin(
+              panoPosition, options.maxDistance, heading-180);
+
+        // weeee
+        plusMarker.setPosition(position);
+      }
+    });
+
 
 
     // Render the place detail template

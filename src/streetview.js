@@ -31,11 +31,11 @@ var Shareabouts = Shareabouts || {};
   };
 
   var focusLayer = function(marker, styleRule) {
-    marker.setIcon(styleRule.focusIcon.url);
+    marker.setIcon(styleRule.focusIcon);
   };
 
   var unfocusLayer = function(marker, styleRule) {
-    marker.setIcon(styleRule.icon.url);
+    marker.setIcon(styleRule.icon);
   };
 
   NS.PanelLayout = Backbone.View.extend({
@@ -304,7 +304,7 @@ var Shareabouts = Shareabouts || {};
       marker = new google.maps.Marker({
         position: position,
         map: panorama,
-        icon: styleRule.icon.url,
+        icon: styleRule.icon,
         title: 'hello'
       });
 

@@ -71,7 +71,7 @@ var Shareabouts = Shareabouts || {};
   NS.PlaceSurveyItemView = Backbone.Marionette.ItemView.extend({
     tagName: 'li',
     initialize: function(options) { this.options = options; },
-    onShow: function() { $(this.options.umbrella).trigger('showplacesurveyitem', arguments); }
+    onShow: function() { $(this.options.umbrella).trigger('showplacesurveyitem', [this]); }
   });
 
   NS.PlaceSurveyView = Backbone.Marionette.CompositeView.extend({
@@ -124,7 +124,7 @@ var Shareabouts = Shareabouts || {};
     },
     onShow: function() {
       this.collection.fetchAllPages();
-      $(this.options.umbrella).trigger('showplacesurvey', arguments);
+      $(this.options.umbrella).trigger('showplacesurvey', [this]);
     }
   });
 
@@ -216,7 +216,7 @@ var Shareabouts = Shareabouts || {};
     onShow: function() {
       // ick
       this.$el.parent().parent().parent().addClass('panel-form-open');
-      $(this.options.umbrella).trigger('showplaceform', arguments);
+      $(this.options.umbrella).trigger('showplaceform', [this]);
     }
   });
 

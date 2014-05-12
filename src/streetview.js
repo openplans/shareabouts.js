@@ -139,6 +139,7 @@ var Shareabouts = Shareabouts || {};
         this.surveyRegion.show(new NS.PlaceSurveyView({
           model: this.model,
           collection: this.model.getSubmissionSetCollection('comments'),
+          umbrella: this.options.umbrella,
 
           template: this.options.surveyTemplate,
           surveyItemTemplate: this.options.surveyItemTemplate
@@ -156,6 +157,9 @@ var Shareabouts = Shareabouts || {};
     },
     events: {
       'submit @ui.form': 'handleSubmit'
+    },
+    initialize: function(options) {
+      this.options = options;
     },
     handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
       evt.preventDefault();
@@ -208,6 +212,7 @@ var Shareabouts = Shareabouts || {};
     onShow: function() {
       // ick
       this.$el.parent().parent().parent().addClass('panel-form-open');
+      $(this.options.umbrella).trigger('showplaceform', arguments);
     }
   });
 
@@ -356,7 +361,8 @@ var Shareabouts = Shareabouts || {};
         // Show the place details in the panel
         self.placeFormView = new NS.PlaceFormView({
           template: tpl,
-          collection: self.placeCollection
+          collection: self.placeCollection,
+          umbrella: self
         });
 
         panelLayout.showContent(self.placeFormView);
@@ -396,6 +402,7 @@ var Shareabouts = Shareabouts || {};
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],
         model: model,
+        umbrella: self,
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
@@ -414,6 +421,7 @@ var Shareabouts = Shareabouts || {};
         panelLayout.showContent(new NS.PlaceDetailView({
           template: options.templates['place-detail'],
           model: model,
+          umbrella: self,
 
           // Templates for the survey views that are rendered in a region
           surveyTemplate: options.templates['place-survey'],

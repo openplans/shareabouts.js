@@ -83,6 +83,36 @@ var Shareabouts = Shareabouts || {};
         template: this.options.surveyItemTemplate
       };
     },
+    ui: {
+      form: 'form'
+    },
+    events: {
+      'submit @ui.form': 'handleFormSubmit'
+    },
+    handleFormSubmit: function(evt) {
+      evt.preventDefault();
+
+      // serialize the form
+      var self = this,
+          data = NS.Util.getAttrs(this.ui.form),
+          model;
+
+      // add loading/busy class
+      this.$el.addClass('loading');
+
+      model = this.collection.create(data, {
+        wait: true,
+        success: function(evt) {
+          model.collection.trigger('create', model);
+          // Reset the form after it is saved successfully
+          self.ui.form.get(0).reset();
+        },
+        complete: function(evt) {
+          // remove loading/busy class
+          self.$el.removeClass('loading');
+        }
+      });
+    },
     onShow: function() {
       this.collection.fetchAllPages();
     }

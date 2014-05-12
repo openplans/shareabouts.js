@@ -116,7 +116,9 @@
         },
         'place-survey': function(data) {
           return '<ul class="survey-items"></ul>' +
-          '<form><label>Name <input type="text"></input></label></form>'
+          '<form><p><label>Name <input name="submitter_name" type="text"></input></label></p>'+
+          '<p><label>Comment <textarea name="comment" type="text"></textarea></label></p>'+
+          '<button>Save</button></form>'
         },
         'place-summary': function(data) {
           return '<h2>' + data.name + '</h2>' +

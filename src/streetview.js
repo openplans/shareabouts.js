@@ -315,6 +315,11 @@ var Shareabouts = Shareabouts || {};
       google.maps.event.trigger(panorama, 'resize');
     });
 
+    $el.on('closepanel', function() {
+      // Remove the plus marker if it exists
+      plusMarker.setMap(null);
+    });
+
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
     this.placeCollection.fetchAllPages({

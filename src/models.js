@@ -126,7 +126,7 @@ var Shareabouts = Shareabouts || {};
                                       'must save the place before saving ' +
                                       'its ' + submissionType + '.'); }
 
-      return '/api/places/' + placeId + '/' + submissionType;
+      return this.options.placeModel.url() + '/' + submissionType;
     },
 
     comparator: 'created_datetime'
@@ -242,6 +242,16 @@ var Shareabouts = Shareabouts || {};
         'geometry': this.get('geometry'),
         'properties': _.omit(this.toJSON(), 'geometry')
       };
+    },
+
+    getSubmissionSetCollection: function(name) {
+      this.submissionSets[name] = this.submissionSets[name] ||
+        new NS.SubmissionCollection([], {
+          submissionType: name,
+          placeModel: this
+        });
+
+      return this.submissionSets[name];
     }
   });
 

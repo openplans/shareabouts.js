@@ -68,14 +68,47 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  NS.PlaceDetailView = Backbone.Marionette.ItemView.extend({
+  NS.PlaceSurveyItemView = Backbone.Marionette.ItemView.extend({
+    tagName: 'li'
+  });
+
+  NS.PlaceSurveyView = Backbone.Marionette.CompositeView.extend({
+    initialize: function(options) {
+      this.options = options;
+    },
+    itemView: NS.PlaceSurveyItemView,
+    itemViewContainer: '.survey-items',
+    itemViewOptions: function(model, index) {
+      return {
+        template: this.options.surveyItemTemplate
+      };
+    },
+    onShow: function() {
+      this.collection.fetchAllPages();
+    }
+  });
+
+  NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
+    initialize: function(options) {
+      this.options = options;
+    },
+    regions: {
+      surveyRegion: '.survey-region'
+    },
     onClose: function() {
       this.model.collection.trigger('closeplace', this.model);
     },
     onShow: function() {
+      if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
+        this.surveyRegion.show(new NS.PlaceSurveyView({
+          collection: this.model.getSubmissionSetCollection('comments'),
+
+          template: this.options.surveyTemplate,
+          surveyItemTemplate: this.options.surveyItemTemplate
+        }));
+      }
+
       this.model.collection.trigger('showplace', this.model);
-      // TODO: is this necessary?
-      // this.el.scrollIntoView();
     }
   });
 
@@ -241,26 +274,6 @@ var Shareabouts = Shareabouts || {};
       }
     });
 
-
-
-    // Render the place detail template
-    // TODO: Adapt for StreetView. When user clicks a marker, show the details.
-    // this.geoJsonLayer.on('click', function(evt) {
-    //   var tpl = options.templates['place-detail'],
-    //       featureData = evt.layer.feature,
-    //       model = self.placeCollection.get(featureData.properties.id);
-
-    //   // Show the place details in the panel
-    //   panelLayout.showContent(new NS.PlaceDetailView({
-    //     template: tpl,
-    //     model: model
-    //   }));
-
-    //   // Pan the map to the selected layer
-    //   // TODO: handle non-point geometries
-    //   map.panTo(evt.layer.getLatLng());
-    // });
-
     // Listen for when a place is shown
     this.placeCollection.on('showplace', function(model){
       var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
@@ -336,7 +349,11 @@ var Shareabouts = Shareabouts || {};
       // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],
-        model: model
+        model: model,
+
+        // Templates for the survey views that are rendered in a region
+        surveyTemplate: options.templates['place-survey'],
+        surveyItemTemplate: options.templates['place-survey-item']
       }));
     });
 
@@ -350,7 +367,11 @@ var Shareabouts = Shareabouts || {};
         // Show the place details in the panel
         panelLayout.showContent(new NS.PlaceDetailView({
           template: options.templates['place-detail'],
-          model: model
+          model: model,
+
+          // Templates for the survey views that are rendered in a region
+          surveyTemplate: options.templates['place-survey'],
+          surveyItemTemplate: options.templates['place-survey-item']
         }));
       };
 

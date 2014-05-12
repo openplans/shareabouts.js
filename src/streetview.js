@@ -131,6 +131,7 @@ var Shareabouts = Shareabouts || {};
     onShow: function() {
       if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
         this.surveyRegion.show(new NS.PlaceSurveyView({
+          model: this.model,
           collection: this.model.getSubmissionSetCollection('comments'),
 
           template: this.options.surveyTemplate,

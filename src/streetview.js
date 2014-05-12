@@ -84,7 +84,8 @@ var Shareabouts = Shareabouts || {};
       };
     },
     ui: {
-      form: 'form'
+      form: 'form',
+      submitButton: '[type="submit"], button'
     },
     events: {
       'submit @ui.form': 'handleFormSubmit'
@@ -97,6 +98,8 @@ var Shareabouts = Shareabouts || {};
           data = NS.Util.getAttrs(this.ui.form),
           model;
 
+      // disable the submit button
+      this.ui.submitButton.prop('disabled', true);
       // add loading/busy class
       this.$el.addClass('loading');
 
@@ -108,6 +111,9 @@ var Shareabouts = Shareabouts || {};
           self.ui.form.get(0).reset();
         },
         complete: function(evt) {
+          // enable the submit button
+          self.ui.submitButton.prop('disabled', false);
+
           // remove loading/busy class
           self.$el.removeClass('loading');
         }
@@ -145,7 +151,8 @@ var Shareabouts = Shareabouts || {};
 
   NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
     ui: {
-      form: 'form'
+      form: 'form',
+      submitButton: '[type="submit"], button'
     },
     events: {
       'submit @ui.form': 'handleSubmit'
@@ -165,6 +172,8 @@ var Shareabouts = Shareabouts || {};
 
       data.geometry = this.geometry;
 
+      // disable the submit button
+      this.ui.submitButton.prop('disabled', true);
       // add loading/busy class
       this.$el.addClass('loading');
 
@@ -172,8 +181,14 @@ var Shareabouts = Shareabouts || {};
         wait: true,
         success: function(evt) {
           model.collection.trigger('create', model);
+
+          // Reset the form after it is saved successfully
+          self.ui.form.get(0).reset();
         },
         complete: function(evt) {
+          // enable the submit button
+          self.ui.submitButton.prop('disabled', false);
+
           // remove loading/busy class
           self.$el.removeClass('loading');
         }

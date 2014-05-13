@@ -20,11 +20,10 @@
 -------------------------------------------------------------- */
 .shareabouts-panel {
   width: 100%;
-  height: 0;
-  display: block;
+  display: none;
 }
 .panel-open .shareabouts-panel {
-  height: auto;
+  display: block;
   position: relative;
   z-index: 2;
 }

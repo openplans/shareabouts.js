@@ -150,6 +150,7 @@ var Shareabouts = Shareabouts || {};
         }));
       }
 
+      $(this.options.umbrella).trigger('showplace', [this]);
       this.model.collection.trigger('showplace', this.model);
     }
   });
@@ -394,10 +395,7 @@ var Shareabouts = Shareabouts || {};
       }
     });
 
-    this.placeCollection.on('create', function(model) {
-      // Remove the plus marker if it exists
-      plusMarker.setMap(null);
-
+    this.showPlace = function(model) {
       // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],
@@ -408,6 +406,14 @@ var Shareabouts = Shareabouts || {};
         surveyTemplate: options.templates['place-survey'],
         surveyItemTemplate: options.templates['place-survey-item']
       }));
+    };
+
+    this.placeCollection.on('create', function(model) {
+      // Remove the plus marker if it exists
+      plusMarker.setMap(null);
+
+      // Show the place details in the panel
+      self.showPlace(model);
     });
 
     this.placeCollection.on('add', function(model) {
@@ -415,19 +421,6 @@ var Shareabouts = Shareabouts || {};
           position = new google.maps.LatLng(geom.coordinates[1], geom.coordinates[0]),
           styleRule = getStyleRule(model.toJSON(), options.placeStyles),
           marker;
-
-      var showPlace = function(model) {
-        // Show the place details in the panel
-        panelLayout.showContent(new NS.PlaceDetailView({
-          template: options.templates['place-detail'],
-          model: model,
-          umbrella: self,
-
-          // Templates for the survey views that are rendered in a region
-          surveyTemplate: options.templates['place-survey'],
-          surveyItemTemplate: options.templates['place-survey-item']
-        }));
-      };
 
       marker = new google.maps.Marker({
         position: position,
@@ -437,7 +430,7 @@ var Shareabouts = Shareabouts || {};
 
       if (options.templates['place-detail']) {
         google.maps.event.addListener(marker, 'click', function(evt) {
-          showPlace(model);
+          self.showPlace(model);
         });
       }
 

@@ -71,6 +71,7 @@ var Shareabouts = Shareabouts || {};
   NS.PlaceSurveyItemView = Backbone.Marionette.ItemView.extend({
     tagName: 'li',
     initialize: function(options) { this.options = options; },
+    onClose: function() { $(this.options.umbrella).trigger('closeplacesurveyitem', [this]); },
     onShow: function() { $(this.options.umbrella).trigger('showplacesurveyitem', [this]); }
   });
 
@@ -122,6 +123,9 @@ var Shareabouts = Shareabouts || {};
         }
       });
     },
+    onClose: function() {
+      $(this.options.umbrella).trigger('closeplacesurvey', [this]);
+    },
     onShow: function() {
       this.collection.fetchAllPages();
       $(this.options.umbrella).trigger('showplacesurvey', [this]);
@@ -136,7 +140,7 @@ var Shareabouts = Shareabouts || {};
       surveyRegion: '.survey-region'
     },
     onClose: function() {
-      this.model.collection.trigger('closeplace', this.model);
+      $(this.options.umbrella).trigger('closeplace', [this]);
     },
     onShow: function() {
       if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
@@ -151,7 +155,6 @@ var Shareabouts = Shareabouts || {};
       }
 
       $(this.options.umbrella).trigger('showplace', [this]);
-      this.model.collection.trigger('showplace', this.model);
     }
   });
 
@@ -213,6 +216,7 @@ var Shareabouts = Shareabouts || {};
     onClose: function() {
       // ick
       this.$el.parent().parent().parent().removeClass('panel-form-open');
+      $(this.options.umbrella).trigger('closeplaceform', [this]);
     },
     onShow: function() {
       // ick
@@ -327,9 +331,9 @@ var Shareabouts = Shareabouts || {};
     });
 
     // Listen for when a place is shown
-    this.placeCollection.on('showplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
-          marker = markers[model.id];
+    $(this).on('showplace', function(evt, view){
+      var styleRule = getStyleRule(view.model.toJSON(), options.placeStyles),
+          marker = markers[view.model.id];
 
       // Focus/highlight the layer
       focusLayer(marker, styleRule);
@@ -339,9 +343,9 @@ var Shareabouts = Shareabouts || {};
     });
 
     // Listen for when a place is closed
-    this.placeCollection.on('closeplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
-          marker = markers[model.id];
+    $(this).on('closeplace', function(evt, view){
+      var styleRule = getStyleRule(view.model.toJSON(), options.placeStyles),
+          marker = markers[view.model.id];
 
       // Revert the layer
       unfocusLayer(marker, styleRule);
@@ -386,8 +390,7 @@ var Shareabouts = Shareabouts || {};
       plusMarker.setMap(null);
     });
 
-    // Get all of the places, all at once.
-    // TODO: How do we make Sharebouts handle very large datasets?
+    // Get all of the places near the center
     this.placeCollection.fetchAllPages({
       data: {
         near: mapOptions.center[0] + ',' + mapOptions.center[1],
@@ -396,6 +399,11 @@ var Shareabouts = Shareabouts || {};
     });
 
     this.showPlace = function(model) {
+
+      if (!self.placeCollection.get(model.id)) {
+        self.placeCollection.add(model);
+      }
+
       // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],

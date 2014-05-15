@@ -281,17 +281,13 @@ var Shareabouts = Shareabouts || {};
         summaryWindow = new google.maps.InfoWindow(summaryOptions),
 
         markers = {},
-        panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions),
         plusMarker = new google.maps.Marker({
           draggable: true,
           crossOnDrag: false
         });
 
-    // for (i = 0; i < options.layers.length; ++i) {
-    //   layerOptions = options.layers[i];
-    //   L.tileLayer(layerOptions.url, layerOptions).addTo(map);
-    // }
-
+    // Init the panorama
+    this.panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
     // Init the place collection
     this.placeCollection = new NS.PlaceCollection();
     // This has to be set directly, not via the options
@@ -312,12 +308,12 @@ var Shareabouts = Shareabouts || {};
     // Don't let the user place a marker beyond the maxDistance
     google.maps.event.addListener(plusMarker, 'drag', function(evt) {
       var dist = google.maps.geometry.spherical.computeDistanceBetween(
-            panorama.getPosition(), plusMarker.getPosition()),
+            self.panorama.getPosition(), plusMarker.getPosition()),
           panoPosition, heading, position;
 
       if (dist > options.maxDistance) {
         // origin
-        panoPosition = panorama.getPosition();
+        panoPosition = self.panorama.getPosition();
         // from the origin to the new marker
         heading = google.maps.geometry.spherical.computeHeading(panoPosition, plusMarker.getPosition());
         // reposition the marker at exact maxDistance along it's current heading (like star trek)
@@ -359,7 +355,7 @@ var Shareabouts = Shareabouts || {};
 
       if (tpl) {
          position = google.maps.geometry.spherical.computeOffsetOrigin(
-          panorama.getPosition(), 10, panorama.getPov().heading-180);
+          self.panorama.getPosition(), 10, self.panorama.getPov().heading-180);
 
 
         // Show the place details in the panel
@@ -372,7 +368,7 @@ var Shareabouts = Shareabouts || {};
         panelLayout.showContent(self.placeFormView);
 
         plusMarker.setOptions({
-          map: panorama,
+          map: self.panorama,
           icon: styleRule.newIcon,
           position: position
         });
@@ -381,7 +377,7 @@ var Shareabouts = Shareabouts || {};
 
     // Tell the map to resize itself when its container changes width
     $el.on('showpanel closepanel', function() {
-      google.maps.event.trigger(panorama, 'resize');
+      google.maps.event.trigger(self.panorama, 'resize');
     });
 
     $el.on('closepanel', function() {
@@ -435,7 +431,7 @@ var Shareabouts = Shareabouts || {};
 
       marker = new google.maps.Marker({
         position: position,
-        map: panorama,
+        map: self.panorama,
         icon: styleRule.icon
       });
 
@@ -458,7 +454,7 @@ var Shareabouts = Shareabouts || {};
           });
 
           // show the window
-          summaryWindow.open(panorama, marker);
+          summaryWindow.open(self.panorama, marker);
         });
       }
 

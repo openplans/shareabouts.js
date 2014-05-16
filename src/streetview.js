@@ -59,7 +59,8 @@ var Shareabouts = Shareabouts || {};
         this.currentView.onShow();
       }
     },
-    handleCloseClick: function() {
+    handleCloseClick: function(evt) {
+      evt.preventDefault();
       this.$el.parent().removeClass('panel-open');
       this.$el.parent().trigger('closepanel');
       if (this.currentView.onClose) {

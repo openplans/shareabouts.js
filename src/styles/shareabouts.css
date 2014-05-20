@@ -12,9 +12,32 @@
   position: relative;
   z-index: 1;
 }
+
+.shareabouts-add-button-container {
+  position: relative;
+  z-index: 3;
+}
 .panel-open .shareabouts-add-button-container {
   display: none;
 }
+
+.shareabouts-auth-container {
+  position: relative;
+  z-index: 4;
+}
+.panel-open .shareabouts-auth-container {
+  display: none;
+}
+.shareabouts-auth-menu {
+  display: none;
+}
+.shareabouts-auth-menu.is-exposed {
+  display: block;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+}
+
 
 /* =Panel area
 -------------------------------------------------------------- */
@@ -147,7 +170,6 @@
 }
 
 
-
 /* =Media Queries (breakpoints via Foundation)
 -------------------------------------------------------------- */
 
@@ -165,10 +187,6 @@
 /* min-width 641px, medium screens */
 @media only screen and (min-width: 40.063em) {
 
-  .shareabouts-container {
-    position: relative;
-  }
-
   .shareabouts-map-container {
     height: 100%;
   }
@@ -177,12 +195,16 @@
     display: inline-block;
   }
 
-  .shareabouts-add-button-container {
-    position: relative;
-    bottom: 4em;
+  .shareabouts-auth-container {
+    position: absolute;
+    bottom: 3em;
     left: 1em;
-    width: 10em;
-    z-index: 3;
+  }
+  .shareabouts-add-button-container {
+    position: absolute;
+    bottom: 3.5em;
+    left: 2em;
+    margin-left: 50px;
   }
 
   .shareabouts-panel {

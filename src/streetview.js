@@ -283,7 +283,7 @@ var Shareabouts = Shareabouts || {};
           position: centerLatLng,
           pov: {
             heading: 0,
-            pitch: 0
+            pitch: -15
           },
           visible: true
         }, options || {}),
@@ -434,9 +434,21 @@ var Shareabouts = Shareabouts || {};
 
     this.placeCollection.on('add', function(model) {
       var geom = model.get('geometry'),
-          position = new google.maps.LatLng(geom.coordinates[1], geom.coordinates[0]),
+          position = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]),
+          panoPosition = self.panorama.getPosition(),
+          distFromPano = google.maps.geometry.spherical.computeDistanceBetween(
+            panoPosition, position),
           styleRule = getStyleRule(model.toJSON(), options.placeStyles),
-          marker;
+          minDistFromPano = 4,
+          marker, heading;
+
+      // If the marker is really really close to the panorama location, then
+      // calculate the heading and bump it out a few meters so people can see it.
+      if (distFromPano < minDistFromPano) {
+        heading = google.maps.geometry.spherical.computeHeading(panoPosition, position);
+        position = google.maps.geometry.spherical.computeOffsetOrigin(
+              panoPosition, minDistFromPano/2 + distFromPano, heading-180);
+      }
 
       marker = new google.maps.Marker({
         position: position,

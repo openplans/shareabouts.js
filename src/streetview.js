@@ -283,7 +283,7 @@ var Shareabouts = Shareabouts || {};
 
         summaryOptions = _.extend({
           disableAutoPan: true
-        }, options.summary || {}),
+        }, options.summaryInfoWindow || {}),
         summaryWindow = new google.maps.InfoWindow(summaryOptions),
 
         markers = {},
@@ -291,7 +291,15 @@ var Shareabouts = Shareabouts || {};
           draggable: true,
           crossOnDrag: false
         }),
+        newPlaceInfoWindowOptions = _.extend({
+          disableAutoPan: true
+        }, options.newPlaceInfoWindow || {}),
+        plusMarkerInfoWindow,
         summaryWindowTid;
+
+    if (options.newPlaceInfoWindow) {
+      plusMarkerInfoWindow = new google.maps.InfoWindow(newPlaceInfoWindowOptions);
+    }
 
     // Init the panorama
     this.panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
@@ -329,6 +337,13 @@ var Shareabouts = Shareabouts || {};
 
         // weeee
         plusMarker.setPosition(position);
+      }
+    });
+
+    google.maps.event.addListener(plusMarker, 'dragstart', function(evt) {
+      // Don't show the instructions after the user starts the drag
+      if (plusMarkerInfoWindow) {
+        plusMarkerInfoWindow.close();
       }
     });
 
@@ -379,6 +394,11 @@ var Shareabouts = Shareabouts || {};
           icon: styleRule.newIcon,
           position: position
         });
+
+        // show the window
+        if (plusMarkerInfoWindow) {
+          plusMarkerInfoWindow.open(self.panorama, plusMarker);
+        }
       }
     });
 

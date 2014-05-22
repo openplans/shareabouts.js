@@ -297,7 +297,8 @@ var Shareabouts = Shareabouts || {};
         plusMarker = new google.maps.Marker({
           draggable: true,
           crossOnDrag: false
-        });
+        }),
+        summaryWindowTid;
 
     // Init the panorama
     this.panorama = new google.maps.StreetViewPanorama($el.find('.shareabouts-map').get(0), panoramaOptions);
@@ -466,16 +467,34 @@ var Shareabouts = Shareabouts || {};
       if (options.templates['place-summary']) {
 
         google.maps.event.addListener(marker, 'mouseover', function(evt) {
-          // close the shared window if it's already open
-          summaryWindow.close();
+          // Already planning to show another summary. Cancel it.
+          if (summaryWindowTid) {
+            clearTimeout(summaryWindowTid);
+          }
 
-          // set the window content
-          summaryWindow.setOptions({
-            content: options.templates['place-summary'](model.toJSON())
-          });
+          // Show the summary info window in 500ms
+          summaryWindowTid = setTimeout(function() {
+            // close the shared window if it's already open
+            summaryWindow.close();
 
-          // show the window
-          summaryWindow.open(self.panorama, marker);
+            // set the window content
+            summaryWindow.setOptions({
+              content: options.templates['place-summary'](model.toJSON())
+            });
+
+            // show the window
+            summaryWindow.open(self.panorama, marker);
+
+            // reset the timeout id
+            summaryWindowTid = null;
+          }, 500);
+        });
+
+        // I moused off a marker before it was shown, so cancel it.
+        google.maps.event.addListener(marker, 'mouseout', function(evt) {
+          if (summaryWindowTid) {
+            clearTimeout(summaryWindowTid);
+          }
         });
       }
 

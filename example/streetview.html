@@ -97,7 +97,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.marionette/1.8.0/backbone.marionette.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry" type="text/javascript"></script>
 
   <script src="http://rawgit.com/openplans/gatekeeper/gh-pages/gatekeeper.js"></script>
   <script src="../src/utils.js"></script>
@@ -125,8 +125,12 @@
         },
       ],
 
-      summary: {
+      summaryInfoWindow: {
         maxWidth: 500
+      },
+
+      newPlaceInfoWindow: {
+        content: 'Drag the marker to the place you want to share.'
       },
 
       datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places',

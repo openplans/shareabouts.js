@@ -15,8 +15,8 @@
       border: 2px solid #b2182b;
     }
 
-    /* NOTE: The #shareabouts-container must be positioned relative, 
-       have an explicit width and a fluid height. An explicit height 
+    /* NOTE: The #shareabouts-container must be positioned relative,
+       have an explicit width and a fluid height. An explicit height
        must be set within a media query. */
 
     #shareabouts-container {
@@ -101,6 +101,7 @@
 
   <script src="http://rawgit.com/openplans/gatekeeper/gh-pages/gatekeeper.js"></script>
   <script src="../src/utils.js"></script>
+  <script src="../src/auth.js"></script>
   <script src="../src/models.js"></script>
   <script src="../src/streetview.js"></script>
   <script>
@@ -182,6 +183,14 @@
       }
     });
 
+    Shareabouts.auth = new Shareabouts.Auth({
+      successPage: '/~aogle/projects/openplans/shareabouts.js/example/success.html',
+      errorPage: '/~aogle/projects/openplans/shareabouts.js/example/error.html'
+    });
+
+    $(Shareabouts.auth).on('authsuccess', function(evt, data) {
+      console.log('you just logged in!', evt, data);
+    });
   </script>
   </body>
 </html>

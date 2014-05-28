@@ -9,6 +9,7 @@ var Shareabouts = Shareabouts || {};
     // Set any default options
     options = options || {};
     _.defaults(options, {
+      apiRoot: 'http://data.shareabouts.org/api/v2/',
       twitter: '.shareabouts-auth-twitter-button',
       facebook: '.shareabouts-auth-facebook-button',
       successPage: '/success.html',
@@ -20,15 +21,17 @@ var Shareabouts = Shareabouts || {};
     $(options.twitter).click(function(evt) {
       evt.preventDefault();
 
-      window.open('http://data.shareabouts.org/api/v2/users/login/twitter?next=' +
+      self.loginWindow = window.open(options.apiRoot + 'users/login/twitter?next=' +
         options.successPage);//+'&error_next=' + options.errorPage);
     });
 
     this.isAuthenticated = false;
 
     this.initUser = function() {
+      self.loginWindow.close();
+
       $.ajax({
-        url: 'http://data.shareabouts.org/api/v2/users/current',
+        url: options.apiRoot + 'users/current',
         xhrFields: {
           withCredentials: true
         },

@@ -183,8 +183,6 @@
       }
     });
 
-    sa.setUser(null);
-
     Shareabouts.auth = new Shareabouts.Auth({
       apiRoot: 'http://data.shareabouts.org/api/v2/',
       successPage: 'success.html',
@@ -195,6 +193,8 @@
       console.log('you just logged in!', evt, data);
       sa.setUser(data);
     });
+
+    Shareabouts.auth.initUser();
   </script>
   </body>
 </html>

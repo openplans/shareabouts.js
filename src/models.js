@@ -118,10 +118,16 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
+  NS.SubmissionModel = Backbone.Model.extend({
+    sync: syncWithCredentials
+  });
+
   NS.SubmissionCollection = NS.PaginatedCollection.extend({
     initialize: function(models, options) {
       this.options = options;
     },
+
+    model: NS.SubmissionModel,
 
     url: function() {
       var submissionType = this.options.submissionType,

@@ -158,9 +158,15 @@
             '<div class="survey-region"></div>';
         },
         'place-survey': function(data) {
+          // anonymous user
+          var submitter = '<label>Name <input name="submitter_name" type="text" value="'+(data.submitter_name||'')+'"></input></label>';
+          if (data.submitter) {
+            submitter = 'Comment by <strong>'+data.submitter.name+'</strong>'
+          }
+
           return '<ul class="survey-items"></ul>' +
-          '<form><p><label>Name <input name="submitter_name" type="text"></input></label></p>'+
-          '<p><label>Comment <textarea name="comment" type="text"></textarea></label></p>'+
+          '<form><p>'+submitter+'</p>'+
+          '<p><label>Comment <textarea name="comment" type="text">'+(data.comment||'')+'</textarea></label></p>'+
           '<button>Save</button></form>'
         },
         'place-summary': function(data) {

@@ -79,6 +79,15 @@ var Shareabouts = Shareabouts || {};
   NS.PlaceSurveyView = Backbone.Marionette.CompositeView.extend({
     initialize: function(options) {
       this.options = options;
+
+      // model is expected to be an in-progress survey
+      if (!this.model) {
+        this.model = new NS.SubmissionModel();
+      }
+
+      if (options.submitter) {
+        this.model.set('submitter', options.submitter);
+      }
     },
     itemView: NS.PlaceSurveyItemView,
     itemViewContainer: '.survey-items',
@@ -93,7 +102,17 @@ var Shareabouts = Shareabouts || {};
       submitButton: '[type="submit"], button'
     },
     events: {
-      'submit @ui.form': 'handleFormSubmit'
+      'submit @ui.form': 'handleFormSubmit',
+      'input @ui.form': 'handleChange',
+      'blur @ui.form': 'handleChange'
+    },
+    handleChange: function(evt) {
+      // serialize the form
+      var self = this,
+          data = NS.Util.getAttrs(this.ui.form);
+
+      // This is so we can call render and never lose any of our data.
+      this.model.set(data);
     },
     handleFormSubmit: function(evt) {
       evt.preventDefault();
@@ -101,17 +120,28 @@ var Shareabouts = Shareabouts || {};
       // serialize the form
       var self = this,
           data = NS.Util.getAttrs(this.ui.form),
-          model;
+          submitter = this.model.get('submitter');
+
+      // Unset the submitter since it's only used for rendering. For saving, it
+      // will be automatically set to the logged in user.
+      if (submitter) {
+        this.model.unset('submitter');
+      }
 
       // disable the submit button
       this.ui.submitButton.prop('disabled', true);
       // add loading/busy class
       this.$el.addClass('loading');
 
-      model = this.collection.create(data, {
+
+      // So we know how to make the model url to save.
+      this.model.collection = this.collection;
+      this.model.save(data, {
         wait: true,
         success: function(evt) {
-          model.collection.trigger('create', model);
+          // Cool, now add it to the collection.
+          self.collection.add(self.model);
+
           // Reset the form after it is saved successfully
           self.ui.form.get(0).reset();
         },
@@ -130,7 +160,12 @@ var Shareabouts = Shareabouts || {};
     onShow: function() {
       this.collection.fetchAllPages();
       $(this.options.umbrella).trigger('showplacesurvey', [this]);
-    }
+    },
+    setSubmitter: function(submitter) {
+      this.model.set('submitter', submitter);
+
+      return this;
+    },
   });
 
   NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
@@ -144,18 +179,19 @@ var Shareabouts = Shareabouts || {};
       $(this.options.umbrella).trigger('closeplace', [this]);
     },
     onShow: function() {
+      $(this.options.umbrella).trigger('showplace', [this]);
+    },
+    onRender: function() {
       if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
         this.surveyRegion.show(new NS.PlaceSurveyView({
-          model: this.model,
           collection: this.model.getSubmissionSetCollection('comments'),
           umbrella: this.options.umbrella,
+          submitter: this.options.submitter,
 
           template: this.options.surveyTemplate,
           surveyItemTemplate: this.options.surveyItemTemplate
         }));
       }
-
-      $(this.options.umbrella).trigger('showplace', [this]);
     }
   });
 
@@ -165,10 +201,28 @@ var Shareabouts = Shareabouts || {};
       submitButton: '[type="submit"], button'
     },
     events: {
-      'submit @ui.form': 'handleSubmit'
+      'submit @ui.form': 'handleSubmit',
+      'input @ui.form': 'handleChange',
+      'blur @ui.form': 'handleChange'
     },
     initialize: function(options) {
       this.options = options;
+
+      if (!this.model) {
+        this.model = new NS.PlaceModel();
+      }
+
+      if (options.submitter) {
+        this.model.set('submitter', options.submitter);
+      }
+    },
+    handleChange: function(evt) {
+      // serialize the form
+      var self = this,
+          data = NS.Util.getAttrs(this.ui.form);
+
+      // This is so we can call render and never lose any of our data.
+      this.model.set(data);
     },
     handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
       evt.preventDefault();
@@ -176,7 +230,7 @@ var Shareabouts = Shareabouts || {};
       // serialize the form
       var self = this,
           data = NS.Util.getAttrs(this.ui.form),
-          model;
+          submitter = this.model.get('submitter');
 
       // Do nothing - can't save without a geometry
       if (!this.geometry) {
@@ -185,15 +239,28 @@ var Shareabouts = Shareabouts || {};
 
       data.geometry = this.geometry;
 
+      // Unset the submitter since it's only used for rendering. For saving, it
+      // will be automatically set to the logged in user.
+      if (submitter) {
+        this.model.unset('submitter');
+      }
+
       // disable the submit button
       this.ui.submitButton.prop('disabled', true);
       // add loading/busy class
       this.$el.addClass('loading');
 
-      model = this.collection.create(data, {
+      // So we know how to make the model url to save.
+      this.model.collection = this.collection;
+      this.model.save(data, {
         wait: true,
         success: function(evt) {
-          model.collection.trigger('create', model);
+          // Cool, now add it to the collection.
+          self.collection.add(self.model);
+
+          // Create is not a real event, but we want to know when a new thing
+          // is saved.
+          self.collection.trigger('create', self.model);
 
           // Reset the form after it is saved successfully
           self.ui.form.get(0).reset();
@@ -213,6 +280,13 @@ var Shareabouts = Shareabouts || {};
     setGeometry: function(geom) {
       this.geometry = geom;
       this.$el.addClass('shareabouts-geometry-set');
+
+      return this;
+    },
+    setSubmitter: function(submitter) {
+      this.model.set('submitter', submitter);
+
+      return this;
     },
     onClose: function() {
       // ick
@@ -244,6 +318,8 @@ var Shareabouts = Shareabouts || {};
     layoutHtml =
       '<div class="shareabouts-map-container">' +
         '<div class="shareabouts-map"></div>' +
+      '</div>' +
+      '<div class="shareabouts-auth-container">' +
       '</div>' +
       '<div class="shareabouts-add-button-container">' +
         '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
@@ -384,7 +460,8 @@ var Shareabouts = Shareabouts || {};
         self.placeFormView = new NS.PlaceFormView({
           template: tpl,
           collection: self.placeCollection,
-          umbrella: self
+          umbrella: self,
+          submitter: self.currentUser
         });
 
         panelLayout.showContent(self.placeFormView);
@@ -426,16 +503,40 @@ var Shareabouts = Shareabouts || {};
         self.placeCollection.add(model);
       }
 
-      // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
+      this.placeDetailView = new NS.PlaceDetailView({
         template: options.templates['place-detail'],
         model: model,
         umbrella: self,
+        submitter: self.currentUser,
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
         surveyItemTemplate: options.templates['place-survey-item']
-      }));
+      });
+
+      // Show the place details in the panel
+      panelLayout.showContent(this.placeDetailView);
+    };
+
+    this.setUser = function(userData) {
+      var markup = options.templates['auth-actions'](userData);
+      $el.find('.shareabouts-auth-container').html(markup);
+
+      // So we can pass this into view constructors
+      this.currentUser = userData;
+
+      // If the place form view is open, then rerender the form
+      if (this.placeFormView) {
+        this.placeFormView
+          .setSubmitter(userData)
+          .render();
+      }
+
+      if (this.placeDetailView) {
+        this.placeDetailView.surveyRegion.currentView
+          .setSubmitter(userData)
+          .render();
+      }
     };
 
     this.placeCollection.on('create', function(model) {

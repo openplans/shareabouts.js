@@ -185,12 +185,15 @@
       });
     });
 
-
     describe('SubmissionCollection', function() {
+      var TestPlaceModel = Backbone.Model.extend({
+        urlRoot: '/api/places'
+      });
+
       it('should throw an error without a submission type option', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 7})
+          placeModel: new TestPlaceModel({id: 7})
         });
 
         assert.throw(function() {
@@ -212,7 +215,7 @@
       it('should generate a good url for the submission list', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 17}),
+          placeModel: new TestPlaceModel({id: 17}),
           submissionType: 'comments'
         });
 
@@ -222,7 +225,7 @@
       it('should generate a good url for the submission item', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 17}),
+          placeModel: new TestPlaceModel({id: 17}),
           submissionType: 'comments'
         });
 
@@ -232,7 +235,7 @@
       it('should order submissions by created_datetime', function () {
         var collection = new S.SubmissionCollection([], {
           parse: true,
-          placeModel: new Backbone.Model({id: 7})
+          placeModel: new TestPlaceModel({id: 7})
         });
 
         collection.add({created_datetime: '2013-11-14'});

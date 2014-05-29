@@ -174,9 +174,12 @@ var Shareabouts = Shareabouts || {};
       if (!this.model) {
         this.model = new NS.PlaceModel();
       }
+
+      if (options.submitter) {
+        this.model.set('submitter', options.submitter);
+      }
     },
     handleChange: function(evt) {
-      console.log('change', evt);
       // serialize the form
       var self = this,
           data = NS.Util.getAttrs(this.ui.form);
@@ -189,7 +192,8 @@ var Shareabouts = Shareabouts || {};
 
       // serialize the form
       var self = this,
-          data = NS.Util.getAttrs(this.ui.form);
+          data = NS.Util.getAttrs(this.ui.form),
+          submitter = this.model.get('submitter');
 
       // Do nothing - can't save without a geometry
       if (!this.geometry) {
@@ -197,6 +201,12 @@ var Shareabouts = Shareabouts || {};
       }
 
       data.geometry = this.geometry;
+
+      // Unset the submitter since it's only used for rendering. For saving, it
+      // will be automatically set to the logged in user.
+      if (submitter) {
+        this.model.unset('submitter');
+      }
 
       // disable the submit button
       this.ui.submitButton.prop('disabled', true);
@@ -233,6 +243,13 @@ var Shareabouts = Shareabouts || {};
     setGeometry: function(geom) {
       this.geometry = geom;
       this.$el.addClass('shareabouts-geometry-set');
+
+      return this;
+    },
+    setSubmitter: function(submitter) {
+      this.model.set('submitter', submitter);
+
+      return this;
     },
     onClose: function() {
       // ick
@@ -406,7 +423,8 @@ var Shareabouts = Shareabouts || {};
         self.placeFormView = new NS.PlaceFormView({
           template: tpl,
           collection: self.placeCollection,
-          umbrella: self
+          umbrella: self,
+          submitter: self.currentUser
         });
 
         panelLayout.showContent(self.placeFormView);
@@ -463,6 +481,16 @@ var Shareabouts = Shareabouts || {};
     this.setUser = function(userData) {
       var markup = options.templates['auth-actions'](userData);
       $el.find('.shareabouts-auth-container').html(markup);
+
+      // So we can pass this into view constructors
+      this.currentUser = userData;
+
+      // If the place form view is open, then rerender the form
+      if (this.placeFormView) {
+        this.placeFormView
+          .setSubmitter(userData)
+          .render();
+      }
     };
 
     this.placeCollection.on('create', function(model) {

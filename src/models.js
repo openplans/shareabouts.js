@@ -21,6 +21,14 @@ var Shareabouts = Shareabouts || {};
     };
   };
 
+  var syncWithCredentials = function(method, model, options) {
+    _.defaults(options || (options = {}), {
+      xhrFields: {withCredentials: true}
+    });
+
+    return Backbone.sync.apply(this, [method, model, options]);
+  };
+
   NS.PaginatedCollection = Backbone.Collection.extend({
     resultsAttr: 'results',
 
@@ -129,6 +137,8 @@ var Shareabouts = Shareabouts || {};
       return this.options.placeModel.url() + '/' + submissionType;
     },
 
+    sync: syncWithCredentials,
+
     comparator: 'created_datetime'
   });
 
@@ -234,7 +244,7 @@ var Shareabouts = Shareabouts || {};
         options.contentType = 'application/json';
       }
 
-      return Backbone.sync(method, model, options);
+      return syncWithCredentials.apply(this, [method, model, options]);
     },
     toGeoJSON: function() {
       return {
@@ -294,7 +304,8 @@ var Shareabouts = Shareabouts || {};
         }
       };
       place.fetch(options);
-    }
+    },
+    sync: syncWithCredentials
   });
 
   // This does not support editing at this time, which is why it is not a
@@ -362,7 +373,8 @@ var Shareabouts = Shareabouts || {};
         contentType: false,
         processData: false
       });
-    }
+    },
+    sync: syncWithCredentials
   });
 
   NS.AttachmentCollection = Backbone.Collection.extend({
@@ -377,7 +389,8 @@ var Shareabouts = Shareabouts || {};
           thingUrl = thingModel.url();
 
       return thingUrl + '/attachments';
-    }
+    },
+    sync: syncWithCredentials
   });
 
   NS.ActionCollection = NS.PaginatedCollection.extend({
@@ -388,7 +401,8 @@ var Shareabouts = Shareabouts || {};
       } else {
         return 1;
       }
-    }
+    },
+    sync: syncWithCredentials
   });
 
 }(Shareabouts, jQuery));

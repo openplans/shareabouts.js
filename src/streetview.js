@@ -111,7 +111,6 @@ var Shareabouts = Shareabouts || {};
       model = this.collection.create(data, {
         wait: true,
         success: function(evt) {
-          model.collection.trigger('create', model);
           // Reset the form after it is saved successfully
           self.ui.form.get(0).reset();
         },
@@ -165,18 +164,32 @@ var Shareabouts = Shareabouts || {};
       submitButton: '[type="submit"], button'
     },
     events: {
-      'submit @ui.form': 'handleSubmit'
+      'submit @ui.form': 'handleSubmit',
+      'input @ui.form': 'handleChange',
+      'blur @ui.form': 'handleChange'
     },
     initialize: function(options) {
       this.options = options;
+
+      if (!this.model) {
+        this.model = new NS.PlaceModel();
+      }
+    },
+    handleChange: function(evt) {
+      console.log('change', evt);
+      // serialize the form
+      var self = this,
+          data = NS.Util.getAttrs(this.ui.form);
+
+      // This is so we can call render and never lose any of our data.
+      this.model.set(data);
     },
     handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
       evt.preventDefault();
 
       // serialize the form
       var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
-          model;
+          data = NS.Util.getAttrs(this.ui.form);
 
       // Do nothing - can't save without a geometry
       if (!this.geometry) {
@@ -190,10 +203,17 @@ var Shareabouts = Shareabouts || {};
       // add loading/busy class
       this.$el.addClass('loading');
 
-      model = this.collection.create(data, {
+      // So we know how to make the model url to save.
+      this.model.collection = this.collection;
+      this.model.save(data, {
         wait: true,
         success: function(evt) {
-          model.collection.trigger('create', model);
+          // Cool, now add it to the collection.
+          self.collection.add(self.model);
+
+          // Create is not a real event, but we want to know when a new thing
+          // is saved.
+          self.collection.trigger('create', self.model);
 
           // Reset the form after it is saved successfully
           self.ui.form.get(0).reset();

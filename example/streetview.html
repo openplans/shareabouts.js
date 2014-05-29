@@ -174,10 +174,10 @@
           return '<p class="form-instructions">Drag the marker to the place you want to share.</p>' +
             '<h2>Add a Place</h2>' +
             '<form novalidate>' +
-            '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +
-            '<p><label>Your Email<input type="text" name="private-email" /></label></p>' +
-            '<p><label>Title<input type="text" name="name" required /></label></p>' +
-            '<p><label>Description<textarea name="description" required></textarea></label></p>' +
+            '<p><label>Your Name<input type="text" name="submitter_name" required value="'+(data.submitter_name||'')+'" /></label></p>' +
+            '<p><label>Your Email<input type="text" name="private-email" value="'+(data['private-email']||'')+'"/></label></p>' +
+            '<p><label>Title<input type="text" name="name" required  value="'+(data.name||'')+'"/></label></p>' +
+            '<p><label>Description<textarea name="description" required>'+(data.description||'')+'</textarea></label></p>' +
             '<p><input type="submit" value="Add to Map"></p>'
             '</form>'
         },

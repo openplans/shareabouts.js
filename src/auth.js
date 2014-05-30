@@ -41,6 +41,11 @@ var Shareabouts = Shareabouts || {};
         self.login('twitter');
       });
 
+      $(options.facebook).click(function(evt) {
+        evt.preventDefault();
+        self.login('facebook');
+      });
+
       $(options.logout).click(function(evt) {
         evt.preventDefault();
         self.logout();

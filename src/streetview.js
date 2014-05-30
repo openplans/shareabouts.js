@@ -612,6 +612,9 @@ var Shareabouts = Shareabouts || {};
         });
       }
 
+      // Init the user to a signed in user or an anonymous user
+      self.setUser(options.currentUser);
+
       markers[model.id] = marker;
     });
   };

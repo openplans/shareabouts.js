@@ -1,4 +1,4 @@
-/*global window _ */
+/*global window _ jQuery */
 
 var Shareabouts = Shareabouts || {};
 
@@ -31,22 +31,22 @@ var Shareabouts = Shareabouts || {};
 
     this.bindEvents = function() {
       // Unbind existing events.
-      $(options.twitter).off();
-      $(options.facebook).off();
-      $(options.logout).off();
+      $(document).off('click', options.twitter);
+      $(document).off('click', options.facebook);
+      $(document).off('click', options.logout);
 
       // Bind login/out events
-      $(options.twitter).click(function(evt) {
+      $(document).on('click', options.twitter, function(evt) {
         evt.preventDefault();
         self.login('twitter');
       });
 
-      $(options.facebook).click(function(evt) {
+      $(document).on('click', options.facebook, function(evt) {
         evt.preventDefault();
         self.login('facebook');
       });
 
-      $(options.logout).click(function(evt) {
+      $(document).on('click', options.logout, function(evt) {
         evt.preventDefault();
         self.logout();
       });

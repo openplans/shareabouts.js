@@ -245,13 +245,6 @@ var Shareabouts = Shareabouts || {};
       '<div class="shareabouts-map-container">' +
         '<div class="shareabouts-map"></div>' +
       '</div>' +
-      '<div class="shareabouts-auth-container">' +
-        '<a href="#" class="shareabouts-auth-button button"><img class="shareabouts-auth-avatar" src="'+options.anonymousAvatarUrl+'"><small>Sign In</small></a>' +
-        '<div class="shareabouts-auth-menu is-exposed">' +
-          '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a>' +
-          '<a class="shareabouts-auth-facebook-button" href="">Facebook</a>' +
-        '</div>' +
-      '</div>' +
       '<div class="shareabouts-add-button-container">' +
         '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +

@@ -17,7 +17,7 @@
   position: relative;
   z-index: 3;
 }
-.panel-open .shareabouts-add-button-container {
+.panel-form-open .shareabouts-add-button-container {
   display: none;
 }
 
@@ -25,7 +25,7 @@
   position: relative;
   z-index: 4;
 }
-.panel-open .shareabouts-auth-container {
+.panel-form-open .shareabouts-auth-container {
   display: none;
 }
 .shareabouts-auth-menu {

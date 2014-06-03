@@ -399,6 +399,9 @@ var Shareabouts = Shareabouts || {};
         if (plusMarkerInfoWindow) {
           plusMarkerInfoWindow.open(self.panorama, plusMarker);
         }
+
+        // hide the summary, if visible
+        summaryWindow.close();
       }
     });
 

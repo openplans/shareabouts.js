@@ -12,7 +12,7 @@
   position: relative;
   z-index: 1;
 }
-.panel-open .shareabouts-add-button-container {
+.panel-form-open .shareabouts-add-button-container {
   display: none;
 }
 

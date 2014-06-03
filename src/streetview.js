@@ -498,6 +498,8 @@ var Shareabouts = Shareabouts || {};
     });
 
     this.showPlace = function(model) {
+      // Remove the plus marker if it exists
+      plusMarker.setMap(null);
 
       if (!self.placeCollection.get(model.id)) {
         self.placeCollection.add(model);
@@ -540,9 +542,6 @@ var Shareabouts = Shareabouts || {};
     };
 
     this.placeCollection.on('create', function(model) {
-      // Remove the plus marker if it exists
-      plusMarker.setMap(null);
-
       // Show the place details in the panel
       self.showPlace(model);
     });

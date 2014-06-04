@@ -12,6 +12,11 @@
   position: relative;
   z-index: 1;
 }
+
+.shareabouts-add-button-container {
+  position: relative;
+  z-index: 3;
+}
 .panel-form-open .shareabouts-add-button-container {
   display: none;
 }
@@ -147,7 +152,6 @@
 }
 
 
-
 /* =Media Queries (breakpoints via Foundation)
 -------------------------------------------------------------- */
 
@@ -165,24 +169,18 @@
 /* min-width 641px, medium screens */
 @media only screen and (min-width: 40.063em) {
 
-  .shareabouts-container {
-    position: relative;
-  }
-
   .shareabouts-map-container {
     height: 100%;
   }
   .panel-open .shareabouts-map-container {
     width:50%;
-    display: inline-block;
+    float: left;
   }
 
   .shareabouts-add-button-container {
-    position: relative;
-    bottom: 4em;
-    left: 1em;
-    width: 10em;
-    z-index: 3;
+    position: absolute;
+    bottom: 3.5em;
+    left: 2em;
   }
 
   .shareabouts-panel {
@@ -193,7 +191,7 @@
   .panel-open .shareabouts-panel {
     width:50%;
     height: 100%;
-    display: inline-block;
+    float: right;
     box-shadow: 0 0 1em rgba(0,0,0,0.2);
   }
 

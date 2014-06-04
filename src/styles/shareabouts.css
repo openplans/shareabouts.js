@@ -192,7 +192,7 @@
   }
   .panel-open .shareabouts-map-container {
     width:50%;
-    display: inline-block;
+    float: left;
   }
 
   .shareabouts-auth-container {
@@ -215,7 +215,7 @@
   .panel-open .shareabouts-panel {
     width:50%;
     height: 100%;
-    display: inline-block;
+    float: right;
     box-shadow: 0 0 1em rgba(0,0,0,0.2);
   }
 

@@ -614,11 +614,11 @@ var Shareabouts = Shareabouts || {};
         });
       }
 
-      // Init the user to a signed in user or an anonymous user
-      self.setUser(options.currentUser);
-
       markers[model.id] = marker;
     });
+
+    // Init the user to a signed in user or an anonymous user
+    this.setUser(options.currentUser);
   };
 
 }(Shareabouts, jQuery, Shareabouts.Util.console));

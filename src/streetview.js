@@ -221,43 +221,6 @@ var Shareabouts = Shareabouts || {};
     },
   });
 
-  NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
-    initialize: function(options) {
-      this.options = options;
-    },
-    regions: {
-      surveyRegion: '.survey-region',
-      supportRegion: '.support-region'
-    },
-    onClose: function() {
-      $(this.options.umbrella).trigger('closeplace', [this]);
-    },
-    onShow: function() {
-      $(this.options.umbrella).trigger('showplace', [this]);
-    },
-    onRender: function() {
-      if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
-        this.surveyRegion.show(new NS.PlaceSurveyView({
-          collection: this.model.getSubmissionSetCollection('comments'),
-          umbrella: this.options.umbrella,
-          submitter: this.options.submitter,
-
-          template: this.options.surveyTemplate,
-          surveyItemTemplate: this.options.surveyItemTemplate
-        }));
-      }
-
-      if (this.options.supportTemplate) {
-        this.supportRegion.show(new NS.PlaceSupportView({
-          collection: this.model.getSubmissionSetCollection('support'),
-          umbrella: this.options.umbrella,
-          submitter: this.options.submitter,
-          template: this.options.supportTemplate
-        }));
-      }
-    }
-  });
-
   NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
     ui: {
       form: 'form',

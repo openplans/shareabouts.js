@@ -51,17 +51,6 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  NS.PlaceDetailView = Backbone.Marionette.ItemView.extend({
-    onClose: function() {
-      this.model.collection.trigger('closeplace', this.model);
-    },
-    onShow: function() {
-      this.model.collection.trigger('showplace', this.model);
-      // TODO: is this necessary?
-      // this.el.scrollIntoView();
-    }
-  });
-
   NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
     ui: {
       form: 'form'
@@ -201,7 +190,8 @@ var Shareabouts = Shareabouts || {};
       // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: tpl,
-        model: model
+        model: model,
+        umbrella: self
       }));
 
       // Pan the map to the selected layer
@@ -210,18 +200,18 @@ var Shareabouts = Shareabouts || {};
     });
 
     // Listen for when a place is shown
-    this.placeCollection.on('showplace', function(model){
-      var styleRule = NS.Util.getStyleRule(model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
+    $(this).on('showplace', function(evt, view){
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
       // Focus/highlight the layer
       focusLayer(layer, styleRule);
     });
 
     // Listen for when a place is closed
-    this.placeCollection.on('closeplace', function(model){
-      var styleRule = NS.Util.getStyleRule(model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
+    $(this).on('closeplace', function(evt, view){
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
       // Revert the layer
       unfocusLayer(layer, styleRule);
@@ -266,7 +256,8 @@ var Shareabouts = Shareabouts || {};
       // Show the place details in the panel
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],
-        model: model
+        model: model,
+        umbrella: self
       }));
     });
   };

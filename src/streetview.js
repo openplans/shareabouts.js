@@ -168,12 +168,91 @@ var Shareabouts = Shareabouts || {};
     },
   });
 
+  NS.PlaceSupportView = Backbone.Marionette.ItemView.extend({
+    initialize: function(options) {
+      this.options = options || {};
+      this.setSubmitter(options.submitter);
+      this._initialEvents();
+    },
+    _initialEvents: function() {
+      if (this.collection) {
+        this.listenTo(this.collection, 'add', this.render);
+        this.listenTo(this.collection, 'remove', this.render);
+        this.listenTo(this.collection, 'reset', this.render);
+      }
+    },
+    ui: {
+      form: 'form',
+      toggle: '[type="checkbox"]'
+    },
+    events: {
+      'change @ui.toggle': 'handleSupportChange'
+    },
+    handleSupportChange: function(evt) {
+      var self = this,
+          checked = evt.target.checked,
+          userSupport = this.getSubmitterSupport(),
+          attrs;
+
+      if (checked && !userSupport) {
+        evt.target.disabled = true;
+
+        // serialize the form
+        attrs = NS.Util.getAttrs(this.ui.form);
+        attrs['user_token'] = self.userToken;
+        this.collection.create(attrs, {
+          wait: true,
+          // success: function() {
+          //   S.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
+          // },
+          error: function() {
+            self.getSubmitterSupport().destroy();
+            alert('Oh dear. It looks like that didn\'t save.');
+            // S.Util.log('USER', 'place', 'fail-to-support', self.collection.options.placeModel.getLoggingDetails());
+          }
+        });
+      } else if (!checked && !!userSupport) {
+        evt.target.disabled = true;
+
+        userSupport.destroy({
+          wait: true,
+          // success: function() {
+          //   S.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());
+          // },
+          error: function() {
+            self.collection.add(userSupport);
+            alert('Oh dear. It looks like that didn\'t save.');
+            // S.Util.log('USER', 'place', 'fail-to-unsupport', self.collection.options.placeModel.getLoggingDetails());
+          }
+        });
+      }
+    },
+    onClose: function() {
+      $(this.options.umbrella).trigger('closeplacesupport', [this]);
+    },
+    onShow: function() {
+      this.collection.fetchAllPages();
+      $(this.options.umbrella).trigger('showplacesupport', [this]);
+    },
+    getSubmitterSupport: function(token) {
+      var userToken = token || this.userToken;
+      return this.collection.find(function(model) {
+        return model.get('user_token') === userToken;
+      });
+    },
+    setSubmitter: function(submitter) {
+      this.userToken = NS.auth.getUserToken(submitter);
+      return this;
+    },
+  });
+
   NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
     initialize: function(options) {
       this.options = options;
     },
     regions: {
-      surveyRegion: '.survey-region'
+      surveyRegion: '.survey-region',
+      supportRegion: '.support-region'
     },
     onClose: function() {
       $(this.options.umbrella).trigger('closeplace', [this]);
@@ -190,6 +269,15 @@ var Shareabouts = Shareabouts || {};
 
           template: this.options.surveyTemplate,
           surveyItemTemplate: this.options.surveyItemTemplate
+        }));
+      }
+
+      if (this.options.supportTemplate) {
+        this.supportRegion.show(new NS.PlaceSupportView({
+          collection: this.model.getSubmissionSetCollection('support'),
+          umbrella: this.options.umbrella,
+          submitter: this.options.submitter,
+          template: this.options.supportTemplate
         }));
       }
     }
@@ -511,7 +599,10 @@ var Shareabouts = Shareabouts || {};
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
-        surveyItemTemplate: options.templates['place-survey-item']
+        surveyItemTemplate: options.templates['place-survey-item'],
+
+        // Template for the support view
+        supportTemplate: options.templates['place-support']
       });
 
       // Show the place details in the panel
@@ -534,6 +625,9 @@ var Shareabouts = Shareabouts || {};
 
       if (this.placeDetailView) {
         this.placeDetailView.surveyRegion.currentView
+          .setSubmitter(userData)
+          .render();
+        this.placeDetailView.supportRegion.currentView
           .setSubmitter(userData)
           .render();
       }

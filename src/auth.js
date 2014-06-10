@@ -21,13 +21,27 @@ var Shareabouts = Shareabouts || {};
     var self = this;
 
     this.login = function(service) {
-      self.authWindow = window.open(options.apiRoot + 'users/login/' + service + '?next=' +
-          options.successPage);//+'&error_next=' + options.errorPage);
+      // NOTE:
+      // -----
+      // In IE, the referrer header is not sent when you specify the URL as a
+      // parameter to window.open. However, the following procedure will will
+      // work to send the referrer along. We need the referrer on the
+      // Shareabouts API so that it knows where to send the user after they
+      // log in/out.
+      //
+      // This solution was found by atogle at:
+      // http://community.invisionpower.com/resources/bugs.html/_/ip-board/external-links-open-in-new-window-and-do-not-pass-referer-in-ie-r42964
+
+      self.authWindow = window.open();
+      self.authWindow.location.href = options.apiRoot + 'users/login/' + service + '?next=' +
+          options.successPage;// + '&error_next=' + options.errorPage
     };
 
     this.logout = function() {
-      self.authWindow = window.open(options.apiRoot + 'users/logout/?next=' +
-          options.successPage);//+'&error_next=' + options.errorPage);
+      // See NOTE in login.
+      self.authWindow = window.open();
+      self.authWindow.location.href = options.apiRoot + 'users/logout/?next=' +
+          options.successPage;// + '&error_next=' + options.errorPage);
     };
 
     this.bindEvents = function() {

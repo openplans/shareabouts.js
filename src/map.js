@@ -51,57 +51,6 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
-    ui: {
-      form: 'form'
-    },
-    events: {
-      'submit @ui.form': 'handleSubmit'
-    },
-    handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
-      evt.preventDefault();
-
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
-          model;
-
-      // Do nothing - can't save without a geometry
-      if (!this.geometry) {
-        return;
-      }
-
-      data.geometry = this.geometry;
-
-      // add loading/busy class
-      this.$el.addClass('loading');
-
-      model = this.collection.create(data, {
-        wait: true,
-        complete: function(evt) {
-          // remove loading/busy class
-          self.$el.removeClass('loading');
-        }
-      });
-
-    }, function(evt) {
-      // window.alert('invalid!');
-    }),
-    setGeometry: function(geom) {
-      this.geometry = geom;
-      this.$el.addClass('shareabouts-geometry-set');
-    },
-    onClose: function() {
-      // ick
-      this.$el.parent().parent().parent().removeClass('panel-form-open');
-    },
-    onShow: function() {
-      // ick
-      this.$el.parent().parent().parent().addClass('panel-form-open');
-    }
-  });
-
-
   NS.Map = function(options) {
     var self = this,
         modelIdToLayerId = {},
@@ -225,11 +174,14 @@ var Shareabouts = Shareabouts || {};
       // Show the place details in the panel
       self.placeFormView = new NS.PlaceFormView({
         template: tpl,
-        collection: self.placeCollection
+        collection: self.placeCollection,
+        umbrella: self
+
+        // TODO
+        // submitter: self.currentUser
       });
 
       panelLayout.showContent(self.placeFormView);
-
     });
 
     // Tell the map to resize itself when its container changes width

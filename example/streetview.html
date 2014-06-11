@@ -104,6 +104,11 @@
   <script src="../src/utils.js"></script>
   <script src="../src/auth.js"></script>
   <script src="../src/models.js"></script>
+  <script src="../src/panel-layout.js"></script>
+  <script src="../src/place-detail-view.js"></script>
+  <script src="../src/place-form-view.js"></script>
+  <script src="../src/place-survey-view.js"></script>
+  <script src="../src/place-support-view.js"></script>
   <script src="../src/streetview.js"></script>
   <script>
     var sa = new Shareabouts.StreetView({
@@ -137,11 +142,13 @@
 
       datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places',
       anonymousAvatarUrl: 'images/user-50.png',
-      addButtonLabel: 'Add a Place',
       maxDistance: 25,
 
       // These are template functions that expect geojson.
       templates: {
+        'add-button': function(data) {
+          return '<a href="#" class="shareabouts-add-button button expand"><span>Add a Place</span></a>';
+        },
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
         'place-detail': function(data) {
           return '<h2>' + data.name + '</h2>' +
@@ -216,7 +223,7 @@
           if (!data) {
             return '<a href="#" class="shareabouts-auth-button button"><img class="shareabouts-auth-avatar" src="images/user-50.png"><small>Sign In</small></a>' +
               '<div class="shareabouts-auth-menu is-exposed">' +
-                '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a>' +
+                '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a><br>' +
                 '<a class="shareabouts-auth-facebook-button" href="#">Facebook</a>' +
               '</div>';
           } else {

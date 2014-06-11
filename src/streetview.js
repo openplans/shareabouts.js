@@ -5,31 +5,6 @@ var Shareabouts = Shareabouts || {};
 (function(NS, $, console){
   'use strict';
 
-  // http://mir.aculo.us/2011/03/09/little-helpers-a-tweet-sized-javascript-templating-engine/
-  var t = function t(s,d){
-   for(var p in d)
-     s=s.replace(new RegExp('{{'+p+'}}','g'), d[p]);
-   return s;
-  };
-
-  // Get the style rule for this feature by evaluating the condition option
-  var getStyleRule = function(properties, rules) {
-    var self = this,
-        len, i, condition;
-
-    for (i=0, len=rules.length; i<len; i++) {
-      // Replace the template with the property variable, not the value.
-      // this is so we don't have to worry about strings vs nums.
-      condition = t(rules[i].condition, properties);
-
-      // Simpler code plus a trusted source; negligible performance hit
-      if (eval(condition)) {
-        return rules[i];
-      }
-    }
-    return null;
-  };
-
   var focusLayer = function(marker, styleRule) {
     marker.setIcon(styleRule.focusIcon);
   };
@@ -38,369 +13,17 @@ var Shareabouts = Shareabouts || {};
     marker.setIcon(styleRule.icon);
   };
 
-  NS.PanelLayout = Backbone.View.extend({
-    events: {
-      'click .shareabouts-close-button': 'handleCloseClick'
-    },
-    initialize: function() {
-      this.$content = this.$('.shareabouts-panel-content');
-    },
-    showContent: function(view) {
-      if (this.currentView && this.currentView.onClose) {
-        this.currentView.onClose();
-      }
-
-      this.currentView = view;
-      this.$content.html(view.render().el);
-      this.$el.parent().addClass('panel-open');
-      this.$el.parent().trigger('showpanel');
-
-      if (this.currentView.onShow) {
-        this.currentView.onShow();
-      }
-    },
-    handleCloseClick: function(evt) {
-      evt.preventDefault();
-      this.$el.parent().removeClass('panel-open');
-      this.$el.parent().trigger('closepanel');
-      if (this.currentView.onClose) {
-        this.currentView.onClose();
-      }
-    }
-  });
-
-  NS.PlaceSurveyItemView = Backbone.Marionette.ItemView.extend({
-    tagName: 'li',
-    initialize: function(options) { this.options = options; },
-    onClose: function() { $(this.options.umbrella).trigger('closeplacesurveyitem', [this]); },
-    onShow: function() { $(this.options.umbrella).trigger('showplacesurveyitem', [this]); }
-  });
-
-  NS.PlaceSurveyView = Backbone.Marionette.CompositeView.extend({
-    initialize: function(options) {
-      this.options = options;
-
-      // model is expected to be an in-progress survey
-      if (!this.model) {
-        this.model = new NS.SubmissionModel();
-      }
-
-      if (options.submitter) {
-        this.model.set('submitter', options.submitter);
-      }
-    },
-    itemView: NS.PlaceSurveyItemView,
-    itemViewContainer: '.survey-items',
-    itemViewOptions: function(model, index) {
-      return {
-        template: this.options.surveyItemTemplate,
-        umbrella: this.options.umbrella
-      };
-    },
-    ui: {
-      form: 'form',
-      submitButton: '[type="submit"], button'
-    },
-    events: {
-      'submit @ui.form': 'handleFormSubmit',
-      'input @ui.form': 'handleChange',
-      'blur @ui.form': 'handleChange'
-    },
-    handleChange: function(evt) {
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form);
-
-      // This is so we can call render and never lose any of our data.
-      this.model.set(data);
-    },
-    handleFormSubmit: function(evt) {
-      evt.preventDefault();
-
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
-          submitter = this.model.get('submitter');
-
-      // Unset the submitter since it's only used for rendering. For saving, it
-      // will be automatically set to the logged in user.
-      if (submitter) {
-        this.model.unset('submitter');
-      }
-
-      // disable the submit button
-      this.ui.submitButton.prop('disabled', true);
-      // add loading/busy class
-      this.$el.addClass('loading');
-
-
-      // So we know how to make the model url to save.
-      this.model.collection = this.collection;
-      this.model.save(data, {
-        wait: true,
-        success: function(evt) {
-          // Cool, now add it to the collection.
-          self.collection.add(self.model);
-
-          // Reset the form after it is saved successfully
-          self.ui.form.get(0).reset();
-        },
-        complete: function(evt) {
-          // enable the submit button
-          self.ui.submitButton.prop('disabled', false);
-
-          // remove loading/busy class
-          self.$el.removeClass('loading');
-        }
-      });
-    },
-    onClose: function() {
-      $(this.options.umbrella).trigger('closeplacesurvey', [this]);
-    },
-    onShow: function() {
-      this.collection.fetchAllPages();
-      $(this.options.umbrella).trigger('showplacesurvey', [this]);
-    },
-    setSubmitter: function(submitter) {
-      this.model.set('submitter', submitter);
-
-      return this;
-    },
-  });
-
-  NS.PlaceSupportView = Backbone.Marionette.ItemView.extend({
-    initialize: function(options) {
-      this.options = options || {};
-      this.setSubmitter(options.submitter);
-      this._initialEvents();
-    },
-    _initialEvents: function() {
-      if (this.collection) {
-        this.listenTo(this.collection, 'add', this.render);
-        this.listenTo(this.collection, 'remove', this.render);
-        this.listenTo(this.collection, 'reset', this.render);
-      }
-    },
-    ui: {
-      form: 'form',
-      toggle: '[type="checkbox"]'
-    },
-    events: {
-      'change @ui.toggle': 'handleSupportChange'
-    },
-    handleSupportChange: function(evt) {
-      var self = this,
-          checked = evt.target.checked,
-          userSupport = this.getSubmitterSupport(),
-          attrs;
-
-      if (checked && !userSupport) {
-        evt.target.disabled = true;
-
-        // serialize the form
-        attrs = NS.Util.getAttrs(this.ui.form);
-        attrs['user_token'] = self.userToken;
-        this.collection.create(attrs, {
-          wait: true,
-          // success: function() {
-          //   S.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
-          // },
-          error: function() {
-            self.getSubmitterSupport().destroy();
-            alert('Oh dear. It looks like that didn\'t save.');
-            // S.Util.log('USER', 'place', 'fail-to-support', self.collection.options.placeModel.getLoggingDetails());
-          }
-        });
-      } else if (!checked && !!userSupport) {
-        evt.target.disabled = true;
-
-        userSupport.destroy({
-          wait: true,
-          // success: function() {
-          //   S.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());
-          // },
-          error: function() {
-            self.collection.add(userSupport);
-            alert('Oh dear. It looks like that didn\'t save.');
-            // S.Util.log('USER', 'place', 'fail-to-unsupport', self.collection.options.placeModel.getLoggingDetails());
-          }
-        });
-      }
-    },
-    onClose: function() {
-      $(this.options.umbrella).trigger('closeplacesupport', [this]);
-    },
-    onShow: function() {
-      this.collection.fetchAllPages();
-      $(this.options.umbrella).trigger('showplacesupport', [this]);
-    },
-    getSubmitterSupport: function(token) {
-      var userToken = token || this.userToken;
-      return this.collection.find(function(model) {
-        return model.get('user_token') === userToken;
-      });
-    },
-    setSubmitter: function(submitter) {
-      this.userToken = NS.auth.getUserToken(submitter);
-      return this;
-    },
-  });
-
-  NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
-    initialize: function(options) {
-      this.options = options;
-    },
-    regions: {
-      surveyRegion: '.survey-region',
-      supportRegion: '.support-region'
-    },
-    onClose: function() {
-      $(this.options.umbrella).trigger('closeplace', [this]);
-    },
-    onShow: function() {
-      $(this.options.umbrella).trigger('showplace', [this]);
-    },
-    onRender: function() {
-      if (this.options.surveyTemplate && this.options.surveyItemTemplate) {
-        this.surveyRegion.show(new NS.PlaceSurveyView({
-          collection: this.model.getSubmissionSetCollection('comments'),
-          umbrella: this.options.umbrella,
-          submitter: this.options.submitter,
-
-          template: this.options.surveyTemplate,
-          surveyItemTemplate: this.options.surveyItemTemplate
-        }));
-      }
-
-      if (this.options.supportTemplate) {
-        this.supportRegion.show(new NS.PlaceSupportView({
-          collection: this.model.getSubmissionSetCollection('support'),
-          umbrella: this.options.umbrella,
-          submitter: this.options.submitter,
-          template: this.options.supportTemplate
-        }));
-      }
-    }
-  });
-
-  NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
-    ui: {
-      form: 'form',
-      submitButton: '[type="submit"], button'
-    },
-    events: {
-      'submit @ui.form': 'handleSubmit',
-      'input @ui.form': 'handleChange',
-      'blur @ui.form': 'handleChange'
-    },
-    initialize: function(options) {
-      this.options = options;
-
-      if (!this.model) {
-        this.model = new NS.PlaceModel();
-      }
-
-      if (options.submitter) {
-        this.model.set('submitter', options.submitter);
-      }
-    },
-    handleChange: function(evt) {
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form);
-
-      // This is so we can call render and never lose any of our data.
-      this.model.set(data);
-    },
-    handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
-      evt.preventDefault();
-
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
-          submitter = this.model.get('submitter');
-
-      // Do nothing - can't save without a geometry
-      if (!this.geometry) {
-        return;
-      }
-
-      data.geometry = this.geometry;
-
-      // Unset the submitter since it's only used for rendering. For saving, it
-      // will be automatically set to the logged in user.
-      if (submitter) {
-        this.model.unset('submitter');
-      }
-
-      // disable the submit button
-      this.ui.submitButton.prop('disabled', true);
-      // add loading/busy class
-      this.$el.addClass('loading');
-
-      // So we know how to make the model url to save.
-      this.model.collection = this.collection;
-      this.model.save(data, {
-        wait: true,
-        success: function(evt) {
-          // Cool, now add it to the collection.
-          self.collection.add(self.model);
-
-          // Create is not a real event, but we want to know when a new thing
-          // is saved.
-          self.collection.trigger('create', self.model);
-
-          // Reset the form after it is saved successfully
-          self.ui.form.get(0).reset();
-        },
-        complete: function(evt) {
-          // enable the submit button
-          self.ui.submitButton.prop('disabled', false);
-
-          // remove loading/busy class
-          self.$el.removeClass('loading');
-        }
-      });
-
-    }, function(evt) {
-      // window.alert('invalid!');
-    }),
-    setGeometry: function(geom) {
-      this.geometry = geom;
-      this.$el.addClass('shareabouts-geometry-set');
-
-      return this;
-    },
-    setSubmitter: function(submitter) {
-      this.model.set('submitter', submitter);
-
-      return this;
-    },
-    onClose: function() {
-      // ick
-      this.$el.parent().parent().parent().removeClass('panel-form-open');
-      $(this.options.umbrella).trigger('closeplaceform', [this]);
-    },
-    onShow: function() {
-      // ick
-      this.$el.parent().parent().parent().addClass('panel-form-open');
-      $(this.options.umbrella).trigger('showplaceform', [this]);
-    }
-  });
-
-
   NS.StreetView = function(options) {
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
-        // $addButton,
         map, layoutHtml, i, layerOptions, panelLayout;
 
     // Set any default options
     options = options || {};
-    _.defaults(options, {
-      addButtonLabel: 'Add a Place'
-    });
+    // _.defaults(options, {
+    //   // TBD
+    // });
 
     // Initialize the Shareabouts DOM structure
     layoutHtml =
@@ -410,13 +33,17 @@ var Shareabouts = Shareabouts || {};
       '<div class="shareabouts-auth-container">' +
       '</div>' +
       '<div class="shareabouts-add-button-container">' +
-        '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +
       '</div>';
     $el.html(layoutHtml);
+
+    // Render the Add button
+    $el.find('.shareabouts-add-button-container').html(
+      options.templates['add-button']()
+    );
 
     // Init the panel layout
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
@@ -513,7 +140,7 @@ var Shareabouts = Shareabouts || {};
 
     // Listen for when a place is shown
     $(this).on('showplace', function(evt, view){
-      var styleRule = getStyleRule(view.model.toJSON(), options.placeStyles),
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
           marker = markers[view.model.id];
 
       // Focus/highlight the layer
@@ -525,7 +152,7 @@ var Shareabouts = Shareabouts || {};
 
     // Listen for when a place is closed
     $(this).on('closeplace', function(evt, view){
-      var styleRule = getStyleRule(view.model.toJSON(), options.placeStyles),
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
           marker = markers[view.model.id];
 
       // Revert the layer
@@ -536,7 +163,7 @@ var Shareabouts = Shareabouts || {};
     $el.on('click', '.shareabouts-add-button', function(evt) {
       evt.preventDefault();
       var tpl = options.templates['place-form'],
-          styleRule = getStyleRule({}, options.placeStyles),
+          styleRule = NS.Util.getStyleRule({}, options.placeStyles),
           position;
 
       if (tpl) {
@@ -615,8 +242,11 @@ var Shareabouts = Shareabouts || {};
     };
 
     this.setUser = function(userData) {
-      var markup = options.templates['auth-actions'](userData);
-      $el.find('.shareabouts-auth-container').html(markup);
+      var markup;
+      if (options.templates['auth-actions']) {
+        markup = options.templates['auth-actions'](userData);
+        $el.find('.shareabouts-auth-container').html(markup);
+      }
 
       // So we can pass this into view constructors
       this.currentUser = userData;
@@ -649,7 +279,7 @@ var Shareabouts = Shareabouts || {};
           panoPosition = self.panorama.getPosition(),
           distFromPano = google.maps.geometry.spherical.computeDistanceBetween(
             panoPosition, position),
-          styleRule = getStyleRule(model.toJSON(), options.placeStyles),
+          styleRule = NS.Util.getStyleRule(model.toJSON(), options.placeStyles),
           minDistFromPano = 4,
           marker, heading;
 

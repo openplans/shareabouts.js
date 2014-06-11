@@ -16,15 +16,16 @@
       border: 2px solid #b2182b;
     }
 
-    /* NOTE: The #shareabouts-container must have an explicit
-       width and a fluid height. An explicit height must be
-       set within a media query. */
+    /* NOTE: The #shareabouts-container must be positioned relative,
+       have an explicit width and a fluid height. An explicit height
+       must be set within a media query. */
 
     #shareabouts-container {
       width: 100%;
       max-width: 64.063em;
       margin: 0 auto;
       overflow: hidden;
+      position: relative;
     }
 
     .shareabouts-add-button {
@@ -34,6 +35,42 @@
       border: 1px solid black;
       background-color: white;
       padding: 0.5em;
+    }
+
+    .shareabouts-auth-container,
+    .shareabouts-auth-menu {
+      float: left;
+      background-color: white;
+      border: 1px solid black;
+      padding: 0.5em;
+    }
+    .shareabouts-auth-container {
+      width: 50px;
+    }
+    .shareabouts-auth-button {}
+    .shareabouts-auth-avatar {
+      display: block;
+      width: 50px;
+    }
+    .shareabouts-auth-menu {
+      margin-bottom: 10px;
+    }
+    .shareabouts-auth-menu:before,
+    .shareabouts-auth-menu:after {
+      content: '';
+      width: 0;
+      height: 0;
+      border: 17px solid white;
+      position: absolute;
+      top: 100%;
+      left: 1em;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+    }
+    .shareabouts-auth-menu:before {
+      border-top-color: black;
+      margin-top: 1px;
     }
 
     .shareabouts-geometry-set .form-instructions {
@@ -48,6 +85,7 @@
       }
 
     }
+
 
   </style>
   <!--[if IE]>
@@ -67,7 +105,13 @@
 
   <script src="http://rawgit.com/openplans/gatekeeper/gh-pages/gatekeeper.js"></script>
   <script src="../src/utils.js"></script>
+  <script src="../src/auth.js"></script>
   <script src="../src/models.js"></script>
+  <script src="../src/panel-layout.js"></script>
+  <script src="../src/place-detail-view.js"></script>
+  <script src="../src/place-form-view.js"></script>
+  <script src="../src/place-survey-view.js"></script>
+  <script src="../src/place-support-view.js"></script>
   <script src="../src/map.js"></script>
   <script>
     var sa = new Shareabouts.Map({
@@ -101,13 +145,16 @@
       ],
 
       datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places',
-      addButtonLabel: 'Add a Place',
 
       // These are template functions that expect geojson.
       templates: {
+        'add-button': function(data) {
+          return '<a href="#" class="shareabouts-add-button button expand"><span>Add a Place</span></a>';
+        },
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
         'place-detail': function(data) {
           return '<h2>' + data.name + '</h2>' +
+            '<div class="support-region"></div>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
@@ -118,32 +165,92 @@
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>';
+            '<div class="survey-region"></div>';
+        },
+        'place-support': function(data) {
+          'use strict';
+
+          var userToken = Shareabouts.auth.getUserToken(),
+              isUserLoaded = !!userToken,
+              userSupport = _.find(data.items, function(support) { return support['user_token'] === userToken; }),
+              isSupporting = !!userSupport;
+
+          return '<form action="#" method="post" class="btn btn-block btn-small user-support">' +
+            '<input type="hidden" name="user_token" value="' + Shareabouts.auth.getUserToken() + '">' +
+            '<input type="hidden" name="visible" value="true">' +
+            '<input type="checkbox" id="support"' +
+              (isSupporting ? ' checked="checked"' : '') +
+              (isUserLoaded ? '' : ' disabled="disabled"') +
+              '>' +
+            '<label for="support"><span class="support-count">' + data.items.length + '</span> Support</label>' +
+          '</form>';
+        },
+        'place-survey': function(data) {
+          // anonymous user
+          var submitter = '<label>Name <input name="submitter_name" type="text" value="'+(data.submitter_name||'')+'"></input></label>';
+          if (data.submitter) {
+            submitter = 'Comment by <strong>'+data.submitter.name+'</strong>'
+          }
+
+          return '<ul class="survey-items"></ul>' +
+          '<form><p>'+submitter+'</p>'+
+          '<p><label>Comment <textarea name="comment" type="text">'+(data.comment||'')+'</textarea></label></p>'+
+          '<button>Save</button></form>'
+        },
+        'place-survey-item': function(data) {
+          return '<p>'+ data.comment +'</p>';
         },
         'place-form': function(data) {
-          return '<p class="form-instructions">Drag the map to the place you want to share.</p>' +
+          // anonymous user
+          var submitter = '<label>Your Name<input type="text" name="submitter_name" required value="'+(data.submitter_name||'')+'" /></label>';
+          if (data.submitter) {
+            submitter = 'Submitted by <strong>'+data.submitter.name+'</strong>'
+          }
+
+          return '<p class="form-instructions">Drag the marker to the place you want to share.</p>' +
             '<h2>Add a Place</h2>' +
             '<form novalidate>' +
-            '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +
-            '<p><label>Your Email<input type="text" name="private-email" /></label></p>' +
-            '<p><label>Title<input type="text" name="name" required /></label></p>' +
-            '<p><label>Description<textarea name="description" required></textarea></label></p>' +
+            '<p>'+submitter+'</p>' +
+            '<p><label>Your Email<input type="text" name="private-email" value="'+(data['private-email']||'')+'"/></label></p>' +
+            '<p><label>Title<input type="text" name="name" required  value="'+(data.name||'')+'"/></label></p>' +
+            '<p><label>Description<textarea name="description" required>'+(data.description||'')+'</textarea></label></p>' +
             '<p><input type="submit" value="Add to Map"></p>'
             '</form>'
+        },
+        'auth-actions': function(data) {
+          if (!data) {
+            return '<a href="#" class="shareabouts-auth-button button"><img class="shareabouts-auth-avatar" src="images/user-50.png"><small>Sign In</small></a>' +
+              '<div class="shareabouts-auth-menu is-exposed">' +
+                '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a><br>' +
+                '<a class="shareabouts-auth-facebook-button" href="#">Facebook</a>' +
+              '</div>';
+          } else {
+            return '<a href="#" class="shareabouts-auth-button button"><img class="shareabouts-auth-avatar" src="' + data.avatar_url + '"><small>' + data.name + '</small></a>' +
+              '<div class="shareabouts-auth-menu is-exposed">' +
+                '<a class="shareabouts-auth-logout-button" href="#">Logout</a>' +
+              '</div>';
+          }
         }
       }
     });
+
+    Shareabouts.auth = new Shareabouts.Auth({
+      apiRoot: 'http://data.shareabouts.org/api/v2/',
+      successPage: 'success.html',
+      errorPage: 'error.html'
+    });
+
+    $(Shareabouts.auth).on('authsuccess', function(evt, data) {
+      if (data) {
+        console.log('you just logged in!', evt, data);
+      } else {
+        console.log('you just logged out!', evt);
+      }
+
+      sa.setUser(data);
+    });
+
+    Shareabouts.auth.initUser();
 
   </script>
   </body>

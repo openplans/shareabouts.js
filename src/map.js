@@ -5,31 +5,6 @@ var Shareabouts = Shareabouts || {};
 (function(NS, $, console){
   'use strict';
 
-  // http://mir.aculo.us/2011/03/09/little-helpers-a-tweet-sized-javascript-templating-engine/
-  var t = function t(s,d){
-   for(var p in d)
-     s=s.replace(new RegExp('{{'+p+'}}','g'), d[p]);
-   return s;
-  };
-
-  // Get the style rule for this feature by evaluating the condition option
-  var getStyleRule = function(properties, rules) {
-    var self = this,
-        len, i, condition;
-
-    for (i=0, len=rules.length; i<len; i++) {
-      // Replace the template with the property variable, not the value.
-      // this is so we don't have to worry about strings vs nums.
-      condition = t(rules[i].condition, properties);
-
-      // Simpler code plus a trusted source; negligible performance hit
-      if (eval(condition)) {
-        return rules[i];
-      }
-    }
-    return null;
-  };
-
   var focusLayer = function(layer, styleRule) {
     if (styleRule.focusIcon) {
       layer.setIcon(L.icon(styleRule.focusIcon));
@@ -46,110 +21,17 @@ var Shareabouts = Shareabouts || {};
     }
   };
 
-  NS.PanelLayout = Backbone.View.extend({
-    events: {
-      'click .shareabouts-close-button': 'handleCloseClick'
-    },
-    initialize: function() {
-      this.$content = this.$('.shareabouts-panel-content');
-    },
-    showContent: function(view) {
-      if (this.currentView && this.currentView.onClose) {
-        this.currentView.onClose();
-      }
-
-      this.currentView = view;
-      this.$content.html(view.render().el);
-      this.$el.parent().addClass('panel-open');
-      this.$el.parent().trigger('showpanel');
-
-      if (this.currentView.onShow) {
-        this.currentView.onShow();
-      }
-    },
-    handleCloseClick: function() {
-      this.$el.parent().removeClass('panel-open');
-      this.$el.parent().trigger('closepanel');
-      if (this.currentView.onClose) {
-        this.currentView.onClose();
-      }
-    }
-  });
-
-  NS.PlaceDetailView = Backbone.Marionette.ItemView.extend({
-    onClose: function() {
-      this.model.collection.trigger('closeplace', this.model);
-    },
-    onShow: function() {
-      this.model.collection.trigger('showplace', this.model);
-      // TODO: is this necessary?
-      // this.el.scrollIntoView();
-    }
-  });
-
-  NS.PlaceFormView = Backbone.Marionette.ItemView.extend({
-    ui: {
-      form: 'form'
-    },
-    events: {
-      'submit @ui.form': 'handleSubmit'
-    },
-    handleSubmit: Gatekeeper.onValidSubmit(function(evt) {
-      evt.preventDefault();
-
-      // serialize the form
-      var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
-          model;
-
-      // Do nothing - can't save without a geometry
-      if (!this.geometry) {
-        return;
-      }
-
-      data.geometry = this.geometry;
-
-      // add loading/busy class
-      this.$el.addClass('loading');
-
-      model = this.collection.create(data, {
-        wait: true,
-        complete: function(evt) {
-          // remove loading/busy class
-          self.$el.removeClass('loading');
-        }
-      });
-
-    }, function(evt) {
-      // window.alert('invalid!');
-    }),
-    setGeometry: function(geom) {
-      this.geometry = geom;
-      this.$el.addClass('shareabouts-geometry-set');
-    },
-    onClose: function() {
-      // ick
-      this.$el.parent().parent().parent().removeClass('panel-form-open');
-    },
-    onShow: function() {
-      // ick
-      this.$el.parent().parent().parent().addClass('panel-form-open');
-    }
-  });
-
-
   NS.Map = function(options) {
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
-        // $addButton,
         map, layoutHtml, i, layerOptions, panelLayout;
 
     // Set any default options
     options = options || {};
-    _.defaults(options, {
-      addButtonLabel: 'Add a Place'
-    });
+    // _.defaults(options, {
+    //   // TBD
+    // });
 
     // Initialize the Shareabouts DOM structure
     layoutHtml =
@@ -159,14 +41,19 @@ var Shareabouts = Shareabouts || {};
           '<span class="shadow"></span><span class="x"></span><span class="marker"></span>' +
         '</div>' +
       '</div>' +
+      '<div class="shareabouts-auth-container"></div>' +
       '<div class="shareabouts-add-button-container">' +
-        '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +
       '</div>';
     $el.html(layoutHtml);
+
+    // Render the Add button
+    $el.find('.shareabouts-add-button-container').html(
+      options.templates['add-button']()
+    );
 
     // Init the panel layout
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
@@ -188,11 +75,11 @@ var Shareabouts = Shareabouts || {};
     this.geoJsonLayer = L.geoJson(null, {
       style: function(featureData) {
         // Get the style for non-point geometries
-        return getStyleRule(featureData.properties, options.placeStyles).style;
+        return NS.Util.getStyleRule(featureData.properties, options.placeStyles).style;
       },
       pointToLayer: function(featureData, latLng) {
         // Get style or icon settings for point geometries
-        var styleRule = getStyleRule(featureData.properties, options.placeStyles);
+        var styleRule = NS.Util.getStyleRule(featureData.properties, options.placeStyles);
         if (styleRule.icon) {
           return L.marker(latLng, {icon: L.icon(styleRule.icon)});
         } else {
@@ -224,10 +111,20 @@ var Shareabouts = Shareabouts || {};
           model = self.placeCollection.get(featureData.properties.id);
 
       // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
+      self.placeDetailView = new NS.PlaceDetailView({
         template: tpl,
-        model: model
-      }));
+        model: model,
+        umbrella: self,
+        submitter: self.currentUser,
+
+        // Templates for the survey views that are rendered in a region
+        surveyTemplate: options.templates['place-survey'],
+        surveyItemTemplate: options.templates['place-survey-item'],
+
+        // Template for the support view
+        supportTemplate: options.templates['place-support']
+      });
+      panelLayout.showContent(self.placeDetailView);
 
       // Pan the map to the selected layer
       // TODO: handle non-point geometries
@@ -235,18 +132,18 @@ var Shareabouts = Shareabouts || {};
     });
 
     // Listen for when a place is shown
-    this.placeCollection.on('showplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
+    $(this).on('showplace', function(evt, view){
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
       // Focus/highlight the layer
       focusLayer(layer, styleRule);
     });
 
     // Listen for when a place is closed
-    this.placeCollection.on('closeplace', function(model){
-      var styleRule = getStyleRule(model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[model.id]);
+    $(this).on('closeplace', function(evt, view){
+      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
+          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
       // Revert the layer
       unfocusLayer(layer, styleRule);
@@ -260,11 +157,12 @@ var Shareabouts = Shareabouts || {};
       // Show the place details in the panel
       self.placeFormView = new NS.PlaceFormView({
         template: tpl,
-        collection: self.placeCollection
+        collection: self.placeCollection,
+        umbrella: self,
+        submitter: self.currentUser
       });
 
       panelLayout.showContent(self.placeFormView);
-
     });
 
     // Tell the map to resize itself when its container changes width
@@ -272,6 +170,32 @@ var Shareabouts = Shareabouts || {};
       map.invalidateSize(true);
     });
 
+    this.setUser = function(userData) {
+      var markup;
+      if (options.templates['auth-actions']) {
+        markup = options.templates['auth-actions'](userData);
+        $el.find('.shareabouts-auth-container').html(markup);
+      }
+
+      // So we can pass this into view constructors
+      this.currentUser = userData;
+
+      // If the place form view is open, then rerender the form
+      if (this.placeFormView) {
+        this.placeFormView
+          .setSubmitter(userData)
+          .render();
+      }
+
+      if (this.placeDetailView) {
+        this.placeDetailView.surveyRegion.currentView
+          .setSubmitter(userData)
+          .render();
+        this.placeDetailView.supportRegion.currentView
+          .setSubmitter(userData)
+          .render();
+      }
+    };
 
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
@@ -289,11 +213,24 @@ var Shareabouts = Shareabouts || {};
 
       // TODO: this may not be the best place for this in the long run
       // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
+      self.placeDetailView = new NS.PlaceDetailView({
         template: options.templates['place-detail'],
-        model: model
-      }));
+        model: model,
+        umbrella: self,
+        submitter: self.currentUser,
+
+        // Templates for the survey views that are rendered in a region
+        surveyTemplate: options.templates['place-survey'],
+        surveyItemTemplate: options.templates['place-survey-item'],
+
+        // Template for the support view
+        supportTemplate: options.templates['place-support']
+      });
+      panelLayout.showContent(self.placeDetailView);
     });
+
+    // Init the user to a signed in user or an anonymous user
+    this.setUser(options.currentUser);
   };
 
 }(Shareabouts, jQuery, Shareabouts.Util.console));

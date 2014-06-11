@@ -81,6 +81,33 @@ var Shareabouts = Shareabouts || {};
       error: function(){}
     },
 
+    // Get the style rule for this feature by evaluating the condition option,
+    // using the Argo convention.
+    // https://github.com/openplans/argo/wiki/Configuration-Guide
+    getStyleRule: function(properties, rules) {
+      // http://mir.aculo.us/2011/03/09/little-helpers-a-tweet-sized-javascript-templating-engine/
+      var t = function t(s,d){
+       for(var p in d)
+         s=s.replace(new RegExp('{{'+p+'}}','g'), d[p]);
+       return s;
+      };
+
+      var self = this,
+          len, i, condition;
+
+      for (i=0, len=rules.length; i<len; i++) {
+        // Replace the template with the property variable, not the value.
+        // this is so we don't have to worry about strings vs nums.
+        condition = t(rules[i].condition, properties);
+
+        // Simpler code plus a trusted source; negligible performance hit
+        if (eval(condition)) {
+          return rules[i];
+        }
+      }
+      return null;
+    },
+
     fixImageOrientation: function(canvas, orientation) {
       var rotated = document.createElement('canvas'),
           ctx = rotated.getContext('2d'),

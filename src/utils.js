@@ -2,10 +2,10 @@
 
 var Shareabouts = Shareabouts || {};
 
-(function(S){
+(function(NS){
   'use strict';
 
-  S.Util = {
+  NS.Util = {
     patch: function(obj, overrides, func) {
       var attr, originals = {};
 
@@ -160,7 +160,7 @@ var Shareabouts = Shareabouts || {};
 
           loadImage(file, function(canvas) {
             // rotate the image, if needed
-            var rotated = S.Util.fixImageOrientation(canvas, orientation);
+            var rotated = NS.Util.fixImageOrientation(canvas, orientation);
             callback(rotated);
           }, options);
       };
@@ -203,6 +203,14 @@ var Shareabouts = Shareabouts || {};
       };
 
       func.apply(context, args);
+    },
+
+    uuid: function() {
+      var id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+          return v.toString(16);
+        });
+      return id;
     },
 
     // Cookies! Om nom nom

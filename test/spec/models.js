@@ -95,27 +95,27 @@
         it('should call pageComplete for each page', function() {
           assert.equal(pageComplete.callCount, 4);
         });
-        
+
         it('should call complete once', function() {
           assert.equal(fetchComplete.callCount, 1);
         });
-        
+
         it('should call pageSuccess for each page', function() {
           assert.equal(pageSuccess.callCount, 4);
         });
-        
+
         it('should call success once', function() {
           assert.equal(fetchSuccess.callCount, 1);
         });
-        
+
         it('should not call pageError', function() {
           assert.equal(pageError.callCount, 0);
         });
-        
+
         it('should not call error', function() {
           assert.equal(fetchError.callCount, 0);
         });
-        
+
         it('should load all data', function() {
           assert.equal(collection.pluck('id').toString(), [1, 2, 3, 4, 5, 6, 7, 8].toString());
         });
@@ -162,35 +162,38 @@
         it('should call pageComplete for each page', function() {
           assert.equal(pageComplete.callCount, 4);
         });
-        
+
         it('should call complete once', function() {
           assert.equal(fetchComplete.callCount, 1);
         });
-        
+
         it('should call pageSuccess for each successful page', function() {
           assert.equal(pageSuccess.callCount, 2);
         });
-        
+
         it('should not call success', function() {
           assert.equal(fetchSuccess.callCount, 0);
         });
-        
+
         it('should call pageError for each errored page', function() {
           assert.equal(pageError.callCount, 2);
         });
-        
+
         it('should call error once', function() {
           assert.equal(fetchError.callCount, 1);
         });
       });
     });
 
-
     describe('SubmissionCollection', function() {
+      var TestPlaceModel = Backbone.Model.extend({
+        urlRoot: '/api/places'
+      });
+
       it('should throw an error without a submission type option', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 7})
+          placeModel: new TestPlaceModel({id: 7})
         });
 
         assert.throw(function() {
@@ -212,7 +215,7 @@
       it('should generate a good url for the submission list', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 17}),
+          placeModel: new TestPlaceModel({id: 17}),
           submissionType: 'comments'
         });
 
@@ -222,7 +225,7 @@
       it('should generate a good url for the submission item', function () {
         var collection = new S.SubmissionCollection(S.Data.submissions, {
           parse: true,
-          placeModel: new Backbone.Model({id: 17}),
+          placeModel: new TestPlaceModel({id: 17}),
           submissionType: 'comments'
         });
 
@@ -232,7 +235,7 @@
       it('should order submissions by created_datetime', function () {
         var collection = new S.SubmissionCollection([], {
           parse: true,
-          placeModel: new Backbone.Model({id: 7})
+          placeModel: new TestPlaceModel({id: 7})
         });
 
         collection.add({created_datetime: '2013-11-14'});

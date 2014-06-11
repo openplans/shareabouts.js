@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 0.8
+  - 0.10
 
 before_script:
   - npm install -g grunt-cli
@@ -16,9 +16,4 @@ notifications:
       - "irc.freenode.org#shareabouts"
     on_success: change
     on_failure: always
-  email:
-    recipients:
-     - dev@openplans.org
-    on_success: change
-    on_failure: always
-
+  slack: openplans:YWZBWnvbdcA3E2JDTdCKTOU6

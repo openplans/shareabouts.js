@@ -2,7 +2,7 @@
 
 var Shareabouts = Shareabouts || {};
 
-(function(S, $) {
+(function(NS, $) {
   'use strict';
 
   var normalizeModelArguments = function(key, val, options) {
@@ -21,7 +21,15 @@ var Shareabouts = Shareabouts || {};
     };
   };
 
-  S.PaginatedCollection = Backbone.Collection.extend({
+  var syncWithCredentials = function(method, model, options) {
+    _.defaults(options || (options = {}), {
+      xhrFields: {withCredentials: true}
+    });
+
+    return Backbone.sync.apply(this, [method, model, options]);
+  };
+
+  NS.PaginatedCollection = Backbone.Collection.extend({
     resultsAttr: 'results',
 
     parse: function(response) {
@@ -110,10 +118,16 @@ var Shareabouts = Shareabouts || {};
     }
   });
 
-  S.SubmissionCollection = S.PaginatedCollection.extend({
+  NS.SubmissionModel = Backbone.Model.extend({
+    sync: syncWithCredentials
+  });
+
+  NS.SubmissionCollection = NS.PaginatedCollection.extend({
     initialize: function(models, options) {
       this.options = options;
     },
+
+    model: NS.SubmissionModel,
 
     url: function() {
       var submissionType = this.options.submissionType,
@@ -126,13 +140,15 @@ var Shareabouts = Shareabouts || {};
                                       'must save the place before saving ' +
                                       'its ' + submissionType + '.'); }
 
-      return '/api/places/' + placeId + '/' + submissionType;
+      return this.options.placeModel.url() + '/' + submissionType;
     },
+
+    sync: syncWithCredentials,
 
     comparator: 'created_datetime'
   });
 
-  S.PlaceModel = Backbone.Model.extend({
+  NS.PlaceModel = Backbone.Model.extend({
     initialize: function() {
       var attachmentData;
 
@@ -146,14 +162,14 @@ var Shareabouts = Shareabouts || {};
           models = submissions;
         }
 
-        this.submissionSets[name] = new S.SubmissionCollection(models, {
+        this.submissionSets[name] = new NS.SubmissionCollection(models, {
           submissionType: name,
           placeModel: this
         });
       }, this);
 
       attachmentData = this.get('attachments') || [];
-      this.attachmentCollection = new S.AttachmentCollection(attachmentData, {
+      this.attachmentCollection = new NS.AttachmentCollection(attachmentData, {
         thingModel: this
       });
 
@@ -176,7 +192,7 @@ var Shareabouts = Shareabouts || {};
         }
       }, this);
 
-      return S.PlaceModel.__super__.set.call(this, args.attrs, args.options);
+      return NS.PlaceModel.__super__.set.call(this, args.attrs, args.options);
     },
 
     save: function(key, val, options) {
@@ -203,7 +219,7 @@ var Shareabouts = Shareabouts || {};
       }
 
       options.ignoreAttachments = true;
-      S.PlaceModel.__super__.save.call(this, attrs, options);
+      NS.PlaceModel.__super__.save.call(this, attrs, options);
     },
 
     saveAttachments: function() {
@@ -234,13 +250,30 @@ var Shareabouts = Shareabouts || {};
         options.contentType = 'application/json';
       }
 
-      return Backbone.sync(method, model, options);
+      return syncWithCredentials.apply(this, [method, model, options]);
+    },
+    toGeoJSON: function() {
+      return {
+        'type': 'Feature',
+        'geometry': this.get('geometry'),
+        'properties': _.omit(this.toJSON(), 'geometry')
+      };
+    },
+
+    getSubmissionSetCollection: function(name) {
+      this.submissionSets[name] = this.submissionSets[name] ||
+        new NS.SubmissionCollection([], {
+          submissionType: name,
+          placeModel: this
+        });
+
+      return this.submissionSets[name];
     }
   });
 
-  S.PlaceCollection = S.PaginatedCollection.extend({
+  NS.PlaceCollection = NS.PaginatedCollection.extend({
     url: '/api/places',
-    model: S.PlaceModel,
+    model: NS.PlaceModel,
     resultsAttr: 'features',
 
     fetchByIds: function(ids, options) {
@@ -263,10 +296,10 @@ var Shareabouts = Shareabouts || {};
     fetchById: function(id, options) {
       options = options ? _.clone(options) : {};
       var self = this,
-          place = new S.PlaceModel(),
+          place = new NS.PlaceModel(),
           success = options.success;
 
-      place.id = id;
+      place.set('id', id);
       place.collection = self;
 
       options.success = function() {
@@ -277,12 +310,13 @@ var Shareabouts = Shareabouts || {};
         }
       };
       place.fetch(options);
-    }
+    },
+    sync: syncWithCredentials
   });
 
   // This does not support editing at this time, which is why it is not a
   // ShareaboutsModel
-  S.AttachmentModel = Backbone.Model.extend({
+  NS.AttachmentModel = Backbone.Model.extend({
     idAttribute: 'name',
 
     initialize: function(attributes, options) {
@@ -306,7 +340,7 @@ var Shareabouts = Shareabouts || {};
     _attachBlob: function(blob, name, options) {
       var formData = new FormData(),
           self = this,
-          progressHandler = S.Util.wrapHandler('progress', this, options.progress),
+          progressHandler = NS.Util.wrapHandler('progress', this, options.progress),
           myXhr = $.ajaxSettings.xhr();
 
       formData.append('file', blob);
@@ -345,11 +379,12 @@ var Shareabouts = Shareabouts || {};
         contentType: false,
         processData: false
       });
-    }
+    },
+    sync: syncWithCredentials
   });
 
-  S.AttachmentCollection = Backbone.Collection.extend({
-    model: S.AttachmentModel,
+  NS.AttachmentCollection = Backbone.Collection.extend({
+    model: NS.AttachmentModel,
 
     initialize: function(models, options) {
       this.options = options;
@@ -360,10 +395,11 @@ var Shareabouts = Shareabouts || {};
           thingUrl = thingModel.url();
 
       return thingUrl + '/attachments';
-    }
+    },
+    sync: syncWithCredentials
   });
 
-  S.ActionCollection = S.PaginatedCollection.extend({
+  NS.ActionCollection = NS.PaginatedCollection.extend({
     url: '/api/actions',
     comparator: function(a, b) {
       if (a.get('created_datetime') > b.get('created_datetime')) {
@@ -371,7 +407,8 @@ var Shareabouts = Shareabouts || {};
       } else {
         return 1;
       }
-    }
+    },
+    sync: syncWithCredentials
   });
 
 }(Shareabouts, jQuery));

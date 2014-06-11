@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Shareabouts Example</title>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+  <link rel="stylesheet" href="../src/styles/shareabouts.css" />
+  <style type="text/css">
+
+    /* NOTE: use these selectors to style invalid form elements on non-HTML5 browsers */
+    .form-submitted input:invalid,
+    .form-submitted textarea:invalid,
+    .form-submitted select:invalid {
+      border: 2px solid #b2182b;
+    }
+
+    /* NOTE: The #shareabouts-container must have an explicit
+       width and a fluid height. An explicit height must be
+       set within a media query. */
+
+    #shareabouts-container {
+      width: 100%;
+      max-width: 64.063em;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .shareabouts-add-button {
+      display: block;
+      text-align: center;
+      line-height: 2em;
+      border: 1px solid black;
+      background-color: white;
+      padding: 0.5em;
+    }
+
+    .shareabouts-geometry-set .form-instructions {
+      display: none;
+    }
+
+
+    @media only screen and (min-width: 40.063em) {
+
+      #shareabouts-container {
+        height: 600px;
+      }
+
+    }
+
+  </style>
+  <!--[if IE]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div id="shareabouts-container"></div>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.marionette/1.8.0/backbone.marionette.min.js"></script>
+  <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+
+
+  <script src="http://rawgit.com/openplans/gatekeeper/gh-pages/gatekeeper.js"></script>
+  <script src="../src/utils.js"></script>
+  <script src="../src/models.js"></script>
+  <script src="../src/map.js"></script>
+  <script>
+    var sa = new Shareabouts.Map({
+      el: '#shareabouts-container',
+      map: {
+        center: [39.952780, -75.163136],
+        zoom: 12
+      },
+      layers: [
+        {
+          url: 'http://{s}.tiles.mapbox.com/v3/openplans.map-dmar86ym/{z}/{x}/{y}.png',
+          attribution: '&copy; OpenStreetMap contributors, CC-BY-SA. <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
+        }
+      ],
+      placeStyles: [
+        {
+          condition: 'true',
+          icon: {
+            iconUrl: 'images/dot-blue.png',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+          },
+          focusIcon: {
+            iconUrl: 'images/marker-blue.png',
+            shadowUrl: 'images/marker-shadow.png',
+            iconSize: [25, 41],
+            shadowSize: [41, 41],
+            iconAnchor: [12, 41]
+          }
+        },
+      ],
+
+      datasetUrl: 'http://data.shareabouts.org/api/v2/demo-user/datasets/demo-data/places',
+      addButtonLabel: 'Add a Place',
+
+      // These are template functions that expect geojson.
+      templates: {
+        // This is only an example. You should use Mustache, Handlebars, etc in real life.
+        'place-detail': function(data) {
+          return '<h2>' + data.name + '</h2>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>' +
+            '<p>' + data.description + '</p>';
+        },
+        'place-form': function(data) {
+          return '<p class="form-instructions">Drag the map to the place you want to share.</p>' +
+            '<h2>Add a Place</h2>' +
+            '<form novalidate>' +
+            '<p><label>Your Name<input type="text" name="submitter_name" required /></label></p>' +
+            '<p><label>Your Email<input type="text" name="private-email" /></label></p>' +
+            '<p><label>Title<input type="text" name="name" required /></label></p>' +
+            '<p><label>Description<textarea name="description" required></textarea></label></p>' +
+            '<p><input type="submit" value="Add to Map"></p>'
+            '</form>'
+        }
+      }
+    });
+
+  </script>
+  </body>
+</html>

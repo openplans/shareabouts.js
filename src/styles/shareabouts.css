@@ -1,0 +1,268 @@
+/* =Map area
+-------------------------------------------------------------- */
+.shareabouts-map {
+  width: 100%;
+  height: 100%;
+}
+
+.shareabouts-map-container {
+  width: 100%;
+  height: 300px;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.shareabouts-add-button-container {
+  position: relative;
+  z-index: 3;
+}
+.panel-form-open .shareabouts-add-button-container {
+  display: none;
+}
+
+.shareabouts-auth-container {
+  position: relative;
+  z-index: 4;
+}
+.panel-form-open .shareabouts-auth-container {
+  display: none;
+}
+.shareabouts-auth-menu {
+  display: none;
+}
+.shareabouts-auth-menu.is-exposed {
+  display: block;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+}
+
+
+/* =Panel area
+-------------------------------------------------------------- */
+.shareabouts-panel {
+  width: 100%;
+  display: none;
+}
+.panel-open .shareabouts-panel {
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+.shareabouts-panel-content {
+  padding: 1em;
+}
+.shareabouts-close-button {
+  position: absolute;
+  top: -1em;
+  left: 10px;
+  background-color: #fff;
+  border: 0;
+  border-radius: 0.25em 0.25em 0 0;
+  color: Hotpink;
+  display: block;
+  height: 1.5em;
+  width: 1.5em;
+  font-size: 1.5em;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+  display: none;
+}
+.panel-open .shareabouts-close-button {
+  display: block;
+}
+
+/* Centerpoint */
+/* Center Point (new point icon) */
+.panel-form-open .shareabouts-centerpoint {
+  display: block;
+}
+
+.shareabouts-centerpoint {
+  display: none;
+  overflow: visible;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 11;
+  width: 47px;
+  height: 47px;
+  margin: -44px 0 0 -12px;
+}
+.shareabouts-centerpoint .x {
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 12px;
+  background: transparent url(../images/marker-x.png) 0 0 no-repeat scroll;
+  left: 4px;
+  top: 37px;
+  opacity: 0;
+  -webkit-transition: opacity 0.25s;
+  -moz-transition: opacity 0.25s;
+  -o-transition: opacity 0.25s;
+  -ms-transition: opacity 0.25s;
+  transition: opacity 0.25s;
+}
+.shareabouts-centerpoint:hover .x,
+.leaflet-dragging .shareabouts-centerpoint .x {
+  opacity: 1;
+}
+.shareabouts-centerpoint .shadow {
+  display: block;
+  height: 47px;
+  width: 47px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent url(../images/marker-shadow.png) 0 3px no-repeat scroll;
+  -webkit-transition: opacity 0s, background-position 0.3s ease;
+  -moz-transition: opacity 0s, background-position 0.3s ease;
+  -o-transition: opacity 0s, background-position 0.3s ease;
+  -ms-transition: opacity 0s, background-position 0.3s ease;
+  transition: opacity 0s, background-position 0.3s ease;
+}
+.shareabouts-centerpoint:hover .shadow,
+.leaflet-dragging .shareabouts-centerpoint .shadow {
+  opacity: 0.2;
+  background-image:
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png),
+    url(../images/marker-shadow.png)
+    ;
+  background-position:
+    0px -3px,
+    3px -3px,
+    6px -3px,
+    0px -6px,
+    3px -6px,
+    6px -6px,
+    0px -9px,
+    3px -9px,
+    6px -9px
+  ;
+}
+.shareabouts-centerpoint .marker {
+  display: block;
+  width: 25px;
+  height: 41px;
+  background: transparent url(../images/marker-plus.png) 0 0 no-repeat scroll;
+  position: relative;
+  top: 3px;
+  -webkit-transition: top 0.4s ease;
+  -moz-transition: top 0.4s ease;
+  -o-transition: top 0.4s ease;
+  -ms-transition: top 0.4s ease;
+  transition: top 0.4s ease;
+}
+.shareabouts-centerpoint:hover .marker,
+.leaflet-dragging .shareabouts-centerpoint .marker {
+  top: -20px;
+}
+
+
+/* =Media Queries (breakpoints via Foundation)
+-------------------------------------------------------------- */
+
+/* Define mobile styles */
+@media only screen {
+}
+
+/* max-width 640px, mobile-only styles, use when QAing mobile issues */
+@media only screen and (max-width: 40em) {
+}
+
+
+/* ----- Medium screens ----- */
+
+/* min-width 641px, medium screens */
+@media only screen and (min-width: 40.063em) {
+
+  .shareabouts-map-container {
+    height: 100%;
+  }
+  .panel-open .shareabouts-map-container {
+    width:50%;
+    float: left;
+  }
+
+  .shareabouts-auth-container {
+    position: absolute;
+    bottom: 3em;
+    left: 1em;
+  }
+  .shareabouts-add-button-container {
+    position: absolute;
+    bottom: 3.5em;
+    left: 2em;
+    margin-left: 50px;
+  }
+
+  .shareabouts-panel {
+    width: 0;
+    height: 100%;
+    display: none;
+  }
+  .panel-open .shareabouts-panel {
+    width:50%;
+    height: 100%;
+    float: right;
+    box-shadow: 0 0 1em rgba(0,0,0,0.2);
+  }
+
+  .shareabouts-close-button {
+    top: 1em;
+    left: -1.25em;
+    border-radius: 0.25em 0 0 0.25em;
+  }
+
+  .shareabouts-panel-content {
+    height: 100%;
+    overflow: auto;
+    -moz-box-sizing:border-box;
+         box-sizing:border-box;
+  }
+
+}
+
+/* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+@media only screen and (min-width: 40.063em) and (max-width: 64em) {
+}
+
+
+/* ----- Large screens ----- */
+
+/* min-width 1025px, large screens */
+@media only screen and (min-width: 64.063em) {
+}
+
+/* min-width 1025px and max-width 1440px, use when QAing large screen-only issues */
+@media only screen and (min-width: 64.063em) and (max-width: 90em) {
+}
+
+
+/* ----- XLarge screens ----- */
+
+/* min-width 1441px, xlarge screens */
+@media only screen and (min-width: 90.063em) {
+}
+
+/* min-width 1441px and max-width 1920px, use when QAing xlarge screen-only issues */
+@media only screen and (min-width: 90.063em) and (max-width: 120em) {
+}
+
+
+/* ----- XXLarge screens ----- */
+
+/* min-width 1921px, xlarge screens */
+@media only screen and (min-width: 120.063em) {
+}

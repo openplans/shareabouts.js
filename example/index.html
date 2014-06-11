@@ -16,15 +16,16 @@
       border: 2px solid #b2182b;
     }
 
-    /* NOTE: The #shareabouts-container must have an explicit
-       width and a fluid height. An explicit height must be
-       set within a media query. */
+    /* NOTE: The #shareabouts-container must be positioned relative,
+       have an explicit width and a fluid height. An explicit height
+       must be set within a media query. */
 
     #shareabouts-container {
       width: 100%;
       max-width: 64.063em;
       margin: 0 auto;
       overflow: hidden;
+      position: relative;
     }
 
     .shareabouts-add-button {
@@ -34,6 +35,42 @@
       border: 1px solid black;
       background-color: white;
       padding: 0.5em;
+    }
+
+    .shareabouts-auth-container,
+    .shareabouts-auth-menu {
+      float: left;
+      background-color: white;
+      border: 1px solid black;
+      padding: 0.5em;
+    }
+    .shareabouts-auth-container {
+      width: 50px;
+    }
+    .shareabouts-auth-button {}
+    .shareabouts-auth-avatar {
+      display: block;
+      width: 50px;
+    }
+    .shareabouts-auth-menu {
+      margin-bottom: 10px;
+    }
+    .shareabouts-auth-menu:before,
+    .shareabouts-auth-menu:after {
+      content: '';
+      width: 0;
+      height: 0;
+      border: 17px solid white;
+      position: absolute;
+      top: 100%;
+      left: 1em;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+    }
+    .shareabouts-auth-menu:before {
+      border-top-color: black;
+      margin-top: 1px;
     }
 
     .shareabouts-geometry-set .form-instructions {
@@ -48,6 +85,7 @@
       }
 
     }
+
 
   </style>
   <!--[if IE]>
@@ -183,7 +221,7 @@
           if (!data) {
             return '<a href="#" class="shareabouts-auth-button button"><img class="shareabouts-auth-avatar" src="images/user-50.png"><small>Sign In</small></a>' +
               '<div class="shareabouts-auth-menu is-exposed">' +
-                '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a>' +
+                '<a class="shareabouts-auth-twitter-button" href="#">Twitter</a><br>' +
                 '<a class="shareabouts-auth-facebook-button" href="#">Facebook</a>' +
               '</div>';
           } else {

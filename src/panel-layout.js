@@ -20,8 +20,9 @@ var Shareabouts = Shareabouts || {};
 
       this.currentView = view;
       this.$content.html(view.render().el);
-      this.$el.parent().addClass('panel-open');
-      this.$el.parent().trigger('showpanel');
+      this.$el.parent()
+        .addClass('panel-open')
+        .trigger('showpanel');
 
       if (this.currentView.onShow) {
         this.currentView.onShow();
@@ -29,8 +30,10 @@ var Shareabouts = Shareabouts || {};
     },
     handleCloseClick: function(evt) {
       evt.preventDefault();
-      this.$el.parent().removeClass('panel-open');
-      this.$el.parent().trigger('closepanel');
+      this.$el.parent()
+        .removeClass('panel-open')
+        .trigger('closepanel');
+
       if (this.currentView.onClose) {
         this.currentView.onClose();
       }

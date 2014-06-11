@@ -71,6 +71,7 @@
   <script src="../src/panel-layout.js"></script>
   <script src="../src/place-detail-view.js"></script>
   <script src="../src/place-form-view.js"></script>
+  <script src="../src/place-survey-view.js"></script>
   <script src="../src/map.js"></script>
   <script>
     var sa = new Shareabouts.Map({
@@ -121,18 +122,22 @@
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>' +
-            '<p>' + data.description + '</p>';
+            '<div class="survey-region"></div>';
+        },
+        'place-survey': function(data) {
+          // anonymous user
+          var submitter = '<label>Name <input name="submitter_name" type="text" value="'+(data.submitter_name||'')+'"></input></label>';
+          if (data.submitter) {
+            submitter = 'Comment by <strong>'+data.submitter.name+'</strong>'
+          }
+
+          return '<ul class="survey-items"></ul>' +
+          '<form><p>'+submitter+'</p>'+
+          '<p><label>Comment <textarea name="comment" type="text">'+(data.comment||'')+'</textarea></label></p>'+
+          '<button>Save</button></form>'
+        },
+        'place-survey-item': function(data) {
+          return '<p>'+ data.comment +'</p>';
         },
         'place-form': function(data) {
           return '<p class="form-instructions">Drag the map to the place you want to share.</p>' +

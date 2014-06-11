@@ -110,7 +110,11 @@ var Shareabouts = Shareabouts || {};
       panelLayout.showContent(new NS.PlaceDetailView({
         template: tpl,
         model: model,
-        umbrella: self
+        umbrella: self,
+
+        // Templates for the survey views that are rendered in a region
+        surveyTemplate: options.templates['place-survey'],
+        surveyItemTemplate: options.templates['place-survey-item']
       }));
 
       // Pan the map to the selected layer

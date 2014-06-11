@@ -108,7 +108,7 @@ var Shareabouts = Shareabouts || {};
           model = self.placeCollection.get(featureData.properties.id);
 
       // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
+      self.placeDetailView = new NS.PlaceDetailView({
         template: tpl,
         model: model,
         umbrella: self,
@@ -116,8 +116,12 @@ var Shareabouts = Shareabouts || {};
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
-        surveyItemTemplate: options.templates['place-survey-item']
-      }));
+        surveyItemTemplate: options.templates['place-survey-item'],
+
+        // Template for the support view
+        supportTemplate: options.templates['place-support']
+      });
+      panelLayout.showContent(self.placeDetailView);
 
       // Pan the map to the selected layer
       // TODO: handle non-point geometries
@@ -206,7 +210,7 @@ var Shareabouts = Shareabouts || {};
 
       // TODO: this may not be the best place for this in the long run
       // Show the place details in the panel
-      panelLayout.showContent(new NS.PlaceDetailView({
+      self.placeDetailView = new NS.PlaceDetailView({
         template: options.templates['place-detail'],
         model: model,
         umbrella: self,
@@ -214,9 +218,16 @@ var Shareabouts = Shareabouts || {};
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
-        surveyItemTemplate: options.templates['place-survey-item']
-      }));
+        surveyItemTemplate: options.templates['place-survey-item'],
+
+        // Template for the support view
+        supportTemplate: options.templates['place-support']
+      });
+      panelLayout.showContent(self.placeDetailView);
     });
+
+    // Init the user to a signed in user or an anonymous user
+    this.setUser(options.currentUser);
   };
 
 }(Shareabouts, jQuery, Shareabouts.Util.console));

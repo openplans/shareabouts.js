@@ -73,6 +73,7 @@
   <script src="../src/place-detail-view.js"></script>
   <script src="../src/place-form-view.js"></script>
   <script src="../src/place-survey-view.js"></script>
+  <script src="../src/place-support-view.js"></script>
   <script src="../src/map.js"></script>
   <script>
     var sa = new Shareabouts.Map({
@@ -113,6 +114,7 @@
         // This is only an example. You should use Mustache, Handlebars, etc in real life.
         'place-detail': function(data) {
           return '<h2>' + data.name + '</h2>' +
+            '<div class="support-region"></div>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
@@ -124,6 +126,24 @@
             '<p>' + data.description + '</p>' +
             '<p>' + data.description + '</p>' +
             '<div class="survey-region"></div>';
+        },
+        'place-support': function(data) {
+          'use strict';
+
+          var userToken = Shareabouts.auth.getUserToken(),
+              isUserLoaded = !!userToken,
+              userSupport = _.find(data.items, function(support) { return support['user_token'] === userToken; }),
+              isSupporting = !!userSupport;
+
+          return '<form action="#" method="post" class="btn btn-block btn-small user-support">' +
+            '<input type="hidden" name="user_token" value="' + Shareabouts.auth.getUserToken() + '">' +
+            '<input type="hidden" name="visible" value="true">' +
+            '<input type="checkbox" id="support"' +
+              (isSupporting ? ' checked="checked"' : '') +
+              (isUserLoaded ? '' : ' disabled="disabled"') +
+              '>' +
+            '<label for="support"><span class="support-count">' + data.items.length + '</span> Support</label>' +
+          '</form>';
         },
         'place-survey': function(data) {
           // anonymous user

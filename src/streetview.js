@@ -317,8 +317,11 @@ var Shareabouts = Shareabouts || {};
     };
 
     this.setUser = function(userData) {
-      var markup = options.templates['auth-actions'](userData);
-      $el.find('.shareabouts-auth-container').html(markup);
+      var markup;
+      if (options.templates['auth-actions']) {
+        markup = options.templates['auth-actions'](userData);
+        $el.find('.shareabouts-auth-container').html(markup);
+      }
 
       // So we can pass this into view constructors
       this.currentUser = userData;

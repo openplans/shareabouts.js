@@ -42,6 +42,7 @@ var Shareabouts = Shareabouts || {};
           '<span class="shadow"></span><span class="x"></span><span class="marker"></span>' +
         '</div>' +
       '</div>' +
+      '<div class="shareabouts-auth-container"></div>' +
       '<div class="shareabouts-add-button-container">' +
         '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
@@ -111,6 +112,7 @@ var Shareabouts = Shareabouts || {};
         template: tpl,
         model: model,
         umbrella: self,
+        submitter: self.currentUser,
 
         // Templates for the survey views that are rendered in a region
         surveyTemplate: options.templates['place-survey'],
@@ -149,10 +151,8 @@ var Shareabouts = Shareabouts || {};
       self.placeFormView = new NS.PlaceFormView({
         template: tpl,
         collection: self.placeCollection,
-        umbrella: self
-
-        // TODO
-        // submitter: self.currentUser
+        umbrella: self,
+        submitter: self.currentUser
       });
 
       panelLayout.showContent(self.placeFormView);
@@ -163,6 +163,32 @@ var Shareabouts = Shareabouts || {};
       map.invalidateSize(true);
     });
 
+    this.setUser = function(userData) {
+      var markup;
+      if (options.templates['auth-actions']) {
+        markup = options.templates['auth-actions'](userData);
+        $el.find('.shareabouts-auth-container').html(markup);
+      }
+
+      // So we can pass this into view constructors
+      this.currentUser = userData;
+
+      // If the place form view is open, then rerender the form
+      if (this.placeFormView) {
+        this.placeFormView
+          .setSubmitter(userData)
+          .render();
+      }
+
+      if (this.placeDetailView) {
+        this.placeDetailView.surveyRegion.currentView
+          .setSubmitter(userData)
+          .render();
+        this.placeDetailView.supportRegion.currentView
+          .setSubmitter(userData)
+          .render();
+      }
+    };
 
     // Get all of the places, all at once.
     // TODO: How do we make Sharebouts handle very large datasets?
@@ -183,7 +209,12 @@ var Shareabouts = Shareabouts || {};
       panelLayout.showContent(new NS.PlaceDetailView({
         template: options.templates['place-detail'],
         model: model,
-        umbrella: self
+        umbrella: self,
+        submitter: self.currentUser,
+
+        // Templates for the survey views that are rendered in a region
+        surveyTemplate: options.templates['place-survey'],
+        surveyItemTemplate: options.templates['place-survey-item']
       }));
     });
   };

@@ -17,14 +17,13 @@ var Shareabouts = Shareabouts || {};
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
-        // $addButton,
         map, layoutHtml, i, layerOptions, panelLayout;
 
     // Set any default options
     options = options || {};
-    _.defaults(options, {
-      addButtonLabel: 'Add a Place'
-    });
+    // _.defaults(options, {
+    //   // TBD
+    // });
 
     // Initialize the Shareabouts DOM structure
     layoutHtml =
@@ -34,13 +33,17 @@ var Shareabouts = Shareabouts || {};
       '<div class="shareabouts-auth-container">' +
       '</div>' +
       '<div class="shareabouts-add-button-container">' +
-        '<a href="#" class="shareabouts-add-button button expand"><span>'+options.addButtonLabel+'</span></a>' +
       '</div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +
       '</div>';
     $el.html(layoutHtml);
+
+    // Render the Add button
+    $el.find('.shareabouts-add-button-container').html(
+      options.templates['add-button']()
+    );
 
     // Init the panel layout
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});

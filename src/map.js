@@ -27,6 +27,12 @@ var Shareabouts = Shareabouts || {};
         $el = $(options.el),
         map, layoutHtml, i, layerOptions, panelLayout;
 
+    // For CORS in IE9 and below, we need to POST our requests and tell
+    // the Shareabouts API what method to actually use in the header.
+    if (!$.support.cors && window.XDomainRequest) {
+      Backbone.emulateHTTP = true;
+    }
+
     // Set any default options
     options = options || {};
     // _.defaults(options, {
@@ -202,6 +208,8 @@ var Shareabouts = Shareabouts || {};
     this.placeCollection.fetchAllPages({
       // So we can add the geojson in bulk, not on add
       silent: true,
+      // Explicitly set this. IE9 forgets sometimes.
+      crossDomain: true,
       pageSuccess: function(collection, data) {
         self.geoJsonLayer.addData(data);
       }

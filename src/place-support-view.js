@@ -38,12 +38,17 @@ var Shareabouts = Shareabouts || {};
         attrs = NS.Util.getAttrs(this.ui.form);
         attrs['user_token'] = self.userToken;
         this.collection.create(attrs, {
+          // Explicitly set this. IE9 forgets sometimes.
+          crossDomain: true,
           wait: true,
           // success: function() {
           //   S.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
           // },
           error: function() {
-            self.getSubmitterSupport().destroy();
+            self.getSubmitterSupport().destroy({
+              // Explicitly set this. IE9 forgets sometimes.
+              crossDomain: true
+            });
             alert('Oh dear. It looks like that didn\'t save.');
             // S.Util.log('USER', 'place', 'fail-to-support', self.collection.options.placeModel.getLoggingDetails());
           }
@@ -52,6 +57,8 @@ var Shareabouts = Shareabouts || {};
         evt.target.disabled = true;
 
         userSupport.destroy({
+          // Explicitly set this. IE9 forgets sometimes.
+          crossDomain: true,
           wait: true,
           // success: function() {
           //   S.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());

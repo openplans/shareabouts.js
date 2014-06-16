@@ -64,6 +64,8 @@ var Shareabouts = Shareabouts || {};
       this.model.collection = this.collection;
       this.model.save(data, {
         wait: true,
+        // Explicitly set this. IE9 forgets sometimes.
+        crossDomain: true,
         success: function(evt) {
           // Cool, now add it to the collection.
           self.collection.add(self.model);

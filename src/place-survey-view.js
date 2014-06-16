@@ -73,6 +73,8 @@ var Shareabouts = Shareabouts || {};
       // So we know how to make the model url to save.
       this.model.collection = this.collection;
       this.model.save(data, {
+        // Explicitly set this. IE9 forgets sometimes.
+        crossDomain: true,
         wait: true,
         success: function(evt) {
           // Cool, now add it to the collection.

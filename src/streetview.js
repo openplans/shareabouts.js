@@ -19,6 +19,12 @@ var Shareabouts = Shareabouts || {};
         $el = $(options.el),
         map, layoutHtml, i, layerOptions, panelLayout;
 
+    // For CORS in IE9 and below, we need to POST our requests and tell
+    // the Shareabouts API what method to actually use in the header.
+    if (!$.support.cors && window.XDomainRequest) {
+      Backbone.emulateHTTP = true;
+    }
+
     // Set any default options
     options = options || {};
     // _.defaults(options, {
@@ -209,6 +215,8 @@ var Shareabouts = Shareabouts || {};
 
     // Get all of the places near the center
     this.placeCollection.fetchAllPages({
+      // Explicitly set this. IE9 forgets sometimes.
+      crossDomain: true,
       data: {
         near: mapOptions.center[0] + ',' + mapOptions.center[1],
         distance_lt: mapOptions.maxDistance

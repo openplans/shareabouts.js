@@ -6,7 +6,8 @@
     "backbone": "~1.1.x",
     "jquery": "2.1.0",
     "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
-    "gatekeeper": "https://github.com/openplans/gatekeeper.git#~0.1.x"
+    "gatekeeper": "https://github.com/openplans/gatekeeper.git#~0.1.x",
+    "jqxdomainrequest": "https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest.git#v1.0.2"
   },
   "devDependencies": {
     "sinonjs": "~1.9.x"

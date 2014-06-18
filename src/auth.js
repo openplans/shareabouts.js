@@ -98,17 +98,18 @@ var Shareabouts = Shareabouts || {};
         xhrFields: {
           withCredentials: true
         },
+        dataType: 'jsonp',
         success: function(userData) {
           // When there is no logged in user, the current user API route will
-          // respond with 204 NO CONTENT. If there is a logged in user it will
-          // respond with 200, and the body will contain the user's data.
+          // respond with 200 and null user data. If there is a logged in user
+          // it will also respond with 200, and the body will contain the
+          // user's data.
           self.isAuthenticated = !!userData;
           self.userData = userData;
+
           $(self).trigger('authsuccess', [userData]);
         },
-        error: function() {
-          self.isAuthenticated = false;
-          self.userData = null;
+        error: function(jqXhr) {
           $(self).trigger('autherror');
         },
         complete: function() {
@@ -116,6 +117,5 @@ var Shareabouts = Shareabouts || {};
         }
       });
     };
-
   };
 }(Shareabouts, jQuery, Shareabouts.Util.console));

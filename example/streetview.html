@@ -243,12 +243,6 @@
     });
 
     $(Shareabouts.auth).on('authsuccess', function(evt, data) {
-      if (data) {
-        console.log('you just logged in!', evt, data);
-      } else {
-        console.log('you just logged out!', evt);
-      }
-
       sa.setUser(data);
     });
 

@@ -1,10 +1,10 @@
 {
   "name": "shareabouts-js",
-  "version": "3.0.0",
+  "version": "3.1.2",
   "dependencies": {
     "underscore": ">=1.5",
     "backbone": "~1.1.x",
-    "jquery": "2.1.0",
+    "jquery": "~2.1.0",
     "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
     "gatekeeper": "https://github.com/openplans/gatekeeper.git#~0.1.x",
     "jqxdomainrequest": "https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest.git#v1.0.2"

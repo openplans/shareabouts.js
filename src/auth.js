@@ -1,4 +1,4 @@
-/*global window _ jQuery */
+/*global window, _, jQuery */
 
 var Shareabouts = Shareabouts || {};
 
@@ -19,6 +19,7 @@ var Shareabouts = Shareabouts || {};
     });
 
     var self = this;
+    this.options = options;
 
     this.login = function(service) {
       // NOTE:

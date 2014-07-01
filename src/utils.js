@@ -1,8 +1,8 @@
-/*global _, moment, BinaryFile, loadImage, EXIF */
+/*global _, moment, BinaryFile, loadImage, EXIF, jQuery */
 
 var Shareabouts = Shareabouts || {};
 
-(function(NS){
+(function(NS, $){
   'use strict';
 
   NS.Util = {
@@ -37,11 +37,26 @@ var Shareabouts = Shareabouts || {};
     },
 
     getAttrs: function($form) {
-      var attrs = {};
+      var attrs = {},
+          $checkedCheckboxes = $form.find('[type="checkbox"]:checked'),
+          $uncheckedCheckboxes = $form.find('[type="checkbox"]:not(:checked)');
 
       // Get values from the form
       _.each($form.serializeArray(), function(item) {
         attrs[item.name] = item.value;
+      });
+
+      // Handle check box values
+      $checkedCheckboxes.each(function(i, el) {
+        if (el.name) {
+          attrs[el.name] = true;
+        }
+      });
+
+      $uncheckedCheckboxes.each(function(i, el) {
+        if (el.name) {
+          attrs[el.name] = false;
+        }
       });
 
       return attrs;
@@ -274,4 +289,4 @@ var Shareabouts = Shareabouts || {};
       }
     }
   };
-}(Shareabouts));
+}(Shareabouts, jQuery));

@@ -165,6 +165,16 @@ var Shareabouts = Shareabouts || {};
       unfocusLayer(marker, styleRule);
     });
 
+    // Listen for when a form is shown
+    $(this).on('openplaceform', function(evt, view) {
+      view.$el.parent().parent().parent().addClass('panel-form-open');
+    });
+
+    // Listen for when a form is hidden
+    $(this).on('closeplaceform', function(evt, view) {
+      view.$el.parent().parent().parent().removeClass('panel-form-open');
+    });
+
     // Init add button object
     $el.on('click', '.shareabouts-add-button', function(evt) {
       evt.preventDefault();

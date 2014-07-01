@@ -20,6 +20,10 @@ var Shareabouts = Shareabouts || {};
 
       if (!this.model) {
         this.model = new NS.PlaceModel();
+        // So we know how to make the model url to save.
+        this.model.collection = this.collection;
+      } else {
+        this.setGeometry(this.model.get('geometry'));
       }
 
       if (options.submitter) {
@@ -60,22 +64,19 @@ var Shareabouts = Shareabouts || {};
       // add loading/busy class
       this.$el.addClass('loading');
 
-      // So we know how to make the model url to save.
-      this.model.collection = this.collection;
       this.model.save(data, {
         wait: true,
         // Explicitly set this. IE9 forgets sometimes.
         crossDomain: true,
         success: function(evt) {
           // Cool, now add it to the collection.
-          self.collection.add(self.model);
+          if (!self.model.collection) {
+            self.collection.add(self.model);
+          }
 
           // Create is not a real event, but we want to know when a new thing
           // is saved.
           self.collection.trigger('create', self.model);
-
-          // Reset the form after it is saved successfully
-          self.ui.form.get(0).reset();
         },
         complete: function(evt) {
           // enable the submit button
@@ -101,13 +102,9 @@ var Shareabouts = Shareabouts || {};
       return this;
     },
     onClose: function() {
-      // ick
-      this.$el.parent().parent().parent().removeClass('panel-form-open');
       $(this.options.umbrella).trigger('closeplaceform', [this]);
     },
     onShow: function() {
-      // ick
-      this.$el.parent().parent().parent().addClass('panel-form-open');
       $(this.options.umbrella).trigger('showplaceform', [this]);
     }
   });

@@ -177,21 +177,26 @@ var Shareabouts = Shareabouts || {};
     this.requestNewUserSession = function(username, password, options) {
       // Log a user in using their username and password,
       // and store their data in the user session.
+      if (arguments.length === 1) { options = username; }
 
       options = options || {};
       var self = this,
           ajaxError = options.error,
-          ajaxComplete = options.complete;
+          ajaxComplete = options.complete,
+          ajaxOptions = _.extend({}, options);
+
+      // If we omit the username and password, it's a logout request.
+      if (arguments.length === 1) {
+        ajaxOptions.type = 'DELETE';
+      } else {
+        ajaxOptions.type = 'POST';
+        ajaxOptions.data = JSON.stringify({'username': username, 'password': password});
+      }
 
       // First, perform a request to log the user in.
-      $.ajax(_.extend({}, options, {
+      $.ajax(_.extend(ajaxOptions, {
         url: self.options.apiRoot + 'users/current',
-        type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({
-          'username': username,
-          'password': password
-        }),
         xhrFields: {withCredentials: true},
 
         success: function() {

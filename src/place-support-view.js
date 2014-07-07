@@ -41,6 +41,10 @@ var Shareabouts = Shareabouts || {};
           // Explicitly set this. IE9 forgets sometimes.
           crossDomain: true,
           wait: true,
+          beforeSend: function ($xhr) {
+            // Add custom headers
+            $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
+          },
           // success: function() {
           //   S.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
           // },
@@ -60,6 +64,10 @@ var Shareabouts = Shareabouts || {};
           // Explicitly set this. IE9 forgets sometimes.
           crossDomain: true,
           wait: true,
+          beforeSend: function ($xhr) {
+            // Add custom headers
+            $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
+          },
           // success: function() {
           //   S.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());
           // },

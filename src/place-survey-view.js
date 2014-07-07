@@ -76,6 +76,10 @@ var Shareabouts = Shareabouts || {};
         // Explicitly set this. IE9 forgets sometimes.
         crossDomain: true,
         wait: true,
+        beforeSend: function ($xhr) {
+          // Add custom headers
+          $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
+        },
         success: function(evt) {
           // Cool, now add it to the collection.
           self.collection.add(self.model);

@@ -68,9 +68,17 @@ var Shareabouts = Shareabouts || {};
         wait: true,
         // Explicitly set this. IE9 forgets sometimes.
         crossDomain: true,
-        beforeSend: function ($xhr) {
+        beforeSend: function ($xhr, options) {
+          var delim;
           // Add custom headers
           $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
+
+          // Add 'include_invisible' so that we can nicely save invisible places,
+          // but only if the user says it's okay via the options.
+          if (self.options.include_invisible) {
+            delim = options.url.indexOf('?') !== -1 ? '&' : '?';
+            options.url = options.url + delim + 'include_invisible';
+          }
         },
         success: function(evt) {
           // Cool, now add it to the collection.

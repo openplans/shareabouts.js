@@ -89,6 +89,15 @@ var Shareabouts = Shareabouts || {};
           // Create is not a real event, but we want to know when a new thing
           // is saved.
           self.collection.trigger('create', self.model);
+
+          if (self.options.success) {
+            self.options.success.apply(self, arguments);
+          }
+        },
+        error: function() {
+          if (self.options.error) {
+            self.options.error.apply(self, arguments);
+          }
         },
         complete: function(evt) {
           // enable the submit button

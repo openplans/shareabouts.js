@@ -25,7 +25,7 @@ var Shareabouts = Shareabouts || {};
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
-        map, layoutHtml, i, layerOptions, panelLayout;
+        layoutHtml, i, layerOptions, panelLayout;
 
     // For CORS in IE9 and below, we need to POST our requests and tell
     // the Shareabouts API what method to actually use in the header.
@@ -65,10 +65,10 @@ var Shareabouts = Shareabouts || {};
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
 
     // Init the map
-    map = L.map($el.find('.shareabouts-map').get(0), options.map);
+    this.map = L.map($el.find('.shareabouts-map').get(0), options.map);
     for (i = 0; i < options.layers.length; ++i) {
       layerOptions = options.layers[i];
-      L.tileLayer(layerOptions.url, layerOptions).addTo(map);
+      L.tileLayer(layerOptions.url, layerOptions).addTo(this.map);
     }
 
     // Init the place collection
@@ -95,11 +95,11 @@ var Shareabouts = Shareabouts || {};
     }).on('layeradd', function(evt) {
       // Map model ids to leaflet layer ids
       modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
-    }).addTo(map);
+    }).addTo(this.map);
 
     // Listen for map moves, and update the geometry on the place form view
     // if it is open.
-    map.on('dragend', function(evt) {
+    this.map.on('dragend', function(evt) {
       var center = evt.target.getCenter();
 
       if (self.placeFormView) {
@@ -134,7 +134,7 @@ var Shareabouts = Shareabouts || {};
 
       // Pan the map to the selected layer
       // TODO: handle non-point geometries
-      map.panTo(evt.layer.getLatLng());
+      self.map.panTo(evt.layer.getLatLng());
     });
 
     // Listen for when a place is shown
@@ -183,7 +183,7 @@ var Shareabouts = Shareabouts || {};
 
     // Tell the map to resize itself when its container changes width
     $el.on('showpanel closepanel', function() {
-      map.invalidateSize(true);
+      self.map.invalidateSize(true);
     });
 
     this.setUser = function(userData) {

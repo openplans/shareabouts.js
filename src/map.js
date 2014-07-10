@@ -156,7 +156,7 @@ var Shareabouts = Shareabouts || {};
     });
 
     // Listen for when a form is shown
-    $(this).on('openplaceform', function(evt, view) {
+    $(this).on('showplaceform', function(evt, view) {
       view.$el.parent().parent().parent().addClass('panel-form-open');
     });
 

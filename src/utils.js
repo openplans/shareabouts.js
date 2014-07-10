@@ -287,6 +287,33 @@ var Shareabouts = Shareabouts || {};
       destroy: function(name) {
         this.save(name,'',-1);
       }
+    },
+    MapQuest: {
+      geocode: function(location, bounds, options, mapQuestKey) {
+        if (!mapQuestKey) { throw 'You must provide a MapQuest key for geocoding to work.'; }
+
+        options = options || {};
+        options.dataType = 'jsonp';
+        options.cache = true;
+        options.url = 'http://open.mapquestapi.com/geocoding/v1/address?key=' + mapQuestKey + '&location=' + location;
+        if (bounds) {
+          options.url += '&boundingBox=' + bounds.join(',');
+        }
+        $.ajax(options);
+      },
+      reverseGeocode: function(latLng, options, mapQuestKey) {
+        var lat, lng;
+
+        if (!mapQuestKey) { throw 'You must provide a MapQuest key for geocoding to work.'; }
+
+        lat = latLng.lat || latLng[0];
+        lng = latLng.lng || latLng[1];
+        options = options || {};
+        options.dataType = 'jsonp';
+        options.cache = true;
+        options.url = 'http://open.mapquestapi.com/geocoding/v1/reverse?key=' + mapQuestKey + '&location=' + lat + ',' + lng;
+        $.ajax(options);
+      }
     }
   };
 }(Shareabouts, jQuery));

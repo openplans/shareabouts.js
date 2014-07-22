@@ -197,6 +197,8 @@ var Shareabouts = Shareabouts || {};
 
         panelLayout.showContent(self.placeFormView);
 
+        NS.Util.log('USER', 'streetview', 'new-place-btn-click');
+
         plusMarker.setOptions({
           map: self.panorama,
           icon: styleRule.newIcon,
@@ -318,6 +320,7 @@ var Shareabouts = Shareabouts || {};
       if (options.templates['place-detail']) {
         google.maps.event.addListener(marker, 'click', function(evt) {
           self.showPlace(model);
+          NS.Util.log('USER', 'streetview', 'place-marker-click', model.getLoggingDetails());
         });
       }
 
@@ -342,6 +345,8 @@ var Shareabouts = Shareabouts || {};
 
             // show the window
             summaryWindow.open(self.panorama, marker);
+
+            NS.Util.log('USER', 'streetview', 'place-marker-hover', model.getLoggingDetails());
 
             // reset the timeout id
             summaryWindowTid = null;

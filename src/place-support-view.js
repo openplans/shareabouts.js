@@ -1,4 +1,4 @@
-/*global jQuery, Backbone */
+/*global jQuery, Backbone, alert */
 
 var Shareabouts = Shareabouts || {};
 
@@ -31,6 +31,8 @@ var Shareabouts = Shareabouts || {};
           userSupport = this.getSubmitterSupport(),
           attrs;
 
+      NS.Util.log('USER', 'place', 'support-btn-click', self.collection.options.placeModel.getLoggingDetails(), self.collection.size());
+
       if (checked && !userSupport) {
         evt.target.disabled = true;
 
@@ -45,16 +47,16 @@ var Shareabouts = Shareabouts || {};
             // Add custom headers
             $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
           },
-          // success: function() {
-          //   S.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
-          // },
+          success: function() {
+            NS.Util.log('USER', 'place', 'successfully-support', self.collection.options.placeModel.getLoggingDetails());
+          },
           error: function() {
             self.getSubmitterSupport().destroy({
               // Explicitly set this. IE9 forgets sometimes.
               crossDomain: true
             });
             alert('Oh dear. It looks like that didn\'t save.');
-            // S.Util.log('USER', 'place', 'fail-to-support', self.collection.options.placeModel.getLoggingDetails());
+            NS.Util.log('USER', 'place', 'fail-to-support', self.collection.options.placeModel.getLoggingDetails());
           }
         });
       } else if (!checked && !!userSupport) {
@@ -68,13 +70,13 @@ var Shareabouts = Shareabouts || {};
             // Add custom headers
             $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
           },
-          // success: function() {
-          //   S.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());
-          // },
+          success: function() {
+            NS.Util.log('USER', 'place', 'successfully-unsupport', self.collection.options.placeModel.getLoggingDetails());
+          },
           error: function() {
             self.collection.add(userSupport);
             alert('Oh dear. It looks like that didn\'t save.');
-            // S.Util.log('USER', 'place', 'fail-to-unsupport', self.collection.options.placeModel.getLoggingDetails());
+            NS.Util.log('USER', 'place', 'fail-to-unsupport', self.collection.options.placeModel.getLoggingDetails());
           }
         });
       }

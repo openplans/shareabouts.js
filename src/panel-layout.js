@@ -27,6 +27,8 @@ var Shareabouts = Shareabouts || {};
       if (this.currentView.onShow) {
         this.currentView.onShow();
       }
+
+      NS.Util.log('APP', 'panel-state', 'open');
     },
     handleCloseClick: function(evt) {
       evt.preventDefault();
@@ -34,8 +36,11 @@ var Shareabouts = Shareabouts || {};
         .removeClass('panel-open')
         .trigger('closepanel');
 
+      NS.Util.log('USER', 'panel', 'close-btn-click');
+
       if (this.currentView.onClose) {
         this.currentView.onClose();
+        NS.Util.log('APP', 'panel-state', 'closed');
       }
     }
   });

@@ -108,7 +108,30 @@ var Shareabouts = Shareabouts || {};
           coordinates: [center.lng, center.lat]
         });
       }
+
+      // Log user map bounds changes
+      NS.Util.log('USER', 'map', 'drag', self.map.getBounds().toBBoxString(), self.map.getZoom());
     });
+
+    // Log app map bounds changes
+    this.map.on('moveend', function(evt) {
+      NS.Util.log('APP', 'center-lat', self.map.getCenter().lat);
+      NS.Util.log('APP', 'center-lng', self.map.getCenter().lng);
+    });
+
+    // Log user zoom changes
+    $(self.map.zoomControl._zoomInButton).click(function() {
+      NS.Util.log('USER', 'map', 'zoom', self.map.getBounds().toBBoxString(), self.map.getZoom());
+    });
+    $(self.map.zoomControl._zoomOutButton).click(function() {
+      NS.Util.log('USER', 'map', 'zoom', self.map.getBounds().toBBoxString(), self.map.getZoom());
+    });
+
+    // Log app zoom changes
+    self.map.on('zoomend', function(evt) {
+      NS.Util.log('APP', 'zoom', self.map.getZoom());
+    });
+
 
     // Render the place detail template
     this.geoJsonLayer.on('click', function(evt) {
@@ -131,6 +154,8 @@ var Shareabouts = Shareabouts || {};
         supportTemplate: options.templates['place-support']
       });
       panelLayout.showContent(self.placeDetailView);
+
+      NS.Util.log('USER', 'map', 'place-marker-click', model.getLoggingDetails());
 
       // Pan the map to the selected layer
       // TODO: handle non-point geometries
@@ -179,6 +204,8 @@ var Shareabouts = Shareabouts || {};
       });
 
       panelLayout.showContent(self.placeFormView);
+
+      NS.Util.log('USER', 'map', 'new-place-btn-click');
     });
 
     // Tell the map to resize itself when its container changes width

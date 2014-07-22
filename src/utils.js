@@ -87,6 +87,57 @@ var Shareabouts = Shareabouts || {};
       return dummy.disabled === false;
     },
 
+    // ====================================================
+    // Event and State Logging
+
+    log: function() {
+      var args = Array.prototype.slice.call(arguments, 0);
+
+      if (window.ga) {
+        this.analytics(args);
+      } else {
+        NS.Util.console.log(args);
+      }
+    },
+
+    analytics: function(args) {
+      var firstArg = args.shift(),
+          secondArg,
+          measure,
+          measures = {
+            'center-lat': 'metric1',
+            'center-lng': 'metric2',
+            'zoom': 'metric3',
+
+            'panel-state': 'dimension1'
+          };
+
+      switch (firstArg.toLowerCase()) {
+        case 'route':
+          args = ['send', 'pageview'].concat(args);
+          break;
+
+        case 'user':
+          args = ['send', 'event'].concat(args);
+          break;
+
+        case 'app':
+          secondArg = args.shift();
+          measure = measures[secondArg];
+          if (!measure) {
+            this.console.error('No metrics or dimensions matching "' + secondArg + '"');
+            return;
+          }
+          args = ['set', measure].concat(args);
+          break;
+
+        default:
+          return;
+      }
+
+      window.ga.apply(window, args);
+    },
+
     // For browsers without a console
     console: window.console || {
       log: function(){},

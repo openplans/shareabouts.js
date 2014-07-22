@@ -46,6 +46,8 @@ var Shareabouts = Shareabouts || {};
           data = NS.Util.getAttrs(this.ui.form),
           submitter = this.model.get('submitter');
 
+      NS.Util.log('USER', 'new-place', 'submit-place-btn-click');
+
       // Do nothing - can't save without a geometry
       if (!this.geometry) {
         return;
@@ -93,11 +95,15 @@ var Shareabouts = Shareabouts || {};
           if (self.options.success) {
             self.options.success.apply(self, arguments);
           }
+
+          NS.Util.log('USER', 'new-place', 'successfully-add-place');
         },
         error: function() {
           if (self.options.error) {
             self.options.error.apply(self, arguments);
           }
+
+          NS.Util.log('USER', 'new-place', 'fail-to-add-place');
         },
         complete: function(evt) {
           // enable the submit button

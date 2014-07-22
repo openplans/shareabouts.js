@@ -268,6 +268,11 @@ var Shareabouts = Shareabouts || {};
         });
 
       return this.submissionSets[name];
+    },
+
+    // For Google Analytics and such
+    getLoggingDetails: function() {
+      return this.id;
     }
   });
 

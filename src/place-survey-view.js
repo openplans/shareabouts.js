@@ -58,6 +58,10 @@ var Shareabouts = Shareabouts || {};
           data = NS.Util.getAttrs(this.ui.form),
           submitter = this.model.get('submitter');
 
+      NS.Util.log('USER', 'place', 'submit-reply-btn-click',
+        this.collection.options.placeModel.getLoggingDetails(),
+        this.collection.size());
+
       // Unset the submitter since it's only used for rendering. For saving, it
       // will be automatically set to the logged in user.
       if (submitter) {
@@ -86,6 +90,13 @@ var Shareabouts = Shareabouts || {};
 
           // Reset the form after it is saved successfully
           self.ui.form.get(0).reset();
+
+          NS.Util.log('USER', 'place', 'successfully-reply',
+            self.collection.options.placeModel.getLoggingDetails());
+        },
+        error: function() {
+          NS.Util.log('USER', 'place', 'fail-to-reply',
+            self.collection.options.placeModel.getLoggingDetails());
         },
         complete: function(evt) {
           // enable the submit button

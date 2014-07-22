@@ -81,6 +81,9 @@ var Shareabouts = Shareabouts || {};
             delim = options.url.indexOf('?') !== -1 ? '&' : '?';
             options.url = options.url + delim + 'include_invisible';
           }
+
+          // Remind the browser to send credentials
+          $xhr.withCredentials = true;
         },
         success: function(evt) {
           // Cool, now add it to the collection.

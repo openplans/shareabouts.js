@@ -82,7 +82,7 @@ var Shareabouts = Shareabouts || {};
         },
         success: function(evt) {
           // Cool, now add it to the collection.
-          if (!self.model.collection) {
+          if (!self.collection.get(self.model.id)) {
             self.collection.add(self.model);
           }
 

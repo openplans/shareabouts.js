@@ -148,6 +148,53 @@ var Shareabouts = Shareabouts || {};
     comparator: 'created_datetime'
   });
 
+  NS.SnapshotModel = Backbone.Model.extend({
+    sync: syncWithCredentials,
+
+    download: function(options) {
+      options = options || {};
+
+      var self = this,
+          delay = 50,
+          url = self.get('url') + '.' + (options.format || 'json');
+
+      var getFilename = function(url) {
+        var filename = url.substring(url.lastIndexOf('/')+1);
+        return filename;
+      };
+
+      var tryDownload = function() {
+        $.ajax({
+          type: 'HEAD',
+          url: url,
+          data: options.data,
+
+          success: function() {
+            var args = Array.prototype.splice.call(arguments, 0),
+                filename = getFilename(url);
+            if (options.success) { options.success.apply(this, [url, filename].concat(args)); }
+          },
+
+          error: function($xhr) {
+            if ($xhr.status === 503) {
+              if (delay < 5000) { delay *= 2; }
+              _.delay(tryDownload, delay);
+            } else {
+              if (options.error) { options.error.apply(this, arguments); }
+            }
+          }
+        });
+      };
+
+      tryDownload();
+    }
+  });
+
+  NS.SnapshotCollection = Backbone.Collection.extend({
+    url: '/api/places/snapshots',
+    model: NS.SnapshotModel
+  });
+
   NS.PlaceModel = Backbone.Model.extend({
     initialize: function() {
       var attachmentData;

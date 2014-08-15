@@ -151,42 +151,41 @@ var Shareabouts = Shareabouts || {};
   NS.SnapshotModel = Backbone.Model.extend({
     sync: syncWithCredentials,
 
-    download: function(options) {
+    waitUntilReady: function(options) {
       options = options || {};
 
       var self = this,
           delay = 50,
           url = self.get('url') + '.' + (options.format || 'json');
 
-      var getFilename = function(url) {
-        var filename = url.substring(url.lastIndexOf('/')+1);
-        return filename;
-      };
-
-      var tryDownload = function() {
+      // Poll the download URL until it is ready.
+      var checkIfReady = function() {
         $.ajax({
-          type: 'HEAD',
           url: url,
           data: options.data,
 
+          // Only request the head so that we don't download the entire
+          // snapshot.
+          type: 'HEAD',
+
           success: function() {
-            var args = Array.prototype.splice.call(arguments, 0),
-                filename = getFilename(url);
-            if (options.success) { options.success.apply(this, [url, filename].concat(args)); }
+            var args = Array.prototype.splice.call(arguments, 0);
+            if (options.success) { options.success.apply(this, [url].concat(args)); }
           },
 
           error: function($xhr) {
             if ($xhr.status === 503) {
+              // 503 means not yet ready. Try again.
               if (delay < 5000) { delay *= 2; }
-              _.delay(tryDownload, delay);
+              _.delay(checkIfReady, delay);
             } else {
+              // Anything besides 503 is an actual failure.
               if (options.error) { options.error.apply(this, arguments); }
             }
           }
         });
       };
-
-      tryDownload();
+      checkIfReady();
     }
   });
 

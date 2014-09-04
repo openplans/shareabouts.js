@@ -362,6 +362,8 @@ var Shareabouts = Shareabouts || {};
       }
 
       markers[model.id] = marker;
+
+      $(self).trigger('addplace', [model]);
     });
 
     // Init the user to a signed in user or an anonymous user

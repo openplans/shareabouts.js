@@ -154,6 +154,9 @@ var Shareabouts = Shareabouts || {};
         xhrFields: {
           withCredentials: true
         },
+        // Ensure that this is processed as jsonp, even if the global default
+        // is set to false, as in the case of the default Django CSRF settings.
+        crossDomain: true,
         dataType: 'jsonp',
         success: function(userData) {
           // When there is no logged in user, the current user API route will

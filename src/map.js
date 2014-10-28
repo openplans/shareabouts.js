@@ -47,14 +47,20 @@ var Shareabouts = Shareabouts || {};
           '<span class="shadow"></span><span class="x"></span><span class="marker"></span>' +
         '</div>' +
       '</div>' +
+      '<div class="shareabouts-legend-container"></div>' +
       '<div class="shareabouts-auth-container"></div>' +
-      '<div class="shareabouts-add-button-container">' +
-      '</div>' +
+      '<div class="shareabouts-add-button-container"></div>' +
       '<div class="shareabouts-panel">' +
         '<span class="shareabouts-close-button">&times;</span>' +
         '<div class="shareabouts-panel-content"></div>' +
       '</div>';
     $el.html(layoutHtml);
+
+    // Render the legend
+    $el.find('.shareabouts-legend-container').html(
+      options.templates['legend'] ?
+        options.templates['legend']() : ''
+    );
 
     // Render the Add button
     $el.find('.shareabouts-add-button-container').html(
@@ -188,6 +194,12 @@ var Shareabouts = Shareabouts || {};
     // Listen for when a form is hidden
     $(this).on('closeplaceform', function(evt, view) {
       view.$el.parent().parent().parent().removeClass('panel-form-open');
+    });
+
+    // Init legend button object
+    $el.on('click', '.shareabouts-legend-button', function(evt) {
+      evt.preventDefault();
+      $(this).siblings('.shareabouts-legend').toggleClass('legend-open');
     });
 
     // Init add button object

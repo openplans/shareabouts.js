@@ -39,6 +39,20 @@
 }
 
 
+/* =Legend area
+-------------------------------------------------------------- */
+.shareabouts-legend-container {
+  position: relative;
+  z-index: 4;
+}
+.shareabouts-legend { 
+  display: none;
+}
+.shareabouts-legend.legend-open {
+  display: block;
+}
+
+
 /* =Panel area
 -------------------------------------------------------------- */
 .shareabouts-panel {
@@ -193,6 +207,28 @@
   .panel-open .shareabouts-map-container {
     width:50%;
     float: left;
+  }
+
+  .shareabouts-legend-container {
+    position: absolute;
+    top: 20%;
+    right: 1em;
+    bottom: 2.5em;
+  }
+  .shareabouts-legend-button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  .shareabouts-legend {
+    position: absolute;
+    right: 0;
+    bottom: 1em;
+    background-color: #fff;
+    width: auto;
+    min-width: 10em;   
+    max-height: 80%;   
+    overflow: scroll;
   }
 
   .shareabouts-auth-container {

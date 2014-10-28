@@ -11,7 +11,7 @@
     "grunt-contrib-clean": "0.4.0",
     "grunt-bower-requirejs": "~0.4.0",
     "grunt-regarde": "~0.1.1",
-    "grunt-mocha": "~0.2.2",
+    "grunt-mocha": "~0.4.11",
     "grunt-open": "~0.2.0",
     "matchdep": "~0.1.1"
   },

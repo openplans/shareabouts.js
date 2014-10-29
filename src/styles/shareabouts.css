@@ -228,7 +228,7 @@
     width: auto;
     min-width: 10em;   
     max-height: 80%;   
-    overflow: scroll;
+    overflow: auto;
   }
 
   .shareabouts-auth-container {

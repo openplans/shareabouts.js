@@ -196,6 +196,15 @@ var Shareabouts = Shareabouts || {};
       view.$el.parent().parent().parent().removeClass('panel-form-open');
     });
 
+    // Listen for when a panel is hovered
+    $('.shareabouts-panel').hover(
+      function() {
+        $('body').addClass('shareabouts-panel-hovered');
+      }, function() {
+        $('body').removeClass('shareabouts-panel-hovered');
+      }
+    );
+
     // Init legend button object
     $el.on('click', '.shareabouts-legend-button', function(evt) {
       evt.preventDefault();

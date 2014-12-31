@@ -21,7 +21,7 @@ var Shareabouts = Shareabouts || {};
     this.sqlurl = options.sqlurl;
 
     this.tables = _.defaults(options.tables || {}, {
-      places: 'places'
+      places: 'shareabouts_places'
     });
   };
 

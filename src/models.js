@@ -34,7 +34,7 @@ var Shareabouts = Shareabouts || {};
     fetchNextPage: function(success, error) {
       var collection = this;
 
-      if (this.metadata.next) {
+      if (this.metadata && this.metadata.next) {
         collection.fetch({
           remove: false,
           url: collection.metadata.next,
@@ -62,14 +62,14 @@ var Shareabouts = Shareabouts || {};
         // Calculate the total number of pages based on the size of the rist
         // page, assuming all pages except the last will be the same size.
         var pageSize = data[self.resultsAttr].length, i;
-        totalPages = Math.ceil(data.metadata.length / pageSize);
+        totalPages = data.metadata ? Math.ceil(data.metadata.length / pageSize) : 1;
 
         if (options.success) {
           onAllSuccess = _.after(totalPages, options.success);
         }
 
         // Fetch all the rest of the pages in parallel.
-        if (data.metadata.next) {
+        if (data.metadata && data.metadata.next) {
           for (i = 2; i <= totalPages; i++) {
             self.fetch(_.defaults({
               remove: false,

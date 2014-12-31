@@ -278,13 +278,9 @@
       var collection;
 
       beforeEach(function() {
-          collection = new S.PlaceCollection(S.Data.places, {
+          collection = new S.PlaceCollection(S.Data.cartodbplaces, {
           parse: true
         });
-      });
-
-      it('should have metadata', function () {
-        assert.property(collection, 'metadata');
       });
 
       it('should have 4 models', function () {

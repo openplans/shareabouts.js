@@ -5,6 +5,8 @@ var Shareabouts = Shareabouts || {};
 (function(NS, $) {
   'use strict';
 
+  NS.backend = NS.backend || new NS.ShareaboutsAPIBackend();
+
   var normalizeModelArguments = function(key, val, options) {
     var attrs;
     if (key === null || _.isObject(key)) {
@@ -19,14 +21,6 @@ var Shareabouts = Shareabouts || {};
       options: options,
       attrs: attrs
     };
-  };
-
-  var syncWithCredentials = function(method, model, options) {
-    _.defaults(options || (options = {}), {
-      xhrFields: {withCredentials: true}
-    });
-
-    return Backbone.sync.apply(this, [method, model, options]);
   };
 
   NS.PaginatedCollection = Backbone.Collection.extend({
@@ -119,7 +113,7 @@ var Shareabouts = Shareabouts || {};
   });
 
   NS.SubmissionModel = Backbone.Model.extend({
-    sync: syncWithCredentials
+    sync: NS.backend.sync
   });
 
   NS.SubmissionCollection = NS.PaginatedCollection.extend({
@@ -143,13 +137,13 @@ var Shareabouts = Shareabouts || {};
       return this.options.placeModel.url() + '/' + submissionType;
     },
 
-    sync: syncWithCredentials,
+    sync: NS.backend.sync,
 
     comparator: 'created_datetime'
   });
 
   NS.SnapshotModel = Backbone.Model.extend({
-    sync: syncWithCredentials,
+    sync: NS.backend.sync,
 
     waitUntilReady: function(options) {
       options = options || {};
@@ -296,7 +290,7 @@ var Shareabouts = Shareabouts || {};
         options.contentType = 'application/json';
       }
 
-      return syncWithCredentials.apply(this, [method, model, options]);
+      return NS.backend.sync.apply(this, [method, model, options]);
     },
     toGeoJSON: function() {
       return {
@@ -362,7 +356,7 @@ var Shareabouts = Shareabouts || {};
       };
       place.fetch(options);
     },
-    sync: syncWithCredentials
+    sync: NS.backend.sync
   });
 
   // This does not support editing at this time, which is why it is not a
@@ -431,7 +425,7 @@ var Shareabouts = Shareabouts || {};
         processData: false
       });
     },
-    sync: syncWithCredentials
+    sync: NS.backend.sync
   });
 
   NS.AttachmentCollection = Backbone.Collection.extend({
@@ -447,7 +441,7 @@ var Shareabouts = Shareabouts || {};
 
       return thingUrl + '/attachments';
     },
-    sync: syncWithCredentials
+    sync: NS.backend.sync
   });
 
   NS.ActionCollection = NS.PaginatedCollection.extend({
@@ -459,7 +453,7 @@ var Shareabouts = Shareabouts || {};
         return 1;
       }
     },
-    sync: syncWithCredentials
+    sync: NS.backend.sync
   });
 
 }(Shareabouts, jQuery));

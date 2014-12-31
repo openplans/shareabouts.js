@@ -32,7 +32,7 @@ var Shareabouts = Shareabouts || {};
         options.url = this.getSQLURL();
         options.type = 'GET';
         _.extend(options.data, {
-          q: encodeURIComponent('SELECT * FROM ' + this.tables.places + ';'),
+          q: 'SELECT * FROM ' + this.tables.places + ';',
           format: 'GeoJSON'
         });
       }

@@ -305,6 +305,7 @@ var Shareabouts = Shareabouts || {};
     toGeoJSON: function() {
       return {
         'type': 'Feature',
+        'id': this.id,
         'geometry': this.get('geometry'),
         'properties': _.omit(this.toJSON(), 'geometry')
       };

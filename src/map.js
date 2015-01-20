@@ -100,7 +100,7 @@ var Shareabouts = Shareabouts || {};
       }
     }).on('layeradd', function(evt) {
       // Map model ids to leaflet layer ids
-      modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
+      modelIdToLayerId[evt.layer.feature.id] = evt.layer._leaflet_id;
     }).addTo(this.map);
 
     // Listen for map moves, and update the geometry on the place form view
@@ -140,10 +140,10 @@ var Shareabouts = Shareabouts || {};
 
 
     // Render the place detail template
-    this.geoJsonLayer.on('click', function(evt) {
+    this.handleGeoJSONLayerClick = function(evt) {
       var tpl = options.templates['place-detail'],
           featureData = evt.layer.feature,
-          model = self.placeCollection.get(featureData.properties.id);
+          model = self.placeCollection.get(featureData.id);
 
       // Show the place details in the panel
       self.placeDetailView = new NS.PlaceDetailView({
@@ -166,7 +166,8 @@ var Shareabouts = Shareabouts || {};
       // Pan the map to the selected layer
       // TODO: handle non-point geometries
       self.map.panTo(evt.layer.getLatLng());
-    });
+    };
+    this.geoJsonLayer.on('click', this.handleGeoJSONLayerClick);
 
     // Listen for when a place is shown
     $(this).on('showplace', function(evt, view){

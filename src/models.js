@@ -113,12 +113,20 @@ var Shareabouts = Shareabouts || {};
   });
 
   NS.SubmissionModel = Backbone.Model.extend({
-    sync: NS.backend.sync
+    initialize: function(attrs, options) {
+      options = options || {};
+      this.backend = options.backend || NS.backend;
+      this.backend.prepareSubmissionModel(this, attrs, options);
+    }
   });
 
   NS.SubmissionCollection = NS.PaginatedCollection.extend({
     initialize: function(models, options) {
       this.options = options;
+
+      options = options || {};
+      this.backend = options.backend || NS.backend;
+      this.backend.prepareSubmissionCollection(this, models, options);
     },
 
     model: NS.SubmissionModel,
@@ -136,8 +144,6 @@ var Shareabouts = Shareabouts || {};
 
       return this.options.placeModel.url() + '/' + submissionType;
     },
-
-    sync: NS.backend.sync,
 
     comparator: 'created_datetime'
   });
@@ -189,8 +195,12 @@ var Shareabouts = Shareabouts || {};
   });
 
   NS.PlaceModel = Backbone.Model.extend({
-    initialize: function() {
+    initialize: function(attrs, options) {
       var attachmentData;
+
+      options = options || {};
+      this.backend = options.backend || NS.backend;
+      this.backend.preparePlaceModel(this, attrs, options);
 
       this.submissionSets = {};
 
@@ -317,7 +327,12 @@ var Shareabouts = Shareabouts || {};
   });
 
   NS.PlaceCollection = NS.PaginatedCollection.extend({
-    url: '/api/places',
+    initialize: function(attrs, options) {
+      options = options || {};
+      this.backend = options.backend || NS.backend;
+      this.backend.preparePlaceCollection(this, attrs, options);
+    },
+
     model: NS.PlaceModel,
     resultsAttr: 'features',
 
@@ -355,8 +370,7 @@ var Shareabouts = Shareabouts || {};
         }
       };
       place.fetch(options);
-    },
-    sync: NS.backend.sync
+    }
   });
 
   // This does not support editing at this time, which is why it is not a

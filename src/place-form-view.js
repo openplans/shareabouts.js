@@ -68,23 +68,9 @@ var Shareabouts = Shareabouts || {};
 
       this.model.save(data, {
         wait: true,
+        silent: !!self.options.silent,
         // Explicitly set this. IE9 forgets sometimes.
         crossDomain: true,
-        beforeSend: function ($xhr, options) {
-          var delim;
-          // Add custom headers
-          $xhr.setRequestHeader('X-Shareabouts-Silent', !!self.options.silent);
-
-          // Add 'include_invisible' so that we can nicely save invisible places,
-          // but only if the user says it's okay via the options.
-          if (self.options.include_invisible) {
-            delim = options.url.indexOf('?') !== -1 ? '&' : '?';
-            options.url = options.url + delim + 'include_invisible';
-          }
-
-          // Remind the browser to send credentials
-          $xhr.withCredentials = true;
-        },
         success: function(evt) {
           // Cool, now add it to the collection.
           if (!self.collection.get(self.model.id)) {

@@ -20,7 +20,9 @@ var Shareabouts = Shareabouts || {};
       options.beforeSend = function ($xhr, inneroptions) {
         var delim;
 
-        origBeforeSend($xhr, inneroptions);
+        if (origBeforeSend) {
+          origBeforeSend($xhr, inneroptions);
+        }
 
         // Add custom headers
         $xhr.setRequestHeader('X-Shareabouts-Silent', !!options.silent);

@@ -5,6 +5,27 @@ var Shareabouts = Shareabouts || {};
 (function(NS, $) {
   'use strict';
 
+  var _escapedAndQuotedValues = function(data, fields) {
+    var values = [];
+    var value;
+
+    _.each(fields, function(field) {
+      value = data[field] || '';
+      value = '\'' + value.replace('\'', '\'\'') + '\'';
+      values.push(value);
+    });
+
+    return values;
+  };
+
+  var _fieldDefs = function(fields) {
+    return _.map(fields, function(fieldName) { return fieldName + ' text'; });
+  };
+
+  var _fieldVars = function(tableOrFunc, fields) {
+    return _.map(fields, function(fieldName) { return tableOrFunc + '.' + fieldName; });
+  };
+
   NS.CartoDBBackend = function(options) {
     /* Options
      * -------
@@ -21,22 +42,14 @@ var Shareabouts = Shareabouts || {};
     this.sqlurl = options.sqlurl;
 
     this.tables = _.defaults(options.tables || {}, {
-      places: 'shareabouts_places',
-      surveys: 'shareabouts_surveys',
-      support: 'shareabouts_support'
+      places: {'name': 'shareabouts_places'},
+      surveys: {'name': 'shareabouts_surveys'},
+      support: {'name': 'shareabouts_support'}
     });
 
-    this.fields = _.defaults(options.fields || {}, {
-      places: ['user_token'],
-      surveys: ['user_token'],
-      support: ['user_token']
-    });
-
-    this.privatefields = _.defaults(options.privatefields || {}, {
-      places: [],
-      surveys: [],
-      support: []
-    });
+    this.tables.places.fields = this.tables.places.fields || [{'name': 'user_token'}];
+    this.tables.surveys.fields = this.tables.surveys.fields || [{'name': 'user_token'}];
+    this.tables.support.fields = this.tables.support.fields || [{'name': 'user_token'}];
   };
 
   NS.CartoDBBackend.prototype = {
@@ -189,23 +202,13 @@ var Shareabouts = Shareabouts || {};
     getPlaceCreateSQL: function(options) {
       var data = options.data.properties || options.data,
           geom = options.data.geometry,
-          values = [], value;
+          values = [];
+
+      values = _escapedAndQuotedValues(data, this.tables.places.fields);
 
       if (geom.type.toLowerCase() === 'point') {
-        values[0] = 'ST_SetSRID(ST_Point(' + geom.coordinates[0] + ',' + geom.coordinates[1] + '),4326)';
+        values.unshift('ST_SetSRID(ST_Point(' + geom.coordinates[0] + ',' + geom.coordinates[1] + '),4326)');
       }
-
-      _.each(this.fields.places, function(field) {
-        value = data[field] || '';
-        value = '\'' + value.replace('\'', '\'\'') + '\'';
-        values.push(value);
-      });
-
-      _.each(this.privatefields.places, function(field) {
-        value = data[field] || '';
-        value = '\'' + value.replace('\'', '\'\'') + '\'';
-        values.push(value);
-      });
 
       return 'SELECT * FROM create_place(' + values.join(',') + ');';
     },
@@ -218,27 +221,28 @@ var Shareabouts = Shareabouts || {};
  * ============================================================ */
 
     makeCreatePlaceFunction: function(key) {
-      var fieldNames = this.fields.places.slice(0),
-          fieldDefs = _.map(this.fields.places, function(fieldName) { return fieldName + ' text'; }),
-          fieldVars = _.map(this.fields.places, function(fieldName) { return 'create_place.' + fieldName; }),
+      var funcName = 'create_place',
+          fieldNames = this.tables.places.fields.slice(0),
+          fieldDefs = _fieldDefs(this.tables.places.fields),
+          fieldVars = _fieldVars(funcName, this.tables.places.fields),
           sql;
 
       fieldNames.unshift('the_geom');
       fieldDefs.unshift('the_geom geometry');
-      fieldVars.unshift('create_place.the_geom');
+      fieldVars.unshift(funcName + '.the_geom');
 
       sql =
-        'CREATE OR REPLACE FUNCTION create_place(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places + ' AS $$\n' +
+        'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places + ' AS $$\n' +
           'INSERT INTO ' + this.tables.places + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;\n' +
         '$$ LANGUAGE SQL ' +
         'SECURITY DEFINER; ' +
-        'GRANT EXECUTE ON FUNCTION create_place(' + fieldDefs.join(', ') + ') TO publicuser;';
+        'GRANT EXECUTE ON FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') TO publicuser;';
 
       this.runSQL({sql: sql, key: key});
     },
 
     makePlacesTable: function(key) {
-      var fieldDefs = _.map(this.fields.places, function(fieldName) { return fieldName + ' text'; });
+      var fieldDefs = _fieldDefs(this.tables.places.fields);
 
       // First, create the table.
       this.runSQL({

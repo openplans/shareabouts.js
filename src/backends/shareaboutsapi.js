@@ -5,16 +5,29 @@ var Shareabouts = Shareabouts || {};
 (function(NS) {
   'use strict';
 
-  NS.ShareaboutsAPIBackend = function() {};
+  NS.ShareaboutsAPIBackend = function(options) {
+    options = options || {};
+    this.apiRoot = options.apiRoot || '';
+  };
 
   NS.ShareaboutsAPIBackend.prototype = {
     sync: function(method, model, options) {
-      var origBeforeSend = options.beforeSend;
+      var origBeforeSend = options.beforeSend,
+          baseUrl;
 
-      // Sync with credentials
-      _.defaults(options || (options = {}), {
+      options = _.extend({
+        url: (options || {}).url || _.result(model, 'url') || urlError(),
+
+        // Sync with credentials
         xhrFields: {withCredentials: true}
-      });
+      }, options);
+
+      // Check whether we are fetching multiple specific ids
+      if ('ids' in options) {
+        baseUrl = options.url;
+        options.url = baseUrl + (baseUrl.charAt(baseUrl.length - 1) === '/' ? '' : '/') + options.ids.join(',');
+        delete options.ids;
+      }
 
       // Add custom headers and such
       options.beforeSend = function ($xhr, inneroptions) {
@@ -42,11 +55,12 @@ var Shareabouts = Shareabouts || {};
     },
 
     prepareSync: function(obj) {
-      obj.sync = _.bind(this.sync, this);
+      // obj.sync = this.sync;
     },
 
     preparePlaceCollection: function(collection/*, attrs, options*/) {
       this.prepareSync(collection);
+      collection.url = this.makeCollectionUrl('/places');
     },
 
     preparePlaceModel: function(model/*, attrs, options*/) {
@@ -59,6 +73,14 @@ var Shareabouts = Shareabouts || {};
 
     prepareSubmissionModel: function(model/*, attrs, options*/) {
       this.prepareSync(model);
+    },
+
+    makeCollectionUrl: function(path) {
+      var apiRoot = this.apiRoot;
+      var urlFunc = function() {
+        return apiRoot + path;
+      };
+      return urlFunc;
     }
   };
 }(Shareabouts));

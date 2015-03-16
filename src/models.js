@@ -300,7 +300,7 @@ var Shareabouts = Shareabouts || {};
         options.contentType = 'application/json';
       }
 
-      return NS.backend.sync.apply(this, [method, model, options]);
+      return this.backend.sync.apply(this, [method, model, options]);
     },
     toGeoJSON: function() {
       return {
@@ -336,19 +336,14 @@ var Shareabouts = Shareabouts || {};
 
     model: NS.PlaceModel,
     resultsAttr: 'features',
+    sync: NS.backend.sync,
 
     fetchByIds: function(ids, options) {
-      var base = _.result(this, 'url');
-
       if (ids.length === 1) {
         this.fetchById(ids[0], options);
       } else {
-        ids = _.map(ids, function(id) { return encodeURIComponent(id); });
-        options = options ? _.clone(options) : {};
-        options.url = base + (base.charAt(base.length - 1) === '/' ? '' : '/') + ids.join(',');
-
         this.fetch(_.extend(
-          {remove: false},
+          {remove: false, ids: ids},
           options
         ));
       }

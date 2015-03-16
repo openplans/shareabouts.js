@@ -4,6 +4,7 @@
   'use strict';
 
   var assert = chai.assert;
+  S.backend = new S.ShareaboutsAPIBackend({apiRoot: '/api'});
 
   describe('models.js', function () {
 

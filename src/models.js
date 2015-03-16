@@ -295,7 +295,7 @@ var Shareabouts = Shareabouts || {};
         options.contentType = 'application/json';
       }
 
-      return this.backend.sync.apply(this, [method, model, options]);
+      return Backbone.sync.apply(this, [method, model, options]);
     },
     toGeoJSON: function() {
       return {
@@ -331,7 +331,6 @@ var Shareabouts = Shareabouts || {};
 
     model: NS.PlaceModel,
     resultsAttr: 'features',
-    sync: NS.backend.sync,
 
     fetchByIds: function(ids, options) {
       if (ids.length === 1) {

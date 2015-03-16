@@ -53,7 +53,7 @@ var Shareabouts = Shareabouts || {};
   };
 
   NS.CartoDBBackend.prototype = {
-    sync: function(method, obj, options) {
+    sync: function(method, obj, options, modelSync) {
       var self = this, sql, successFunc = options.success;
 
       options.url = this.getSQLURL();
@@ -116,11 +116,13 @@ var Shareabouts = Shareabouts || {};
         };
       }
 
-      return Backbone.sync.apply(this, [method, obj, options]);
+      return (modelSync || Backbone.sync).apply(this, [method, obj, options]);
     },
 
     prepareSync: function(obj) {
-      obj.sync = _.bind(this.sync, this);
+      var backendSync = _.bind(this.sync, this);
+      var modelSync = _.bind(obj.sync, obj);
+      obj.sync = _.partial(backendSync, _, _, _, modelSync);
     },
 
     preparePlaceCollection: function(collection/*, attrs, options*/) {

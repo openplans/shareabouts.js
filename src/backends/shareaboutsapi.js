@@ -11,7 +11,7 @@ var Shareabouts = Shareabouts || {};
   };
 
   NS.ShareaboutsAPIBackend.prototype = {
-    sync: function(method, model, options) {
+    sync: function(method, model, options, modelSync) {
       var origBeforeSend = options.beforeSend,
           baseUrl;
 
@@ -51,11 +51,13 @@ var Shareabouts = Shareabouts || {};
         $xhr.withCredentials = true;
       };
 
-      return Backbone.sync.apply(this, [method, model, options]);
+      return (modelSync || Backbone.sync).apply(this, [method, model, options]);
     },
 
     prepareSync: function(obj) {
-      // obj.sync = this.sync;
+      var backendSync = _.bind(this.sync, this);
+      var modelSync = _.bind(obj.sync, obj);
+      obj.sync = _.partial(backendSync, _, _, _, modelSync);
     },
 
     preparePlaceCollection: function(collection/*, attrs, options*/) {

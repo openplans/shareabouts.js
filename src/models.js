@@ -290,12 +290,7 @@ var Shareabouts = Shareabouts || {};
       var attrs;
 
       if (method === 'create' || method === 'update') {
-        attrs = {
-          'type': 'Feature',
-          'geometry': model.get('geometry'),
-          'properties': _.omit(model.toJSON(), 'geometry')
-        };
-
+        attrs = model.toGeoJSON();
         options.data = JSON.stringify(attrs);
         options.contentType = 'application/json';
       }

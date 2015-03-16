@@ -54,9 +54,11 @@ var Shareabouts = Shareabouts || {};
 
   NS.CartoDBBackend.prototype = {
     sync: function(method, obj, options, modelSync) {
-      var self = this, sql, successFunc = options.success;
+      var backend = this.backend,
+          sql,
+          successFunc = options.success;
 
-      options.url = this.getSQLURL();
+      options.url = backend.getSQLURL();
       options.type = 'POST';
       options.data = options.data || {};
       options.contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -70,12 +72,12 @@ var Shareabouts = Shareabouts || {};
         // Read a place collection
         //
         if (method === 'read') {
-          sql = this.getPlaceCollectionReadSQL({table: this.tables.places});
+          sql = backend.getPlaceCollectionReadSQL({table: backend.tables.places});
         }
         _.extend(options.data, {q: sql, format: 'GeoJSON'});
 
         options.success = function(data) {
-          _.map(data.features, _.bind(self._parsePlace, self));
+          _.map(data.features, _.bind(backend._parsePlace, backend));
           return successFunc.apply(this, arguments);
         };
       }
@@ -84,31 +86,31 @@ var Shareabouts = Shareabouts || {};
         // Create a place
         //
         if (method === 'create') {
-          sql = this.getPlaceCreateSQL({data: obj.toJSON()});
+          sql = backend.getPlaceCreateSQL({data: this.toJSON()});
         }
         _.extend(options.data, {q: sql, format: 'GeoJSON'});
 
         options.success = function(data) {
-          data = self._parsePlace(data.features[0]);
+          data = backend._parsePlace(data.features[0]);
           var newargs = Array.prototype.slice.call(arguments, 0);
           newargs.splice(0, 1, data);
           return successFunc.apply(this, newargs);
         };
       }
-      else if (obj instanceof NS.SubmissionCollection) {
+      else if (this instanceof NS.SubmissionCollection) {
         //
         // Read a submission collection
         //
         if (method === 'read') {
-          sql = this.getSubmissionCollectionReadSQL({
-            table: this.tables[obj.options.submissionType],
-            placeid: obj.options.placeModel.get('id')
+          sql = backend.getSubmissionCollectionReadSQL({
+            table: backend.tables[this.options.submissionType],
+            placeid: this.options.placeModel.get('id')
           });
         }
         _.extend(options.data, {q: sql});
 
         options.success = function(data) {
-          _.map(data.rows, _.bind(self._parseSubmission, self));
+          _.map(data.rows, _.bind(backend._parseSubmission, backend));
           data = {'results': data.rows};
           var newargs = Array.prototype.slice.call(arguments, 0);
           newargs.splice(0, 1, data);
@@ -120,8 +122,8 @@ var Shareabouts = Shareabouts || {};
     },
 
     prepareSync: function(obj) {
-      var backendSync = _.bind(this.sync, this);
-      var modelSync = _.bind(obj.sync, obj);
+      var backendSync = _.bind(this.sync, obj);
+      var modelSync = obj.sync;
       obj.sync = _.partial(backendSync, _, _, _, modelSync);
     },
 

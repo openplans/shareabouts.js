@@ -63,6 +63,7 @@ module.exports = function (grunt) {
       all: [
         '<%= yeoman.app %>/{,*/}*.js',
         '!<%= yeoman.app %>/lib/{,*/}*.js',
+        '!<%= yeoman.app %>/bower_components/{,*/}*.js',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -123,10 +124,42 @@ module.exports = function (grunt) {
       all: {
         rjsConfig: '<%= yeoman.app %>/main.js'
       }
-    }
+    },
+    // Watches files for changes and runs tasks based on the changed files
+    watch: {
+      // bower: {
+      //   files: ['bower.json'],
+      //   tasks: ['wiredep']
+      // },
+      js: {
+        files: ['<%= yeoman.app %>/{,*/}*.js'],
+        tasks: ['jshint', 'test'],
+        options: {
+          livereload: true
+        }
+      },
+      jstest: {
+        files: ['test/spec/{,*/}*.js'],
+        tasks: ['test:watch']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
+        files: [
+          '<%= yeoman.app %>/{,*/}*.html',
+          '.tmp/styles/{,*/}*.css',
+          '<%= yeoman.app %>/images/{,*/}*'
+        ]
+      }
+    },
+    regarde: {}
   });
 
-  grunt.renameTask('regarde', 'watch');
+  // grunt.renameTask('regarde', 'watch');
 
   grunt.registerTask('server', function (target) {
     if (target === 'dist') {
@@ -136,7 +169,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'open',
-      'watch'
+      'regarde'
     ]);
   });
 

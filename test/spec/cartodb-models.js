@@ -1,4 +1,4 @@
-/*global chai, describe, it, beforeEach, afterEach, Shareabouts, Backbone, jQuery, sinon */
+/*global chai, describe, it, Shareabouts, beforeEach, afterEach, sinon */
 
 (function (S) {
   'use strict';
@@ -6,6 +6,16 @@
   var assert = chai.assert;
 
   describe('The CartoDB Backend', function() {
+    var runSQL;
+
+    beforeEach(function() {
+      runSQL = sinon.stub(S.CartoDBBackend.prototype, 'runSQL', function() {});
+    });
+
+    afterEach(function() {
+      runSQL.restore();
+    });
+
     describe('constructor', function() {
       it('creates a default table structure configuration', function() {
         var backend = new S.CartoDBBackend();
@@ -20,6 +30,29 @@
         assert.equal(backend.tables.surveys.fields[0].name, 'user_token');
         assert.equal(backend.tables.support.fields.length, 1);
         assert.equal(backend.tables.support.fields[0].name, 'user_token');
+      });
+    });
+
+    describe('creating a places table', function() {
+      it('uses all configured fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makePlacesTable('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+        assert.equal(runSQL.getCall(0).args[0].sql,
+          'CREATE TABLE places (location_name text, location_description text, submitter_name text, submitter_email text, submitter_home_zip text, submitter_age text, submitter_ethnicity text, user_token text);');
+      });
+    });
+
+    describe('creating a place listing function', function() {
+      it('uses only non-private fields fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makeListPlacesFunction('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+        assert.match(runSQL.getCall(0).args[0].sql,
+          /^CREATE OR REPLACE FUNCTION list_places\(\) RETURNS TABLE\(the_geom geometry, location_name text, location_description text, submitter_name text, user_token text\).*/);
+        assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });
   });

@@ -19,11 +19,11 @@ var Shareabouts = Shareabouts || {};
   };
 
   var _fieldDefs = function(fields) {
-    return _.map(fields, function(fieldName) { return fieldName + ' text'; });
+    return _.map(fields, function(field) { return field.name + ' text'; });
   };
 
   var _fieldVars = function(tableOrFunc, fields) {
-    return _.map(fields, function(fieldName) { return tableOrFunc + '.' + fieldName; });
+    return _.map(fields, function(field) { return tableOrFunc + '.' + field.name; });
   };
 
   NS.CartoDBBackend = function(options) {
@@ -236,11 +236,33 @@ var Shareabouts = Shareabouts || {};
       fieldVars.unshift(funcName + '.the_geom');
 
       sql =
-        'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places + ' AS $$\n' +
+        'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places.name + ' AS $$\n' +
           'INSERT INTO ' + this.tables.places + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;\n' +
         '$$ LANGUAGE SQL ' +
         'SECURITY DEFINER; ' +
         'GRANT EXECUTE ON FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') TO publicuser;';
+
+      this.runSQL({sql: sql, key: key});
+    },
+
+    makeListPlacesFunction: function(key) {
+      var funcName = 'list_places',
+          fields = _.filter(this.tables.places.fields, function(field) { return !field.private; }),
+          fieldNames = _.pluck(fields, 'name'),
+          fieldDefs = _fieldDefs(fields),
+          // fieldVars = _fieldVars(funcName, fields),
+          sql;
+
+      fieldNames.unshift('the_geom');
+      fieldDefs.unshift('the_geom geometry');
+      // fieldVars.unshift(funcName + '.the_geom');
+
+      sql =
+        'CREATE OR REPLACE FUNCTION ' + funcName + '() RETURNS TABLE(' + fieldDefs.join(', ') + ') AS $$\n' +
+          'SELECT ' + fieldNames.join(', ') + ' FROM ' + this.tables.places.name + ';\n' +
+        '$$ LANGUAGE SQL ' +
+        'SECURITY DEFINER; ' +
+        'GRANT EXECUTE ON FUNCTION ' + funcName + '() TO publicuser;';
 
       this.runSQL({sql: sql, key: key});
     },
@@ -251,14 +273,14 @@ var Shareabouts = Shareabouts || {};
       // First, create the table.
       this.runSQL({
         key: key,
-        sql: 'CREATE TABLE ' + this.tables.places + ' (' + fieldDefs.join(',') + ');'
+        sql: 'CREATE TABLE ' + this.tables.places.name + ' (' + fieldDefs.join(', ') + ');'
       });
 
       // A few seconds later, CartoDBfy it.
       _.delay(function() {
         this.runSQL({
           key: key,
-          sql: 'SELECT cdb_cartodbfytable(\'' + this.tables.places + '\');'
+          sql: 'SELECT cdb_cartodbfytable(\'' + this.tables.places.name + '\');'
         });
       }, 5000);
     }

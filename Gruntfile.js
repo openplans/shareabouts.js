@@ -139,7 +139,7 @@ module.exports = function (grunt) {
         }
       },
       test: {
-        files: ['<%= yeoman.app %>/{,*/}*.js', 'test/spec/{,*/}*.js'],
+        files: ['test/*.html', '<%= yeoman.app %>/{,*/}*.js', 'test/spec/{,*/}*.js', 'test/data/{,*/}*.js'],
         tasks: ['test'],
         options: {
           livereload: true

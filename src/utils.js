@@ -154,13 +154,13 @@ var Shareabouts = Shareabouts || {};
     getStyleRule: function(properties, rules) {
       // http://mir.aculo.us/2011/03/09/little-helpers-a-tweet-sized-javascript-templating-engine/
       var t = function t(s,d){
-       for(var p in d)
-         s=s.replace(new RegExp('{{'+p+'}}','g'), d[p]);
-       return s;
+        for(var p in d) {
+          s=s.replace(new RegExp('{{'+p+'}}','g'), d[p]);
+        }
+        return s;
       };
 
-      var self = this,
-          len, i, condition;
+      var len, i, condition;
 
       for (i=0, len=rules.length; i<len; i++) {
         // Replace the template with the property variable, not the value.

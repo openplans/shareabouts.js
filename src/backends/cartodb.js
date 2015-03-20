@@ -196,7 +196,7 @@ var Shareabouts = Shareabouts || {};
  * ============================================================ */
 
     getPlaceCollectionReadSQL: function(options) {
-      return 'SELECT * FROM ' + options.table + ';';
+      return 'SELECT * FROM ' + options.tables.places.name + '_list();';
     },
 
     getSubmissionCollectionReadSQL: function(options) {
@@ -225,8 +225,8 @@ var Shareabouts = Shareabouts || {};
  * ============================================================ */
 
     makeCreatePlaceFunction: function(key) {
-      var funcName = 'create_place',
-          fieldNames = this.tables.places.fields.slice(0),
+      var funcName = this.tables.places.name + '_create',
+          fieldNames = _.pluck(this.tables.places.fields.slice(0), 'name'),
           fieldDefs = _fieldDefs(this.tables.places.fields),
           fieldVars = _fieldVars(funcName, this.tables.places.fields),
           sql;
@@ -237,7 +237,7 @@ var Shareabouts = Shareabouts || {};
 
       sql =
         'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places.name + ' AS $$\n' +
-          'INSERT INTO ' + this.tables.places + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;\n' +
+          'INSERT INTO ' + this.tables.places.name + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;\n' +
         '$$ LANGUAGE SQL ' +
         'SECURITY DEFINER; ' +
         'GRANT EXECUTE ON FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') TO publicuser;';
@@ -246,16 +246,14 @@ var Shareabouts = Shareabouts || {};
     },
 
     makeListPlacesFunction: function(key) {
-      var funcName = 'list_places',
+      var funcName = this.tables.places.name + '_list',
           fields = _.filter(this.tables.places.fields, function(field) { return !field.private; }),
           fieldNames = _.pluck(fields, 'name'),
           fieldDefs = _fieldDefs(fields),
-          // fieldVars = _fieldVars(funcName, fields),
           sql;
 
       fieldNames.unshift('the_geom');
       fieldDefs.unshift('the_geom geometry');
-      // fieldVars.unshift(funcName + '.the_geom');
 
       sql =
         'CREATE OR REPLACE FUNCTION ' + funcName + '() RETURNS TABLE(' + fieldDefs.join(', ') + ') AS $$\n' +

@@ -44,6 +44,18 @@
       });
     });
 
+    describe('creating a place creating function', function() {
+      it('uses all fields fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makeCreatePlaceFunction('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+        assert.match(runSQL.getCall(0).args[0].sql,
+          /^CREATE OR REPLACE FUNCTION places_create\(the_geom geometry, location_name text, location_description text, submitter_name text, submitter_email text, submitter_home_zip text, submitter_age text, submitter_ethnicity text, user_token text\) RETURNS places.*/);
+        assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
+      });
+    });
+
     describe('creating a place listing function', function() {
       it('uses only non-private fields fields in the SQL', function() {
         var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
@@ -51,7 +63,7 @@
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
         assert.match(runSQL.getCall(0).args[0].sql,
-          /^CREATE OR REPLACE FUNCTION list_places\(\) RETURNS TABLE\(the_geom geometry, location_name text, location_description text, submitter_name text, user_token text\).*/);
+          /^CREATE OR REPLACE FUNCTION places_list\(\) RETURNS TABLE\(the_geom geometry, location_name text, location_description text, submitter_name text, user_token text\).*/);
         assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });

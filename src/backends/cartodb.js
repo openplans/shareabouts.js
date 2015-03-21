@@ -236,8 +236,9 @@ var Shareabouts = Shareabouts || {};
       fieldVars.unshift(funcName + '.the_geom');
 
       sql =
-        'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places.name + ' AS $$\n' +
-          'INSERT INTO ' + this.tables.places.name + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;\n' +
+        'DROP FUNCTION IF EXISTS ' + funcName + '(' + fieldDefs.join(', ') + ');' +
+        'CREATE OR REPLACE FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') RETURNS ' + this.tables.places.name + ' AS $$ ' +
+          'INSERT INTO ' + this.tables.places.name + ' (' + fieldNames.join(',') + ') VALUES (' + fieldVars.join(',') + ') RETURNING *;' +
         '$$ LANGUAGE SQL ' +
         'SECURITY DEFINER; ' +
         'GRANT EXECUTE ON FUNCTION ' + funcName + '(' + fieldDefs.join(', ') + ') TO publicuser;';
@@ -256,8 +257,9 @@ var Shareabouts = Shareabouts || {};
       fieldDefs.unshift('the_geom geometry');
 
       sql =
-        'CREATE OR REPLACE FUNCTION ' + funcName + '() RETURNS TABLE(' + fieldDefs.join(', ') + ') AS $$\n' +
-          'SELECT ' + fieldNames.join(', ') + ' FROM ' + this.tables.places.name + ';\n' +
+        'DROP FUNCTION IF EXISTS ' + funcName + '();' +
+        'CREATE FUNCTION ' + funcName + '() RETURNS TABLE(' + fieldDefs.join(', ') + ') AS $$ ' +
+          'SELECT ' + fieldNames.join(', ') + ' FROM ' + this.tables.places.name + ';' +
         '$$ LANGUAGE SQL ' +
         'SECURITY DEFINER; ' +
         'GRANT EXECUTE ON FUNCTION ' + funcName + '() TO publicuser;';

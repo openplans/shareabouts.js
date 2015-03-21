@@ -39,8 +39,10 @@
         backend.makePlacesTable('demo-key');
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
-        assert.equal(runSQL.getCall(0).args[0].sql,
-          'CREATE TABLE places (location_name text, location_description text, submitter_name text, submitter_email text, submitter_home_zip text, submitter_age text, submitter_ethnicity text, user_token text);');
+
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
       });
     });
 
@@ -50,8 +52,11 @@
         backend.makeCreatePlaceFunction('demo-key');
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
-        assert.match(runSQL.getCall(0).args[0].sql,
-          /^CREATE OR REPLACE FUNCTION places_create\(the_geom geometry, location_name text, location_description text, submitter_name text, submitter_email text, submitter_home_zip text, submitter_age text, submitter_ethnicity text, user_token text\) RETURNS places.*/);
+
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
         assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });
@@ -62,8 +67,15 @@
         backend.makeListPlacesFunction('demo-key');
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
-        assert.match(runSQL.getCall(0).args[0].sql,
-          /^CREATE OR REPLACE FUNCTION places_list\(\) RETURNS TABLE\(the_geom geometry, location_name text, location_description text, submitter_name text, user_token text\).*/);
+
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) { return !field.private; }), function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) { return field.private; }), function(field) {
+          assert.notInclude(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
         assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });

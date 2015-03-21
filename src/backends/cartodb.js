@@ -18,8 +18,12 @@ var Shareabouts = Shareabouts || {};
     return values;
   };
 
+  var _fieldType = function(field) {
+    return 'text';
+  };
+
   var _fieldDefs = function(fields) {
-    return _.map(fields, function(field) { return field.name + ' text'; });
+    return _.map(fields, function(field) { return field.name + ' ' + _fieldType(field); });
   };
 
   var _fieldVars = function(tableOrFunc, fields) {
@@ -267,13 +271,25 @@ var Shareabouts = Shareabouts || {};
       this.runSQL({sql: sql, key: key});
     },
 
-    makePlacesTable: function(key) {
-      var fieldDefs = _fieldDefs(this.tables.places.fields);
+    makePlacesTable: function(key, done) {
+      var fieldDefs = _fieldDefs(this.tables.places.fields),
+          sql;
+
+      // QUESTION FOR CARTODB: How can I create a hidden table?
+      sql = 'CREATE TABLE IF NOT EXISTS ' + this.tables.places.name + ' (' + fieldDefs.join(', ') + ');\n';
+
+      _.forEach(this.tables.places.fields, _.bind(function(field) {
+        sql +=
+          'DO $$ BEGIN ' +
+            'ALTER TABLE ' + this.tables.places.name + ' ADD COLUMN ' + field.name + ' ' + _fieldType(field) + ';' +
+          'EXCEPTION WHEN duplicate_column THEN NULL;' +
+          'END $$;';
+      }, this));
 
       // First, create the table.
       this.runSQL({
         key: key,
-        sql: 'CREATE TABLE ' + this.tables.places.name + ' (' + fieldDefs.join(', ') + ');'
+        sql: sql
       });
 
       // A few seconds later, CartoDBfy it.

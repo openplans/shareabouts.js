@@ -258,6 +258,9 @@ var Shareabouts = Shareabouts || {};
           fieldDefs = _fieldDefs(fields),
           sql;
 
+      fieldNames.unshift('cartodb_id');
+      fieldDefs.unshift('cartodb_id integer');
+
       fieldNames.unshift('the_geom');
       fieldDefs.unshift('the_geom geometry');
 

@@ -207,10 +207,11 @@ var Shareabouts = Shareabouts || {};
       return 'SELECT * FROM ' + this.table + ' WHERE place_id=' + this.placeid + ';';
     },
 
-    getPlaceCreateSQL: function() {
-      var data = this.data.properties || this.data,
-          geom = this.data.geometry,
+    getPlaceCreateSQL: function(data) {
+      var funcName = this.tables.places.name + '_create',
+          geom = data.geometry,
           values = [];
+      data = data.properties || data;
 
       values = _escapedAndQuotedValues(data, this.tables.places.fields);
 
@@ -218,7 +219,7 @@ var Shareabouts = Shareabouts || {};
         values.unshift('ST_SetSRID(ST_Point(' + geom.coordinates[0] + ',' + geom.coordinates[1] + '),4326)');
       }
 
-      return 'SELECT * FROM create_place(' + values.join(',') + ');';
+      return 'SELECT * FROM ' + funcName + '(' + values.join(',') + ');';
     },
 
 /* ============================================================

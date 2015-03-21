@@ -10,7 +10,7 @@ var Shareabouts = Shareabouts || {};
     var value;
 
     _.each(fields, function(field) {
-      value = data[field] || '';
+      value = data[field.name] || '';
       value = '\'' + value.replace('\'', '\'\'') + '\'';
       values.push(value);
     });

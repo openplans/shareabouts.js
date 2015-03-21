@@ -289,16 +289,15 @@ var Shareabouts = Shareabouts || {};
       // First, create the table.
       this.runSQL({
         key: key,
-        sql: sql
+        sql: sql,
+        success: _.bind(function() {
+          this.runSQL({
+            key: key,
+            sql: 'SELECT cdb_cartodbfytable(\'' + this.tables.places.name + '\');',
+            success: done
+          });
+        }, this)
       });
-
-      // A few seconds later, CartoDBfy it.
-      _.delay(function() {
-        this.runSQL({
-          key: key,
-          sql: 'SELECT cdb_cartodbfytable(\'' + this.tables.places.name + '\');'
-        });
-      }, 5000);
     }
 
   };

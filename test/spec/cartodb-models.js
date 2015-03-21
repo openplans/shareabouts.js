@@ -1,4 +1,4 @@
-/*global chai, describe, it, Shareabouts, beforeEach, afterEach, sinon */
+/*global chai, describe, it, Shareabouts, beforeEach, afterEach, sinon, _ */
 
 (function (S) {
   'use strict';

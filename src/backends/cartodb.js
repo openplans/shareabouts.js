@@ -199,17 +199,17 @@ var Shareabouts = Shareabouts || {};
  *
  * ============================================================ */
 
-    getPlaceCollectionReadSQL: function(options) {
-      return 'SELECT * FROM ' + options.tables.places.name + '_list();';
+    getPlaceCollectionReadSQL: function() {
+      return 'SELECT * FROM ' + this.tables.places.name + '_list();';
     },
 
-    getSubmissionCollectionReadSQL: function(options) {
-      return 'SELECT * FROM ' + options.table + ' WHERE place_id=' + options.placeid + ';';
+    getSubmissionCollectionReadSQL: function() {
+      return 'SELECT * FROM ' + this.table + ' WHERE place_id=' + this.placeid + ';';
     },
 
-    getPlaceCreateSQL: function(options) {
-      var data = options.data.properties || options.data,
-          geom = options.data.geometry,
+    getPlaceCreateSQL: function() {
+      var data = this.data.properties || this.data,
+          geom = this.data.geometry,
           values = [];
 
       values = _escapedAndQuotedValues(data, this.tables.places.fields);

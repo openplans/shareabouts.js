@@ -40,9 +40,26 @@
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
 
-        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) {
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.tables.places.fields, function(field) {
           assert.include(runSQL.getCall(0).args[0].sql, field.name);
         });
+
+        assert.notInclude(runSQL.getCall(0).args[0].sql, 'place_id');
+      });
+    });
+
+    describe('creating a surveys table', function() {
+      it('uses all configured fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makeSurveysTable('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.tables.surveys.fields, function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
+        assert.include(runSQL.getCall(0).args[0].sql, 'place_id integer references');
       });
     });
 
@@ -53,10 +70,27 @@
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
 
-        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) {
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.tables.places.fields, function(field) {
           assert.include(runSQL.getCall(0).args[0].sql, field.name);
         });
 
+        assert.include(runSQL.getCall(0).args[0].sql, 'the_geom');
+        assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
+      });
+    });
+
+    describe('creating a survey creating function', function() {
+      it('uses all fields fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makeCreateSurveyFunction('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+
+        _.forEach(Shareabouts.Data.cartoDBBackendCustomOptions.tables.surveys.fields, function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
+        assert.include(runSQL.getCall(0).args[0].sql, 'place_id');
         assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });
@@ -68,14 +102,35 @@
         assert.equal(runSQL.callCount, 1);
         assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
 
-        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) { return !field.private; }), function(field) {
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.tables.places.fields, function(field) { return !field.private; }), function(field) {
           assert.include(runSQL.getCall(0).args[0].sql, field.name);
         });
 
-        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.fields, function(field) { return field.private; }), function(field) {
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.tables.places.fields, function(field) { return field.private; }), function(field) {
           assert.notInclude(runSQL.getCall(0).args[0].sql, field.name);
         });
 
+        assert.notInclude(runSQL.getCall(0).args[0].sql, 'place_id');
+        assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
+      });
+    });
+
+    describe('creating a survey listing function', function() {
+      it('uses only non-private fields fields in the SQL', function() {
+        var backend = new S.CartoDBBackend(Shareabouts.Data.cartoDBBackendCustomOptions);
+        backend.makeListSurveysFunction('demo-key');
+        assert.equal(runSQL.callCount, 1);
+        assert.equal(runSQL.getCall(0).args[0].key, 'demo-key');
+
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.tables.surveys.fields, function(field) { return !field.private; }), function(field) {
+          assert.include(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
+        _.forEach(_.filter(Shareabouts.Data.cartoDBBackendCustomOptions.tables.surveys.fields, function(field) { return field.private; }), function(field) {
+          assert.notInclude(runSQL.getCall(0).args[0].sql, field.name);
+        });
+
+        assert.include(runSQL.getCall(0).args[0].sql, 'place_id');
         assert.notInclude(runSQL.getCall(0).args[0].sql, '[object Object]');
       });
     });

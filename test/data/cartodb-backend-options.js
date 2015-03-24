@@ -10,6 +10,7 @@ Shareabouts.Data.cartoDBBackendCustomOptions = {
   tables: {
     places: {
       name: 'places',
+      methods: ['create', 'retrieve', 'list'],
       fields: [
         {
           name: 'location_name',
@@ -36,6 +37,30 @@ Shareabouts.Data.cartoDBBackendCustomOptions = {
           name: 'submitter_ethnicity',
           private: true
         },
+        {
+          name: 'user_token',
+        }
+      ]
+    },
+    comments: {
+      name: 'comments',
+      methods: ['create', 'retrieve', 'list'],
+      fields: [
+        {
+          name: 'comment_text',
+        },
+        {
+          name: 'submitter_name',
+        },
+        {
+          name: 'user_token',
+        }
+      ]
+    },
+    support: {
+      name: 'support',
+      methods: ['create', 'retrieve', 'list', 'delete'],
+      fields: [
         {
           name: 'user_token',
         }

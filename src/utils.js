@@ -148,6 +148,25 @@ var Shareabouts = Shareabouts || {};
       error: function(){}
     },
 
+    SimpleStyle: {
+      mapping: [
+          ['stroke', 'color'],
+          ['stroke-width', 'weight'],
+          ['stroke-opacity', 'opacity'],
+          ['fill', 'fillColor'],
+          ['fill-opacity', 'fillOpacity']
+      ],
+
+      remap: function(instyle) {
+        var mapping = NS.Util.SimpleStyle.mapping;
+        var outstyle = {};
+        for (var i = 0; i < mapping.length; i++) {
+          outstyle[mapping[i][1]] = instyle[mapping[i][0]];
+        }
+        return outstyle;
+      }
+    },
+
     // Get the style rule for this feature by evaluating the condition option,
     // using the Argo convention.
     // https://github.com/openplans/argo/wiki/Configuration-Guide
@@ -160,7 +179,12 @@ var Shareabouts = Shareabouts || {};
       };
 
       var self = this,
-          len, i, condition;
+          len, i, condition,
+          dataStyle, rule;
+
+      if (properties.style) {
+        dataStyle = NS.Util.SimpleStyle.remap(properties.style);
+      }
 
       for (i=0, len=rules.length; i<len; i++) {
         // Replace the template with the property variable, not the value.
@@ -169,10 +193,17 @@ var Shareabouts = Shareabouts || {};
 
         // Simpler code plus a trusted source; negligible performance hit
         if (eval(condition)) {
-          return rules[i];
+          rule = _.clone(rules[i]);
+
+          if (dataStyle) {
+            rule.style = rule.style || {};
+            rule.style = _.defaults(rule.style, dataStyle);
+          }
+
+          return rule
         }
       }
-      return null;
+      return (dataStyle ? {style: dataStyle} || null);
     },
 
     fixImageOrientation: function(canvas, orientation) {

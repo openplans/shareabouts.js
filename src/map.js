@@ -6,17 +6,17 @@ var Shareabouts = Shareabouts || {};
   'use strict';
 
   var focusLayer = function(layer, styleRule) {
-    if (styleRule.focusIcon) {
+    if (styleRule.focusIcon && layer.setIcon) {
       layer.setIcon(L.icon(styleRule.focusIcon));
-    } else if (styleRule.focusStyle) {
+    } else if (styleRule.focusStyle && layer.setStyle) {
       layer.setStyle(styleRule.focusStyle);
     }
   };
 
   var unfocusLayer = function(layer, styleRule) {
-    if (styleRule.icon) {
+    if (styleRule.icon && layer.setIcon) {
       layer.setIcon(L.icon(styleRule.icon));
-    } else if (styleRule.style) {
+    } else if (styleRule.style && layer.setStyle) {
       layer.setStyle(styleRule.style);
     }
   };

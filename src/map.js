@@ -164,8 +164,7 @@ var Shareabouts = Shareabouts || {};
       NS.Util.log('USER', 'map', 'place-marker-click', model.getLoggingDetails());
 
       // Pan the map to the selected layer
-      // TODO: handle non-point geometries
-      self.map.panTo(evt.layer.getLatLng());
+      self.panToLayer(evt.layer);
     });
 
     // Listen for when a place is shown
@@ -233,6 +232,23 @@ var Shareabouts = Shareabouts || {};
     $el.on('showpanel closepanel', function() {
       self.map.invalidateSize(true);
     });
+
+    this.panToLayer = function(layer) {
+      var bb = layer.getBounds();
+      var center;
+
+      if (layer.getLatLng) {
+        center = layer.getLatLng();
+      } else {
+        center = bb.getCenter();
+      }
+
+      if (this.map.getBounds().contains(bb)) {
+        this.map.panTo(center);
+      } else {
+        this.map.fit(bb);
+      }
+    };
 
     this.setUser = function(userData) {
       var markup;

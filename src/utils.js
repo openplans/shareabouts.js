@@ -200,10 +200,10 @@ var Shareabouts = Shareabouts || {};
             rule.style = _.defaults(rule.style, dataStyle);
           }
 
-          return rule
+          return rule;
         }
       }
-      return (dataStyle ? {style: dataStyle} || null);
+      return (dataStyle ? {style: dataStyle} : null);
     },
 
     fixImageOrientation: function(canvas, orientation) {

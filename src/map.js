@@ -246,7 +246,7 @@ var Shareabouts = Shareabouts || {};
       if (this.map.getBounds().contains(bb)) {
         this.map.panTo(center);
       } else {
-        this.map.fit(bb);
+        this.map.fitBounds(bb);
       }
     };
 

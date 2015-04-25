@@ -234,19 +234,26 @@ var Shareabouts = Shareabouts || {};
     });
 
     this.panToLayer = function(layer) {
-      var bb = layer.getBounds();
-      var center;
+      var bb, center;
 
+      // Center the layer if it's a point
       if (layer.getLatLng) {
         center = layer.getLatLng();
-      } else {
-        center = bb.getCenter();
+        this.map.panTo(center);
       }
 
-      if (this.map.getBounds().contains(bb)) {
-        this.map.panTo(center);
-      } else {
-        this.map.fitBounds(bb);
+      // Fit and center the layer if it has bounds
+      else if (layer.getBounds) {
+        bb = layer.getBounds();
+        center = bb.getCenter();
+
+        // Only zoom if the layer is not already
+        // contained by the current map bounds.
+        if (this.map.getBounds().contains(bb)) {
+          this.map.panTo(center);
+        } else {
+          this.map.fitBounds(bb);
+        }
       }
     };
 

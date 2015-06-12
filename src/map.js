@@ -35,9 +35,14 @@ var Shareabouts = Shareabouts || {};
 
     // Set any default options
     options = options || {};
-    // _.defaults(options, {
-    //   // TBD
-    // });
+    _.defaults(options, {
+      enableAddPlaces: true,  // If true, render the add-place button
+      enableLegend: true
+    });
+
+    if (!options.layers || options.layers.length === 0) {
+      throw new Error('No layers were specified; you should provide at least one (a base layer).');
+    }
 
     // Initialize the Shareabouts DOM structure
     layoutHtml =
@@ -57,15 +62,19 @@ var Shareabouts = Shareabouts || {};
     $el.html(layoutHtml);
 
     // Render the legend
-    $el.find('.shareabouts-legend-container').html(
-      options.templates['legend'] ?
-        options.templates['legend']() : ''
-    );
+    if (options.enableLegend) {
+      $el.find('.shareabouts-legend-container').html(
+        options.templates['legend'] ?
+          options.templates['legend']() : ''
+      );
+    }
 
     // Render the Add button
-    $el.find('.shareabouts-add-button-container').html(
-      options.templates['add-button']()
-    );
+    if (options.enableAddPlaces) {
+      $el.find('.shareabouts-add-button-container').html(
+        options.templates['add-button']()
+      );
+    }
 
     // Init the panel layout
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});

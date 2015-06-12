@@ -13,6 +13,11 @@ var Shareabouts = Shareabouts || {};
       surveyRegion: '.survey-region',
       supportRegion: '.support-region'
     },
+    serializeData: function() {
+      var data = Backbone.Marionette.Layout.prototype.serializeData.call(this);
+      data._options = this.options.umbrella.options;
+      return data;
+    },
     onClose: function() {
       $(this.options.umbrella).trigger('closeplace', [this]);
     },

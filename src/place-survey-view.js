@@ -42,6 +42,11 @@ var Shareabouts = Shareabouts || {};
       'input @ui.form': 'handleChange',
       'blur @ui.form': 'handleChange'
     },
+    serializeData: function() {
+      var data = Backbone.Marionette.CompositeView.prototype.serializeData.call(this);
+      data._options = this.options.umbrella.options;
+      return data;
+    },
     handleChange: function(evt) {
       // serialize the form
       var self = this,

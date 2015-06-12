@@ -95,7 +95,7 @@ var Shareabouts = Shareabouts || {};
       });
     },
     setSubmitter: function(submitter) {
-      this.userToken = NS.auth.getUserToken(submitter);
+      this.userToken = NS.auth && NS.auth.getUserToken(submitter);
       return this;
     },
   });

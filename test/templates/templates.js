@@ -23,13 +23,13 @@ Shareabouts.Templates = {
   'place-support': function(data) {
     'use strict';
 
-    var userToken = Shareabouts.auth.getUserToken(),
+    var userToken = Shareabouts.auth && Shareabouts.auth.getUserToken(),
         isUserLoaded = !!userToken,
         userSupport = _.find(data.items, function(support) { return support['user_token'] === userToken; }),
         isSupporting = !!userSupport;
 
     return '<form action="#" method="post" class="btn btn-block btn-small user-support">' +
-      '<input type="hidden" name="user_token" value="' + Shareabouts.auth.getUserToken() + '">' +
+      '<input type="hidden" name="user_token" value="' + userToken + '">' +
       '<input type="hidden" name="visible" value="true">' +
       '<input type="checkbox" id="support"' +
         (isSupporting ? ' checked="checked"' : '') +
@@ -45,10 +45,11 @@ Shareabouts.Templates = {
       submitter = 'Comment by <strong>'+data.submitter.name+'</strong>'
     }
 
-    return '<ul class="survey-items"></ul>' +
-    '<form><p>'+submitter+'</p>'+
-    '<p><label>Comment <textarea name="comment" type="text">'+(data.comment||'')+'</textarea></label></p>'+
-    '<button>Save</button></form>'
+    return '<ul class="survey-items"></ul>' + (
+      data._options.enableAddSurveys ? (
+        '<form class="survey-form"><p>'+submitter+'</p>'+
+        '<p><label>Comment <textarea name="comment" type="text">'+(data.comment||'')+'</textarea></label></p>'+
+        '<button>Save</button></form>') : '');
   },
   'place-survey-item': function(data) {
     return '<p>'+ data.comment +'</p>';

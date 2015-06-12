@@ -27,6 +27,8 @@ var Shareabouts = Shareabouts || {};
         $el = $(options.el),
         layoutHtml, i, layerOptions, panelLayout;
 
+    this.options = options;
+
     // For CORS in IE9 and below, we need to POST our requests and tell
     // the Shareabouts API what method to actually use in the header.
     if (!$.support.cors && window.XDomainRequest) {
@@ -37,6 +39,7 @@ var Shareabouts = Shareabouts || {};
     options = options || {};
     _.defaults(options, {
       enableAddPlaces: true,  // If true, render the add-place button
+      enableAddSurveys: true,
       enableLegend: true
     });
 
@@ -149,10 +152,9 @@ var Shareabouts = Shareabouts || {};
 
 
     // Render the place detail template
-    this.geoJsonLayer.on('click', function(evt) {
+    this.showPlaceDetail = function(placeId) {
       var tpl = options.templates['place-detail'],
-          featureData = evt.layer.feature,
-          model = self.placeCollection.get(featureData.properties.id);
+          model = self.placeCollection.get(placeId);
 
       // Show the place details in the panel
       self.placeDetailView = new NS.PlaceDetailView({
@@ -171,7 +173,11 @@ var Shareabouts = Shareabouts || {};
       panelLayout.showContent(self.placeDetailView);
 
       NS.Util.log('USER', 'map', 'place-marker-click', model.getLoggingDetails());
+    };
 
+    this.geoJsonLayer.on('click', function(evt) {
+      // Show the detail for the place
+      this.showPlaceDetail(evt.layer.feature.properties.id);
       // Pan the map to the selected layer
       self.panToLayer(evt.layer);
     });

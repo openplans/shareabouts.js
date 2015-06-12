@@ -40,6 +40,7 @@ var Shareabouts = Shareabouts || {};
     _.defaults(options, {
       enableAddPlaces: true,  // If true, render the add-place button
       enableAddSurveys: true,
+      enableAddSupport: true,
       enableLegend: true
     });
 

@@ -28,15 +28,19 @@ Shareabouts.Templates = {
         userSupport = _.find(data.items, function(support) { return support['user_token'] === userToken; }),
         isSupporting = !!userSupport;
 
-    return '<form action="#" method="post" class="btn btn-block btn-small user-support">' +
-      '<input type="hidden" name="user_token" value="' + userToken + '">' +
-      '<input type="hidden" name="visible" value="true">' +
-      '<input type="checkbox" id="support"' +
-        (isSupporting ? ' checked="checked"' : '') +
-        (isUserLoaded ? '' : ' disabled="disabled"') +
-        '>' +
-      '<label for="support"><span class="support-count">' + data.items.length + '</span> Support</label>' +
-    '</form>';
+    return data._options.enableAddSupport ? (
+        '<form action="#" method="post" class="btn btn-block btn-small user-support">' +
+          '<input type="hidden" name="user_token" value="' + userToken + '">' +
+          '<input type="hidden" name="visible" value="true">' +
+          '<input type="checkbox" id="support"' +
+            (isSupporting ? ' checked="checked"' : '') +
+            (isUserLoaded ? '' : ' disabled="disabled"') +
+            '>' +
+          '<label for="support"><span class="support-count">' + data.items.length + '</span> Support</label>' +
+        '</form>'
+      ) : (
+        '<label for="support"><span class="support-count">' + data.items.length + '</span> Support</label>'
+      );
   },
   'place-survey': function(data) {
     // anonymous user

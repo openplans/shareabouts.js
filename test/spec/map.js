@@ -103,5 +103,44 @@
         assert.equal($('#testbed .survey-form').length, 1);
       });
     });
+
+
+    describe('enableAddSupport flag', function () {
+      var mapOptions;
+
+      beforeEach(function() {
+        $('#testbed').empty();
+        mapOptions = {
+          templates: Shareabouts.Templates,
+          el: '#testbed',
+          datasetUrl: 'http://localhost:8000',
+          layers: [stubLayer],
+          placeStyles: [{'condition': 'true', 'icon': ''}]
+        };
+      });
+
+      var openPlaceDetail = function(map) {
+        map.placeCollection.add({'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [0,0]}, 'id': 1, 'properties': {'id': 1}});
+        map.showPlaceDetail(1);
+      };
+
+      it('should show the add support template when true', function () {
+        var map = new Shareabouts.Map(_.extend(mapOptions, { enableAddSupport: true }));
+        openPlaceDetail(map);
+        assert.equal($('#testbed form.user-support').length, 1);
+      });
+
+      it('should hide the add support template when false', function () {
+        var map = new Shareabouts.Map(_.extend(mapOptions, { enableAddSupport: false }));
+        openPlaceDetail(map);
+        assert.equal($('#testbed form.user-support').length, 0);
+      });
+
+      it('should default to true', function () {
+        var map = new Shareabouts.Map(mapOptions);
+        openPlaceDetail(map);
+        assert.equal($('#testbed form.user-support').length, 1);
+      });
+    });
   });
 })();

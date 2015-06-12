@@ -25,6 +25,11 @@ var Shareabouts = Shareabouts || {};
     events: {
       'change @ui.toggle': 'handleSupportChange'
     },
+    serializeData: function() {
+      var data = Backbone.Marionette.ItemView.prototype.serializeData.call(this);
+      data._options = this.options.umbrella.options;
+      return data;
+    },
     handleSupportChange: function(evt) {
       var self = this,
           checked = evt.target.checked,

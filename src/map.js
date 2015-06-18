@@ -178,7 +178,7 @@ var Shareabouts = Shareabouts || {};
 
     this.geoJsonLayer.on('click', function(evt) {
       // Show the detail for the place
-      this.showPlaceDetail(evt.layer.feature.properties.id);
+      self.showPlaceDetail(evt.layer.feature.properties.id);
       // Pan the map to the selected layer
       self.panToLayer(evt.layer);
     });

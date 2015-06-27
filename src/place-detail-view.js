@@ -5,7 +5,7 @@ var Shareabouts = Shareabouts || {};
 (function(NS, $, console){
   'use strict';
 
-  NS.PlaceDetailView = Backbone.Marionette.Layout.extend({
+  NS.PlaceDetailView = Backbone.Marionette.LayoutView.extend({
     initialize: function(options) {
       this.options = options;
     },
@@ -14,7 +14,7 @@ var Shareabouts = Shareabouts || {};
       supportRegion: '.support-region'
     },
     serializeData: function() {
-      var data = Backbone.Marionette.Layout.prototype.serializeData.call(this);
+      var data = Backbone.Marionette.LayoutView.prototype.serializeData.call(this);
       data._options = this.options.umbrella.options;
       return data;
     },

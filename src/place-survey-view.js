@@ -25,9 +25,9 @@ var Shareabouts = Shareabouts || {};
         this.model.set('submitter', options.submitter);
       }
     },
-    itemView: NS.PlaceSurveyItemView,
-    itemViewContainer: '.survey-items',
-    itemViewOptions: function(model, index) {
+    childView: NS.PlaceSurveyItemView,
+    childViewContainer: '.survey-items',
+    childViewOptions: function(model, index) {
       return {
         template: this.options.surveyItemTemplate,
         umbrella: this.options.umbrella

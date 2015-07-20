@@ -14,8 +14,8 @@ var Shareabouts = Shareabouts || {};
       this.$content = this.$('.shareabouts-panel-content');
     },
     showContent: function(view) {
-      if (this.currentView && this.currentView.onClose) {
-        this.currentView.onClose();
+      if (this.currentView && this.currentView.onDestroy) {
+        this.currentView.onDestroy();
       }
 
       this.currentView = view;
@@ -38,8 +38,8 @@ var Shareabouts = Shareabouts || {};
 
       NS.Util.log('USER', 'panel', 'close-btn-click');
 
-      if (this.currentView.onClose) {
-        this.currentView.onClose();
+      if (this.currentView.onDestroy) {
+        this.currentView.onDestroy();
         NS.Util.log('APP', 'panel-state', 'closed');
       }
     }

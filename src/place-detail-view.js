@@ -18,7 +18,7 @@ var Shareabouts = Shareabouts || {};
       data._options = this.options.umbrella.options;
       return data;
     },
-    onClose: function() {
+    onDestroy: function() {
       $(this.options.umbrella).trigger('closeplace', [this]);
     },
     onShow: function() {

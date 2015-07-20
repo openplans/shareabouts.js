@@ -131,7 +131,7 @@ var Shareabouts = Shareabouts || {};
 
       return this;
     },
-    onClose: function() {
+    onDestroy: function() {
       $(this.options.umbrella).trigger('closeplaceform', [this]);
     },
     onShow: function() {

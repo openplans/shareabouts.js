@@ -86,7 +86,7 @@ var Shareabouts = Shareabouts || {};
         });
       }
     },
-    onClose: function() {
+    onDestroy: function() {
       $(this.options.umbrella).trigger('closeplacesupport', [this]);
     },
     onShow: function() {

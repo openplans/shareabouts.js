@@ -8,7 +8,7 @@ var Shareabouts = Shareabouts || {};
   NS.PlaceSurveyItemView = Backbone.Marionette.ItemView.extend({
     tagName: 'li',
     initialize: function(options) { this.options = options; },
-    onClose: function() { $(this.options.umbrella).trigger('closeplacesurveyitem', [this]); },
+    onDestroy: function() { $(this.options.umbrella).trigger('closeplacesurveyitem', [this]); },
     onShow: function() { $(this.options.umbrella).trigger('showplacesurveyitem', [this]); }
   });
 
@@ -112,7 +112,7 @@ var Shareabouts = Shareabouts || {};
         }
       });
     },
-    onClose: function() {
+    onDestroy: function() {
       $(this.options.umbrella).trigger('closeplacesurvey', [this]);
     },
     onShow: function() {

@@ -168,6 +168,9 @@ var Shareabouts = Shareabouts || {};
           // snapshot.
           type: 'HEAD',
 
+          // Be sure to send credentials to the server.
+          xhrFields: {withCredentials: true},
+
           success: function() {
             var args = Array.prototype.splice.call(arguments, 0);
             if (options.success) { options.success.apply(this, [url].concat(args)); }

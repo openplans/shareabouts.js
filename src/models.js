@@ -405,6 +405,7 @@ var Shareabouts = Shareabouts || {};
       $.ajax({
         url: this.collection.url(),
         type: 'POST',
+        xhrFields: {withCredentials: true},
         xhr: function() {  // custom xhr
           if(myXhr.upload){ // check if upload property exists
             myXhr.upload.addEventListener('progress', progressHandler, false); // for handling the progress of the upload

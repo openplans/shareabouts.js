@@ -160,7 +160,7 @@ var Shareabouts = Shareabouts || {};
 
       // Poll the download URL until it is ready.
       var checkIfReady = function() {
-        $.ajax({
+        $.ajax(_.defaults({
           url: url,
           data: options.data,
 
@@ -186,7 +186,7 @@ var Shareabouts = Shareabouts || {};
               if (options.error) { options.error.apply(this, arguments); }
             }
           }
-        });
+        }, options));
       };
       checkIfReady();
     }

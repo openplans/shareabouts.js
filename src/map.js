@@ -171,7 +171,7 @@ var Shareabouts = Shareabouts || {};
         // Template for the support view
         supportTemplate: options.templates['place-support']
       });
-      this.panelLayout.showContent(self.placeDetailView);
+      panelLayout.showContent(self.placeDetailView);
 
       NS.Util.log('USER', 'map', 'place-marker-click', model.getLoggingDetails());
     };

@@ -70,7 +70,7 @@ var Shareabouts = Shareabouts || {};
 
     this.isAuthenticated = false;
 
-    this.getUserToken = function(userData) {
+    this.getUserToken = _.bind(function(userData) {
       if (arguments.length === 0) { userData = this.userData; }
 
       if (userData) {
@@ -78,7 +78,7 @@ var Shareabouts = Shareabouts || {};
       } else {
         return this.getAnonymousUserToken();
       }
-    };
+    }, this);
 
     this.getAnonymousUserToken = function() {
       var token = NS.Util.cookies.get(options.anonToken);

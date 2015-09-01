@@ -1,6 +1,6 @@
 {
   "name": "shareabouts-js",
-  "version": "3.8.7",
+  "version": "3.8.8",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.0",

@@ -1,4 +1,4 @@
-/*global _ L jQuery Backbone Gatekeeper */
+/*global _, L, jQuery, Backbone, Gatekeeper */
 
 var Shareabouts = Shareabouts || {};
 
@@ -113,7 +113,7 @@ var Shareabouts = Shareabouts || {};
       }
     }).on('layeradd', function(evt) {
       // Map model ids to leaflet layer ids
-      modelIdToLayerId[evt.layer.feature.properties.id] = evt.layer._leaflet_id;
+      modelIdToLayerId[evt.layer.toGeoJSON().properties.id] = evt.layer._leaflet_id;
     }).addTo(this.map);
 
     // Listen for map moves, and update the geometry on the place form view
@@ -171,14 +171,14 @@ var Shareabouts = Shareabouts || {};
         // Template for the support view
         supportTemplate: options.templates['place-support']
       });
-      panelLayout.showContent(self.placeDetailView);
+      this.panelLayout.showContent(self.placeDetailView);
 
       NS.Util.log('USER', 'map', 'place-marker-click', model.getLoggingDetails());
     };
 
     this.geoJsonLayer.on('click', function(evt) {
       // Show the detail for the place
-      self.showPlaceDetail(evt.layer.feature.properties.id);
+      self.showPlaceDetail(evt.layer.toGeoJSON().properties.id);
       // Pan the map to the selected layer
       self.panToLayer(evt.layer);
     });

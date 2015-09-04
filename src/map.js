@@ -185,20 +185,24 @@ var Shareabouts = Shareabouts || {};
 
     // Listen for when a place is shown
     $(this).on('showplace', function(evt, view){
-      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
+      if (view && view.model) {
+        var styleRule = NS.Util.getStyleRule(view.model.toJSON(), self.placeStyles),
+            layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
-      // Focus/highlight the layer
-      focusLayer(layer, styleRule);
+        // Focus/highlight the layer
+        focusLayer(layer, styleRule);
+      }
     });
 
     // Listen for when a place is closed
     $(this).on('closeplace', function(evt, view){
-      var styleRule = NS.Util.getStyleRule(view.model.toJSON(), options.placeStyles),
-          layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
+      if (view && view.model) {
+        var styleRule = NS.Util.getStyleRule(view.model.toJSON(), self.placeStyles),
+            layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
-      // Revert the layer
-      unfocusLayer(layer, styleRule);
+        // Revert the layer
+        unfocusLayer(layer, styleRule);
+      }
     });
 
     // Listen for when a form is shown

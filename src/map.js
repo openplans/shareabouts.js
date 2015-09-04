@@ -179,10 +179,15 @@ var Shareabouts = Shareabouts || {};
     };
 
     this.geoJsonLayer.on('click', function(evt) {
-      // Show the detail for the place
-      self.showPlaceDetail(evt.layer.toGeoJSON().properties.id);
-      // Pan the map to the selected layer
-      self.panToLayer(evt.layer);
+      var geojson = evt.layer.toGeoJSON(),
+          props = geojson.properties;
+
+      if (props.id) {
+        // Show the detail for the place
+        self.showPlaceDetail(props.id);
+        // Pan the map to the selected layer
+        self.panToLayer(evt.layer);
+      }
     });
 
     // Listen for when a place is shown

@@ -187,23 +187,27 @@ var Shareabouts = Shareabouts || {};
 
     // Listen for when a place is shown
     $(this).on('showplace', function(evt, view){
-      if (view && view.model) {
+      if (view.model) {
         var styleRule = NS.Util.getStyleRule(view.model.toJSON(), self.placeStyles),
             layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
         // Focus/highlight the layer
         focusLayer(layer, styleRule);
+      } else {
+        throw 'No model specified for the place detail view.';
       }
     });
 
     // Listen for when a place is closed
     $(this).on('closeplace', function(evt, view){
-      if (view && view.model) {
+      if (view.model) {
         var styleRule = NS.Util.getStyleRule(view.model.toJSON(), self.placeStyles),
             layer = self.geoJsonLayer.getLayer(modelIdToLayerId[view.model.id]);
 
         // Revert the layer
         unfocusLayer(layer, styleRule);
+      } else {
+        throw 'No model specified for the place detail view.';
       }
     });
 

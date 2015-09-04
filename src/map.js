@@ -93,18 +93,20 @@ var Shareabouts = Shareabouts || {};
     // Init the place collection
     this.placeCollection = new NS.PlaceCollection();
     // This has to be set directly, not via the options
-    this.placeCollection.url = options.datasetUrl;
+    this.placeCollection.url = options.datasetUrl || options.dataset_url;
+
+    this.placeStyles = options.placeStyles || options.place_styles;
 
     // Init an empty geoJson layer and add it to the map
     // Add data to it for it to appear on the map
     this.geoJsonLayer = L.geoJson(null, {
       style: function(featureData) {
         // Get the style for non-point geometries
-        return NS.Util.getStyleRule(featureData.properties, options.placeStyles).style;
+        return NS.Util.getStyleRule(featureData.properties, self.placeStyles).style;
       },
       pointToLayer: function(featureData, latLng) {
         // Get style or icon settings for point geometries
-        var styleRule = NS.Util.getStyleRule(featureData.properties, options.placeStyles);
+        var styleRule = NS.Util.getStyleRule(featureData.properties, self.placeStyles);
         if (styleRule.icon) {
           return L.marker(latLng, {icon: L.icon(styleRule.icon)});
         } else {

@@ -123,6 +123,16 @@ module.exports = function (grunt) {
       all: {
         rjsConfig: '<%= yeoman.app %>/main.js'
       }
+    },
+    watch: {
+      all: {
+        files: [
+          '<%= yeoman.app %>/{,*/}*.js',
+          '!<%= yeoman.app %>/lib/{,*/}*.js',
+          'test/spec/{,*/}*.js'
+        ],
+        tasks: ['build']
+      }
     }
   });
 

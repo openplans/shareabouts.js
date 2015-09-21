@@ -116,11 +116,28 @@ var Shareabouts = Shareabouts || {};
     this.geoJsonLayer = L.geoJson(null, {
       style: function(featureData) {
         // Get the style for non-point geometries
-        return NS.Util.getStyleRule(featureData.properties, self.placeStyles).style;
+        var styleRule = NS.Util.getStyleRule(featureData.properties, self.placeStyles);
+
+        if (!styleRule) {
+          console.warn('No style rule condition matches for this feature. ' +
+            'You should provide a default style rule. Using a default ' +
+            'invisible style.', featureData);
+          styleRule = {style: {}};
+        }
+
+        return styleRule.style;
       },
       pointToLayer: function(featureData, latLng) {
         // Get style or icon settings for point geometries
         var styleRule = NS.Util.getStyleRule(featureData.properties, self.placeStyles);
+
+        if (!styleRule) {
+          console.warn('No style rule condition matches for this feature. ' +
+            'You should provide a default style rule. Using a default ' +
+            'invisible style.', featureData);
+          styleRule = {style: {}};
+        }
+
         if (styleRule.icon) {
           return L.marker(latLng, {icon: L.icon(styleRule.icon)});
         } else {

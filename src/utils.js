@@ -87,6 +87,22 @@ var Shareabouts = Shareabouts || {};
       return dummy.disabled === false;
     },
 
+    // pathJoin translated from Python's os.path.join
+    pathJoin: function() {
+      var i, segment, path = '';
+      for (i = 0; i < arguments.length; ++i) {
+        segment = arguments[i];
+        if (segment[0] === '/') {
+          path = segment;
+        } else if (path === '' || path[path.length-1] === '/') {
+          path += segment;
+        } else {
+          path += '/' + segment;
+        }
+      }
+      return path;
+    },
+
     // ====================================================
     // Event and State Logging
 

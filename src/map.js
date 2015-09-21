@@ -52,6 +52,16 @@ var Shareabouts = Shareabouts || {};
       throw new Error('No layers were specified; you should provide at least one (a base layer).');
     }
 
+    // If the dataset url ends with a places path, get rid of the ending.
+    // TODO: remove this in a few versions.
+    var placeEnding = /\/places\/?$/;
+    if (placeEnding.test(datasetUrl)) {
+      console.warn('Dataset URLs should point to the root of the dataset. ' +
+        'Including the place path is deprecated and support will be removed ' +
+        'in the future. (Received the dataset URL: ' + datasetUrl + ')');
+      datasetUrl = datasetUrl.replace(/\/places\/?$/, '');
+    }
+
     // Initialize the Shareabouts DOM structure
     layoutHtml =
       '<div class="shareabouts-map-container">' +
@@ -97,7 +107,7 @@ var Shareabouts = Shareabouts || {};
     // Init the place collection
     this.placeCollection = new NS.PlaceCollection();
     // This has to be set directly, not via the options
-    this.placeCollection.url = options.datasetUrl || options.dataset_url;
+    this.placeCollection.url = Shareabouts.Util.pathJoin(datasetUrl, 'places');
 
     this.placeStyles = options.placeStyles || options.place_styles;
 

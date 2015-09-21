@@ -9,6 +9,42 @@
   };
 
   describe('Shareabouts Map', function () {
+    describe('dataset url', function() {
+      var mapOptions;
+
+      beforeEach(function() {
+        $('#testbed').empty();
+        mapOptions = {
+          templates: Shareabouts.Templates,
+          el: '#testbed',
+          layers: [stubLayer]
+        };
+      });
+
+      it('should be required', function() {
+        try {
+          Shareabouts.Map(mapOptions);
+        } catch (e) {
+          assert.include(e.message, 'dataset');
+          assert.include(e.message, ' must ');
+          return;
+        }
+        assert.fail('Shareabouts.Map should require a dataset URL');
+      });
+
+      it('can be specified in camelCase', function() {
+        Shareabouts.Map(_.extend({
+          datasetUrl: 'http://localhost:8000'
+        }, mapOptions));
+      });
+
+      it('can be specified in underscore_case', function() {
+        Shareabouts.Map(_.extend({
+          dataset_url: 'http://localhost:8000'
+        }, mapOptions));
+      });
+    });
+
     describe('layers option', function() {
       var mapOptions;
 

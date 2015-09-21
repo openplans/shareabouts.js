@@ -25,7 +25,7 @@ var Shareabouts = Shareabouts || {};
     var self = this,
         modelIdToLayerId = {},
         $el = $(options.el),
-        layoutHtml, i, layerOptions, panelLayout;
+        layoutHtml, i, layerOptions, panelLayout, datasetUrl;
 
     this.options = options;
 
@@ -44,6 +44,10 @@ var Shareabouts = Shareabouts || {};
       enableLegend: true
     });
 
+    datasetUrl = options.datasetUrl || options.dataset_url;
+    if (!datasetUrl) {
+      throw new Error('You must specify a dataset URL.');
+    }
     if (!options.layers || options.layers.length === 0) {
       throw new Error('No layers were specified; you should provide at least one (a base layer).');
     }

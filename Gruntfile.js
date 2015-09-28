@@ -87,7 +87,7 @@ module.exports = function (grunt) {
             '<%= yeoman.app %>/lib/django-csrf.js'
           ],
           '<%= yeoman.dist %>/map.js': [
-            '<%= yeoman.app %>/map.js',
+            '<%= yeoman.app %>/map-app.js',
             '<%= yeoman.app %>/panel-layout.js',
             '<%= yeoman.app %>/place-detail-view.js',
             '<%= yeoman.app %>/place-form-view.js',
@@ -120,7 +120,7 @@ module.exports = function (grunt) {
             '<%= yeoman.app %>/lib/django-csrf.js'
           ],
           '<%= yeoman.dist %>/map.js.min': [
-            '<%= yeoman.app %>/map.js',
+            '<%= yeoman.app %>/map-app.js',
             '<%= yeoman.app %>/panel-layout.js',
             '<%= yeoman.app %>/place-detail-view.js',
             '<%= yeoman.app %>/place-form-view.js',

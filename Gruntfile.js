@@ -86,6 +86,14 @@ module.exports = function (grunt) {
             '<%= yeoman.app %>/models.js',
             '<%= yeoman.app %>/lib/django-csrf.js'
           ],
+          '<%= yeoman.dist %>/map.js': [
+            '<%= yeoman.app %>/map.js',
+            '<%= yeoman.app %>/panel-layout.js',
+            '<%= yeoman.app %>/place-detail-view.js',
+            '<%= yeoman.app %>/place-form-view.js',
+            '<%= yeoman.app %>/place-support-view.js',
+            '<%= yeoman.app %>/place-survey-view.js'
+          ],
           '<%= yeoman.dist %>/heatmap.js': [
             '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.Canvas.js',
             '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.HeatCanvas.js',
@@ -110,6 +118,14 @@ module.exports = function (grunt) {
           '<%= yeoman.dist %>/models.min.js': [
             '<%= yeoman.app %>/models.js',
             '<%= yeoman.app %>/lib/django-csrf.js'
+          ],
+          '<%= yeoman.dist %>/map.js.min': [
+            '<%= yeoman.app %>/map.js',
+            '<%= yeoman.app %>/panel-layout.js',
+            '<%= yeoman.app %>/place-detail-view.js',
+            '<%= yeoman.app %>/place-form-view.js',
+            '<%= yeoman.app %>/place-support-view.js',
+            '<%= yeoman.app %>/place-survey-view.js'
           ],
           '<%= yeoman.dist %>/heatmap.min.js': [
             '<%= yeoman.app %>/heatmap/lib/Leaflet.ImageOverlay.Canvas.js',

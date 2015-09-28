@@ -21,6 +21,11 @@ var Shareabouts = Shareabouts || {};
     }
   };
 
+  NS.makeMap = function(mapEl, mapOptions) {
+    // Create a leaflet-like map
+    return new L.Map(mapEl, mapOptions);
+  };
+
   NS.Map = function(options) {
     var self = this,
         modelIdToLayerId = {},
@@ -98,7 +103,7 @@ var Shareabouts = Shareabouts || {};
     panelLayout = new NS.PanelLayout({el: $el.find('.shareabouts-panel').get(0)});
 
     // Init the map
-    this.map = L.map($el.find('.shareabouts-map').get(0), options.map);
+    this.map = NS.makeMap($el.find('.shareabouts-map').get(0), options.map);
     for (i = 0; i < options.layers.length; ++i) {
       layerOptions = options.layers[i];
       L.tileLayer(layerOptions.url, layerOptions).addTo(this.map);

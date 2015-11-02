@@ -32,7 +32,14 @@ var Shareabouts = Shareabouts || {};
     },
 
     getModelDataFromForm: function() {
-      return NS.Util.getAttrs(this.ui.form);
+      var data;
+
+      // Do nothing - can't save without a geometry
+      if (!this.geometry) { return; }
+
+      data = NS.Util.getAttrs(this.ui.form);
+      data.geometry = this.geometry;
+      return data
     },
 
     handleChange: function(evt) {
@@ -53,12 +60,7 @@ var Shareabouts = Shareabouts || {};
 
       NS.Util.log('USER', 'new-place', 'submit-place-btn-click');
 
-      // Do nothing - can't save without a geometry
-      if (!this.geometry) {
-        return;
-      }
-
-      data.geometry = this.geometry;
+      if (!data) { return; }
 
       // Unset the submitter since it's only used for rendering. For saving, it
       // will be automatically set to the logged in user.

@@ -30,6 +30,11 @@ var Shareabouts = Shareabouts || {};
         this.model.set('submitter', options.submitter);
       }
     },
+
+    getModelDataFromForm: function() {
+      return NS.Util.getAttrs(this.ui.form);
+    },
+
     handleChange: function(evt) {
       // serialize the form
       var self = this,
@@ -43,7 +48,7 @@ var Shareabouts = Shareabouts || {};
 
       // serialize the form
       var self = this,
-          data = NS.Util.getAttrs(this.ui.form),
+          data = this.getModelDataFromForm(),
           submitter = this.model.get('submitter');
 
       NS.Util.log('USER', 'new-place', 'submit-place-btn-click');
@@ -57,7 +62,7 @@ var Shareabouts = Shareabouts || {};
 
       // Unset the submitter since it's only used for rendering. For saving, it
       // will be automatically set to the logged in user.
-      if (submitter) {
+      if (submitter && this.model.isNew()) {
         this.model.unset('submitter');
       }
 
